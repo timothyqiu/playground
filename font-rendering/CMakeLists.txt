@@ -36,4 +36,8 @@ find_package(spdlog REQUIRED)
 find_package(CLI11 REQUIRED)
 find_package(Freetype REQUIRED)
 
+# CLI11 uses std::filesystem in C++17, may require extra std-libraries
+# depends on the compiler. Just disable the use of std::filesystem here.
+target_compile_definitions(CLI11::CLI11 INTERFACE CLI11_HAS_FILESYSTEM=0)
+
 add_subdirectory(src)

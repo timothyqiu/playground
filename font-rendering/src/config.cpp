@@ -9,7 +9,8 @@ Config::Config(int argc, char *argv[])
     CLI::App app{"Font Rendering Demo"};
 
     app.add_option("file", file, "Path to the font file")
-        ->type_name("PATH");
+        ->type_name("PATH")
+        ->required();
 
     app.add_option("-o,--output", output, "Output file path")
         ->type_name("FILE")
