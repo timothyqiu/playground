@@ -1,12 +1,11 @@
 #include <algorithm>
-#include <cerrno>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -46,6 +45,8 @@ static void dump_face_info(FT_Face face)
     fmt::print(" Underline Thickness: {}\n", face->underline_thickness);
 }
 
+// Scaled Global Metrics
+// No grid-fitting is performed for these values.
 static void dump_metrics(FT_Size_Metrics const& metrics)
 {
     fmt::print(" X Pixel per EM: {}\n", metrics.x_ppem);
@@ -123,6 +124,9 @@ int main(int argc, char *argv[])
 
     dump_face_info(face.get());
 
+    bool const use_kerning = FT_HAS_KERNING(face.get());
+    spdlog::debug("Kerning support: {}", use_kerning);
+
     spdlog::debug("Setting pixel size to {}", config.font_pixel_size);
     if (auto const error = FT_Set_Pixel_Sizes(face.get(),
                                               /*width*/config.font_pixel_size,
@@ -135,7 +139,7 @@ int main(int argc, char *argv[])
     dump_metrics(face->size->metrics);
 
     // UTF-32
-    std::u32string_view const text{U"Type 字体😄"};
+    std::u32string_view const text{U"AV Type 字体 😄"};
 
     // 32-bit integer in 26.6 fix point format
     auto const ascender = face->size->metrics.ascender >> 6;
@@ -147,28 +151,50 @@ int main(int argc, char *argv[])
         static_cast<size_t>(ascender - descender),
     };
 
+    spdlog::debug("Canvas size {}x{}", canvas.width(), canvas.height());
+    spdlog::debug("Baseline at {}", ascender);
+
     canvas.draw_horizontal_line(ascender, 0x00);  // baseline
 
     int pen_x = 0;
     int const pen_y = ascender;
+    FT_UInt last_index = 0;  // the undefined glyph has no kerning with anyone
 
     for (FT_ULong const charcode : text) {
         auto const index = FT_Get_Char_Index(face.get(), charcode);
         if (index == 0) {
             spdlog::warn("Glyph undefined for character code: U+{:X}", charcode);
         }
+
         if (auto const error = FT_Load_Glyph(face.get(), index, FT_LOAD_DEFAULT); error) {
             spdlog::error("FT_Load_Glyph error: 0x{:02X}", error);
             return EXIT_FAILURE;
         }
 
         if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP) {
-            spdlog::debug("Glyph {} not in bitmap format, convert", index);
             if (auto const error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL); error) {
                 spdlog::error("FT_Render_Glyph error: 0x{:02X}", error);
                 return EXIT_FAILURE;
             }
         }
+
+        if (use_kerning && last_index != 0) {
+            FT_Vector delta;
+
+            // error check can be skipped, delta will be 0 on error
+            if (auto const error = FT_Get_Kerning(face.get(),
+                                                  last_index, index,
+                                                  FT_KERNING_DEFAULT,
+                                                  &delta); error)
+            {
+                spdlog::error("FT_Get_Kerning error: 0x{:02X}", error);
+            } else if (delta.x != 0) {
+                assert(delta.y == 0);
+                pen_x += (delta.x >> 6);
+                canvas.draw_vertical_line(pen_x, 0xC0);
+            }
+        }
+        last_index = index;
 
         draw_bitmap(canvas, &face->glyph->bitmap,
                     pen_x + face->glyph->bitmap_left,

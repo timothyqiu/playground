@@ -1,6 +1,8 @@
 #include "canvas.hpp"
 
+#include <cerrno>
 #include <cstdio>
+#include <cstring>
 
 #include <fmt/core.h>
 #include <spdlog/spdlog.h>
