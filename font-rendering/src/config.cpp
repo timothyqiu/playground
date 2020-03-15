@@ -24,6 +24,6 @@ Config::Config(int argc, char *argv[])
         app.parse(argc, argv);
     }
     catch (CLI::ParseError const& e) {
-        exit(app.exit(e));
+        std::exit(app.exit(e));
     }
 }
