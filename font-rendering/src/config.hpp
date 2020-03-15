@@ -7,8 +7,9 @@
 struct Config
 {
     std::string file;
-    std::string output{"render.pgm"};
-    size_t pixel_size{48};
+    std::string output;
+    size_t font_pixel_size;
+    size_t canvas_width;
 
     Config(int argc, char *argv[]);
 };

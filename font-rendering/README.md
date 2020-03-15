@@ -16,3 +16,10 @@ Build the project with [CMake](https://cmake.org/) and [Conan](https://conan.io/
     cmake --build /path/to/build-dir
 
 Note that Conan installs Release build by default (use `-s build_type=Debug` to change), and this CMake project builds RelWithDebInfo by default (use `-DCMAKE_BUILD_TYPE=Debug` to change when configuring for single-configuration generators, or `--config Debug` to change when building for multi-configuration generators). Type mismatch may result in link errors.
+
+## Run
+
+    # Use -h to see all options
+    /path/to/build-dir/src/demo [options] <font>
+
+The render output is a [PGM image](https://en.wikipedia.org/wiki/Netpbm).

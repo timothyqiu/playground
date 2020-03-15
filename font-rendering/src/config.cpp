@@ -14,11 +14,15 @@ Config::Config(int argc, char *argv[])
 
     app.add_option("-o,--output", output, "Output file path")
         ->type_name("FILE")
-        ->default_val(output);
+        ->default_val("render.pgm");
 
-    app.add_option("--size", pixel_size, "Pixel size")
-        ->type_name("PIXEL_SIZE")
-        ->default_val(pixel_size);
+    app.add_option("--size", font_pixel_size, "Font pixel size")
+        ->type_name("SIZE")
+        ->default_val(200);
+
+    app.add_option("--canvas-width", canvas_width, "Canvas width")
+        ->type_name("SIZE")
+        ->default_val(256);
 
     try {
         app.parse(argc, argv);

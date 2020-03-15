@@ -15,18 +15,17 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include "canvas.hpp"
 #include "config.hpp"
+#include "utils.hpp"
 
 // FT_Done_XXX may return error, just ignore it...
-template<typename T> struct DeleterOf;
 template<> struct DeleterOf<FT_Library> { void operator()(FT_Library v) { FT_Done_FreeType(v); } };
 template<> struct DeleterOf<FT_Face> { void operator()(FT_Face v) { FT_Done_Face(v); } };
-template<> struct DeleterOf<FILE> { void operator()(FILE *v) { std::fclose(v); } };
 
 // make life easier with RAII
 using LibraryPtr = std::unique_ptr<std::remove_pointer_t<FT_Library>, DeleterOf<FT_Library>>;
 using FacePtr = std::unique_ptr<std::remove_pointer_t<FT_Face>, DeleterOf<FT_Face>>;
-using FilePtr = std::unique_ptr<FILE, DeleterOf<FILE>>;
 
 static void dump_face_info(FT_Face face)
 {
@@ -47,12 +46,20 @@ static void dump_face_info(FT_Face face)
     fmt::print(" Underline Thickness: {}\n", face->underline_thickness);
 }
 
-static void save_bitmap(FT_Bitmap *bitmap, std::string const& path)
+static void dump_metrics(FT_Size_Metrics const& metrics)
 {
-    size_t const canvas_width{64};
-    size_t const canvas_height{64};
-    std::vector<uint8_t> buffer(canvas_width * canvas_height, 0xFF / 2);
+    fmt::print(" X Pixel per EM: {}\n", metrics.x_ppem);
+    fmt::print(" Y Pixel per EM: {}\n", metrics.y_ppem);
+    fmt::print("        X Scale: {}\n", metrics.x_scale);
+    fmt::print("        Y Scale: {}\n", metrics.y_scale);
+    fmt::print("       Ascender: {}\n", metrics.ascender);
+    fmt::print("      Descender: {}\n", metrics.descender);
+    fmt::print("         Height: {}\n", metrics.height);
+    fmt::print("    Max Advance: {}\n", metrics.max_advance);
+}
 
+static void draw_bitmap(Canvas& canvas, FT_Bitmap *bitmap, int x, int y)
+{
     // TODO: support more pixel modes
     if (bitmap->pixel_mode != FT_PIXEL_MODE_GRAY) {
         spdlog::error("Unsupported pixel mode: {}", bitmap->pixel_mode);
@@ -60,33 +67,31 @@ static void save_bitmap(FT_Bitmap *bitmap, std::string const& path)
     }
 
     double const color = 1.0;
-    for (size_t y = 0; y < bitmap->rows && y < canvas_height; y++) {
-        auto const *src_line = bitmap->buffer + bitmap->pitch * y;
-        auto       *dst_line = buffer.data() + canvas_width * y;
-        for (size_t x = 0; x < bitmap->width && x < canvas_width; x++) {
-            auto const bg = dst_line[x] / 255.0;
-            auto const alpha = src_line[x] / 255.0;
+    for (size_t src_y = 0; src_y < bitmap->rows; src_y++) {
+        auto const dst_y = y + static_cast<int>(src_y);
+        if (dst_y < 0) {
+            continue;
+        }
+        if (dst_y >= canvas.height()) {
+            break;
+        }
+
+        auto const *src_line = bitmap->buffer + bitmap->pitch * src_y;
+        auto       *dst_line = canvas.data() + canvas.pitch() * dst_y;
+        for (size_t src_x = 0; src_x < bitmap->width; src_x++) {
+            auto const dst_x = x + static_cast<int>(src_x);
+            if (dst_x < 0) {
+                continue;
+            }
+            if (dst_x >= canvas.width()) {
+                break;
+            }
+
+            auto const bg = dst_line[dst_x] / 255.0;
+            auto const alpha = src_line[src_x] / 255.0;
             auto const blend = bg * (1 - alpha) + color * alpha;
-            dst_line[x] = static_cast<uint8_t>(std::clamp(blend * 255, 0.0, 255.0));
+            dst_line[dst_x] = static_cast<uint8_t>(std::clamp(blend * 255, 0.0, 255.0));
         }
-    }
-
-    FilePtr file;
-    {
-        FILE *raw = std::fopen(path.c_str(), "wb");
-        if (raw == nullptr) {
-            spdlog::error("fopen {} failed: {}", path, std::strerror(errno));
-            return;
-        }
-        file.reset(raw);
-    }
-
-    auto const header = fmt::format("P5\n{} {}\n{}\n", canvas_width, canvas_height, 0xFF);
-    if (std::fwrite(header.data(), header.size(), 1, file.get()) != 1) {
-        spdlog::error("fwrite failed to write header");
-    }
-    if (std::fwrite(buffer.data(), buffer.size(), 1, file.get()) != 1) {
-        spdlog::error("fwrite failed to write pixels");
     }
 }
 
@@ -118,22 +123,23 @@ int main(int argc, char *argv[])
 
     dump_face_info(face.get());
 
-    spdlog::debug("Setting pixel size to {}", config.pixel_size);
+    spdlog::debug("Setting pixel size to {}", config.font_pixel_size);
     if (auto const error = FT_Set_Pixel_Sizes(face.get(),
-                                              /*width*/config.pixel_size,
-                                              /*height*/config.pixel_size); error)
+                                              /*width*/config.font_pixel_size,
+                                              /*height*/config.font_pixel_size); error)
     {
         spdlog::error("FT_Set_Pixel_Sizes error: 0x{:02X}", error);
         return EXIT_FAILURE;
     }
 
-    FT_ULong const charcode{0x90b1};  // UTF-32
+    dump_metrics(face->size->metrics);
+
+    FT_ULong const charcode{0x5b57};  // UTF-32
+
     auto const index = FT_Get_Char_Index(face.get(), charcode);
     if (index == 0) {
-        spdlog::error("Glyph undefined for character code: U+{:X}", charcode);
-        return EXIT_FAILURE;
+        spdlog::warn("Glyph undefined for character code: U+{:X}", charcode);
     }
-
     if (auto const error = FT_Load_Glyph(face.get(), index, FT_LOAD_DEFAULT); error) {
         spdlog::error("FT_Load_Glyph error: 0x{:02X}", error);
         return EXIT_FAILURE;
@@ -147,5 +153,26 @@ int main(int argc, char *argv[])
         }
     }
 
-    save_bitmap(&face->glyph->bitmap, config.output);
+    // 32-bit integer in 26.6 fix point format
+    auto const ascender = face->size->metrics.ascender >> 6;
+    auto const descender = face->size->metrics.descender >> 6;
+    spdlog::debug(" ascender: {}", ascender);
+    spdlog::debug("descender: {}", descender);
+
+    size_t const height = ascender - descender;
+    Canvas canvas{config.canvas_width, height};
+
+    canvas.draw_horizontal_line(ascender, 0x00);  // baseline
+
+    int const pen_x = 0;
+    int const pen_y = ascender;
+
+    spdlog::debug("bitmap left: {}", face->glyph->bitmap_left);
+    spdlog::debug("bitmap top: {}", face->glyph->bitmap_top);
+
+    draw_bitmap(canvas, &face->glyph->bitmap,
+                pen_x + face->glyph->bitmap_left,
+                pen_y - face->glyph->bitmap_top);
+
+    canvas.save_pgm(config.output);
 }
