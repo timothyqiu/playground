@@ -20,9 +20,9 @@ Config::Config(int argc, char *argv[])
         ->type_name("SIZE")
         ->default_val(200);
 
-    app.add_option("--canvas-width", canvas_width, "Canvas width")
+    app.add_option("--canvas-width", canvas_width, "Canvas width, zero means auto")
         ->type_name("SIZE")
-        ->default_val(256);
+        ->default_val(0);
 
     try {
         app.parse(argc, argv);

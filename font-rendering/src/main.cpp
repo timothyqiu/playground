@@ -134,45 +134,51 @@ int main(int argc, char *argv[])
 
     dump_metrics(face->size->metrics);
 
-    FT_ULong const charcode{0x5b57};  // UTF-32
-
-    auto const index = FT_Get_Char_Index(face.get(), charcode);
-    if (index == 0) {
-        spdlog::warn("Glyph undefined for character code: U+{:X}", charcode);
-    }
-    if (auto const error = FT_Load_Glyph(face.get(), index, FT_LOAD_DEFAULT); error) {
-        spdlog::error("FT_Load_Glyph error: 0x{:02X}", error);
-        return EXIT_FAILURE;
-    }
-
-    if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP) {
-        spdlog::debug("Glyph not in bitmap format, convert");
-        if (auto const error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL); error) {
-            spdlog::error("FT_Render_Glyph error: 0x{:02X}", error);
-            return EXIT_FAILURE;
-        }
-    }
+    // UTF-32
+    std::u32string_view const text{U"Type 字体😄"};
 
     // 32-bit integer in 26.6 fix point format
     auto const ascender = face->size->metrics.ascender >> 6;
     auto const descender = face->size->metrics.descender >> 6;
-    spdlog::debug(" ascender: {}", ascender);
-    spdlog::debug("descender: {}", descender);
 
-    size_t const height = ascender - descender;
-    Canvas canvas{config.canvas_width, height};
+    Canvas canvas{
+        // TODO: measure the texts to get an accurate width
+        config.canvas_width ? config.canvas_width : text.size() * config.font_pixel_size,
+        static_cast<size_t>(ascender - descender),
+    };
 
     canvas.draw_horizontal_line(ascender, 0x00);  // baseline
 
-    int const pen_x = 0;
+    int pen_x = 0;
     int const pen_y = ascender;
 
-    spdlog::debug("bitmap left: {}", face->glyph->bitmap_left);
-    spdlog::debug("bitmap top: {}", face->glyph->bitmap_top);
+    for (FT_ULong const charcode : text) {
+        auto const index = FT_Get_Char_Index(face.get(), charcode);
+        if (index == 0) {
+            spdlog::warn("Glyph undefined for character code: U+{:X}", charcode);
+        }
+        if (auto const error = FT_Load_Glyph(face.get(), index, FT_LOAD_DEFAULT); error) {
+            spdlog::error("FT_Load_Glyph error: 0x{:02X}", error);
+            return EXIT_FAILURE;
+        }
 
-    draw_bitmap(canvas, &face->glyph->bitmap,
-                pen_x + face->glyph->bitmap_left,
-                pen_y - face->glyph->bitmap_top);
+        if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP) {
+            spdlog::debug("Glyph {} not in bitmap format, convert", index);
+            if (auto const error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL); error) {
+                spdlog::error("FT_Render_Glyph error: 0x{:02X}", error);
+                return EXIT_FAILURE;
+            }
+        }
+
+        draw_bitmap(canvas, &face->glyph->bitmap,
+                    pen_x + face->glyph->bitmap_left,
+                    pen_y - face->glyph->bitmap_top);
+
+        pen_x += (face->glyph->advance.x >> 6);
+        assert(face->glyph->advance.y == 0);
+
+        canvas.draw_vertical_line(pen_x, 0x00);
+    }
 
     canvas.save_pgm(config.output);
 }

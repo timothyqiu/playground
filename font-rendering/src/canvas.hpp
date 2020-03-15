@@ -19,6 +19,7 @@ public:
     auto data() const -> uint8_t const * { return buffer_.data(); }
 
     void draw_horizontal_line(int y, uint8_t color);
+    void draw_vertical_line(int x, uint8_t color);
 
     void save_pgm(std::string const& path) const;
 

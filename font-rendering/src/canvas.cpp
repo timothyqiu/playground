@@ -18,8 +18,23 @@ Canvas::Canvas(size_t width, size_t height)
 }
 
 void Canvas::draw_horizontal_line(int y, uint8_t color) {
+    if (y < 0 || height_ <= y) {
+        return;
+    }
+
     auto line = buffer_.data() + width_ * y;
     for (size_t x = 0; x < width_; x++) {
+        line[x] = color;
+    }
+}
+
+void Canvas::draw_vertical_line(int x, uint8_t color) {
+    if (x < 0 || width_ <= x) {
+        return;
+    }
+
+    for (size_t y = 0; y < height_; y++) {
+        auto line = buffer_.data() + width_ * y;
         line[x] = color;
     }
 }
