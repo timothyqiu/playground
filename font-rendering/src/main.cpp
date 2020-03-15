@@ -70,7 +70,6 @@ static void draw_bitmap(Canvas& canvas, FT_Bitmap *bitmap, int x, int y)
         return;
     }
 
-    double const color = 1.0;
     for (size_t src_y = 0; src_y < bitmap->rows; src_y++) {
         auto const dst_y = y + static_cast<int>(src_y);
         if (dst_y < 0) {
@@ -91,9 +90,11 @@ static void draw_bitmap(Canvas& canvas, FT_Bitmap *bitmap, int x, int y)
                 break;
             }
 
-            auto const bg = dst_line[dst_x] / 255.0;
+            auto const fg    = 1.0;
+            auto const bg    = dst_line[dst_x] / 255.0;
             auto const alpha = src_line[src_x] / 255.0;
-            auto const blend = bg * (1 - alpha) + color * alpha;
+            auto const blend = bg * (1 - alpha) + fg * alpha;
+
             dst_line[dst_x] = static_cast<uint8_t>(std::clamp(blend * 255, 0.0, 255.0));
         }
     }
@@ -142,12 +143,14 @@ int main(int argc, char *argv[])
 
     dump_metrics(face->size->metrics);
 
+    size_t const padding = 8;
+
     // 32-bit integer in 26.6 fix point format
     auto const ascender = face->size->metrics.ascender >> 6;
     auto const descender = face->size->metrics.descender >> 6;
 
     // UTF-32
-    std::u32string_view const text{U"AV Type 字体-😄"};
+    std::u32string_view const text{U"AV Type 字体*路径😄"};
 
     int pen_x = 0;
     int pen_y = 0;
@@ -199,18 +202,55 @@ int main(int argc, char *argv[])
         pen_y += (face->glyph->advance.y >> 6);
     }
 
+    FT_BBox bbox;
+    bbox.xMin = bbox.yMin =  32000;
+    bbox.xMax = bbox.yMax = -32000;
+    for (size_t i = 0; i < text.size(); i++) {
+        FT_BBox glyph_bbox;
+        FT_Glyph_Get_CBox(glyphs[i].get(), FT_GLYPH_BBOX_PIXELS, &glyph_bbox);
+
+        glyph_bbox.xMin += pos[i].x;
+        glyph_bbox.xMax += pos[i].x;
+        glyph_bbox.yMin += pos[i].y;
+        glyph_bbox.yMax += pos[i].y;
+
+        bbox.xMin = std::min(bbox.xMin, glyph_bbox.xMin);
+        bbox.yMin = std::min(bbox.yMin, glyph_bbox.yMin);
+        bbox.xMax = std::max(bbox.xMax, glyph_bbox.xMax);
+        bbox.yMax = std::max(bbox.yMax, glyph_bbox.yMax);
+    }
+    if (bbox.xMin > bbox.xMax) {
+        bbox.xMin = 0;
+        bbox.yMin = 0;
+        bbox.xMax = 0;
+        bbox.yMax = 0;
+    }
+    spdlog::debug("BBOX: {},{} - {},{}", bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax);
+    auto const bbox_height = bbox.yMax - bbox.yMin;
+    auto const [canvas_height, baseline] = ([&]() -> std::pair<size_t, size_t> {
+        auto const raw = ascender - descender;
+        if (bbox_height > raw) {
+            return {bbox_height, bbox.yMax};
+        }
+        return {raw, ascender};
+    })();
+
     Canvas canvas{
-        config.canvas_width > 0 ? config.canvas_width : pen_x,
-        static_cast<size_t>(ascender - descender),
+        padding * 2 + (config.canvas_width > 0 ? config.canvas_width : pen_x),
+        padding * 2 + canvas_height,
     };
+    canvas.clear(Color{0xFF});
+    canvas.fill_rect(padding, padding, canvas.width() - padding * 2, canvas.height() - padding * 2, Color{0xCC, 1.0});
 
     spdlog::debug("Canvas size {}x{}", canvas.width(), canvas.height());
     spdlog::debug("Baseline at {}", ascender);
 
     auto const offset_x = 0;
-    auto const offset_y = ascender;
+    auto const offset_y = baseline;
 
-    canvas.draw_horizontal_line(ascender, 0x00);  // baseline
+    canvas.draw_horizontal_line(padding + baseline - ascender, Color{0x00, 1.0});  // ascender
+    canvas.draw_horizontal_line(padding + baseline, Color{0x00, 1.0});  // baseline
+    canvas.draw_horizontal_line(padding + baseline - descender, Color{0x00, 1.0});  // descender
 
     for (size_t i = 0; i < text.size(); i++) {
         FT_Glyph glyph = glyphs[i].get();
@@ -224,11 +264,16 @@ int main(int argc, char *argv[])
 
         auto const bit = reinterpret_cast<FT_BitmapGlyph>(glyph);
 
+        canvas.fill_rect(padding + offset_x + pos[i].x + bit->left,
+                         padding + offset_y + pos[i].y - bit->top,
+                         bit->bitmap.width,
+                         bit->bitmap.rows,
+                         Color{0x00, 0.3});
         draw_bitmap(canvas, &bit->bitmap,
-                    offset_x + pos[i].x + bit->left,
-                    offset_y + pos[i].y - bit->top);
+                    padding + offset_x + pos[i].x + bit->left,
+                    padding + offset_y + pos[i].y - bit->top);
 
-        canvas.draw_vertical_line(offset_x + pos[i].x, 0x00);
+        canvas.draw_vertical_line(padding + offset_x + pos[i].x, Color{0x00, 0.5});
     }
 
     canvas.save_pgm(config.output);

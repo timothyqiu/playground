@@ -18,7 +18,7 @@ Config::Config(int argc, char *argv[])
 
     app.add_option("--size", font_pixel_size, "Font pixel size")
         ->type_name("SIZE")
-        ->default_val(200);
+        ->default_val(100);
 
     app.add_option("--canvas-width", canvas_width, "Canvas width, zero means auto")
         ->type_name("SIZE")

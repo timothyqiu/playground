@@ -6,6 +6,12 @@
 #include <string>
 #include <vector>
 
+struct Color
+{
+    uint8_t gray;
+    double alpha;
+};
+
 class Canvas
 {
 public:
@@ -18,8 +24,10 @@ public:
     auto data() -> uint8_t * { return buffer_.data(); }
     auto data() const -> uint8_t const * { return buffer_.data(); }
 
-    void draw_horizontal_line(int y, uint8_t color);
-    void draw_vertical_line(int x, uint8_t color);
+    void clear(Color color);
+    void fill_rect(int x, int y, int w, int h, Color color);
+    void draw_horizontal_line(int y, Color color);
+    void draw_vertical_line(int x, Color color);
 
     void save_pgm(std::string const& path) const;
 
