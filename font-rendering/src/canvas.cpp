@@ -24,17 +24,21 @@ static inline auto blend(uint8_t bg, Color color)
 Canvas::Canvas(size_t width, size_t height)
     : width_{width}, height_{height}
     , buffer_(width * height)
+    , translate_x_{0}, translate_y_{0}
 {
     this->clear(Color{});
 }
 
-void Canvas::clear(Color color)
+auto Canvas::pitch() const
 {
-    std::fill(std::begin(buffer_), std::end(buffer_), color.gray);
+    return width_;
 }
 
 void Canvas::fill_rect(int x, int y, int w, int h, Color color)
 {
+    x += translate_x_;
+    y += translate_y_;
+
     if (x < 0) {
         w += x;
         x = 0;
@@ -62,30 +66,55 @@ void Canvas::fill_rect(int x, int y, int w, int h, Color color)
     }
 }
 
+void Canvas::blend_alpha(int x, int y,
+                         uint8_t const *data,
+                         size_t width, size_t height,
+                         size_t pitch,
+                         Color color)
+{
+    x += translate_x_;
+    y += translate_y_;
+
+    for (size_t src_y = 0; src_y < height; src_y++) {
+        auto const dst_y = y + static_cast<int>(src_y);
+        if (dst_y < 0) {
+            continue;
+        }
+        if (dst_y >= height_) {
+            break;
+        }
+
+        auto const *src_line = data + pitch * src_y;
+        auto       *dst_line = buffer_.data() + this->pitch() * dst_y;
+        for (size_t src_x = 0; src_x < width; src_x++) {
+            auto const dst_x = x + static_cast<int>(src_x);
+            if (dst_x < 0) {
+                continue;
+            }
+            if (dst_x >= width_) {
+                break;
+            }
+
+            color.alpha = src_line[src_x] / 255.0;
+            dst_line[dst_x] = blend(dst_line[dst_x], color);
+        }
+    }
+}
+
+void Canvas::clear(Color color)
+{
+    color.alpha = 1.0;
+    this->fill_rect(0, 0, width_, height_, color);
+}
+
 void Canvas::draw_horizontal_line(int y, Color color)
 {
-    if (y < 0 || height_ <= y) {
-        return;
-    }
-
-    auto line = buffer_.data() + this->pitch() * y;
-    for (size_t x = 0; x < width_; x++) {
-        auto const pixel = line + x;
-        *pixel = blend(*pixel, color);
-    }
+    this->fill_rect(-translate_x_, y, width_, 1, color);
 }
 
 void Canvas::draw_vertical_line(int x, Color color)
 {
-    if (x < 0 || width_ <= x) {
-        return;
-    }
-
-    for (size_t y = 0; y < height_; y++) {
-        auto const line = buffer_.data() + this->pitch() * y;
-        auto const pixel = line + x;
-        *pixel = blend(*pixel, color);
-    }
+    this->fill_rect(x, -translate_y_, 1, height_, color);
 }
 
 void Canvas::save_pgm(std::string const& path) const

@@ -62,44 +62,6 @@ static void dump_metrics(FT_Size_Metrics const& metrics)
     fmt::print("    Max Advance: {}\n", metrics.max_advance);
 }
 
-static void draw_bitmap(Canvas& canvas, FT_Bitmap *bitmap, int x, int y)
-{
-    // TODO: support more pixel modes
-    if (bitmap->pixel_mode != FT_PIXEL_MODE_GRAY) {
-        spdlog::error("Unsupported pixel mode: {}", bitmap->pixel_mode);
-        return;
-    }
-
-    for (size_t src_y = 0; src_y < bitmap->rows; src_y++) {
-        auto const dst_y = y + static_cast<int>(src_y);
-        if (dst_y < 0) {
-            continue;
-        }
-        if (dst_y >= canvas.height()) {
-            break;
-        }
-
-        auto const *src_line = bitmap->buffer + bitmap->pitch * src_y;
-        auto       *dst_line = canvas.data() + canvas.pitch() * dst_y;
-        for (size_t src_x = 0; src_x < bitmap->width; src_x++) {
-            auto const dst_x = x + static_cast<int>(src_x);
-            if (dst_x < 0) {
-                continue;
-            }
-            if (dst_x >= canvas.width()) {
-                break;
-            }
-
-            auto const fg    = 1.0;
-            auto const bg    = dst_line[dst_x] / 255.0;
-            auto const alpha = src_line[src_x] / 255.0;
-            auto const blend = bg * (1 - alpha) + fg * alpha;
-
-            dst_line[dst_x] = static_cast<uint8_t>(std::clamp(blend * 255, 0.0, 255.0));
-        }
-    }
-}
-
 int main(int argc, char *argv[])
 {
     Config const config{argc, argv};
@@ -225,7 +187,7 @@ int main(int argc, char *argv[])
         bbox.xMax = 0;
         bbox.yMax = 0;
     }
-    spdlog::debug("BBOX: {},{} - {},{}", bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax);
+
     auto const bbox_height = bbox.yMax - bbox.yMin;
     auto const [canvas_height, baseline] = ([&]() -> std::pair<size_t, size_t> {
         auto const raw = ascender - descender;
@@ -240,17 +202,19 @@ int main(int argc, char *argv[])
         padding * 2 + canvas_height,
     };
     canvas.clear(Color{0xFF});
-    canvas.fill_rect(padding, padding, canvas.width() - padding * 2, canvas.height() - padding * 2, Color{0xCC, 1.0});
+    canvas.fill_rect(/* x */padding,
+                     /* y */padding,
+                     /* w */pen_x,
+                     /* h */canvas_height,
+                     Color{0xCC, 1.0});
 
-    spdlog::debug("Canvas size {}x{}", canvas.width(), canvas.height());
-    spdlog::debug("Baseline at {}", ascender);
+    canvas.translate(padding, padding);
+    canvas.draw_horizontal_line(baseline - ascender, Color{0x00, 1.0});  // ascender
+    canvas.draw_horizontal_line(baseline, Color{0x00, 1.0});  // baseline
+    canvas.draw_horizontal_line(baseline - descender, Color{0x00, 1.0});  // descender
 
     auto const offset_x = 0;
     auto const offset_y = baseline;
-
-    canvas.draw_horizontal_line(padding + baseline - ascender, Color{0x00, 1.0});  // ascender
-    canvas.draw_horizontal_line(padding + baseline, Color{0x00, 1.0});  // baseline
-    canvas.draw_horizontal_line(padding + baseline - descender, Color{0x00, 1.0});  // descender
 
     for (size_t i = 0; i < text.size(); i++) {
         FT_Glyph glyph = glyphs[i].get();
@@ -264,16 +228,26 @@ int main(int argc, char *argv[])
 
         auto const bit = reinterpret_cast<FT_BitmapGlyph>(glyph);
 
-        canvas.fill_rect(padding + offset_x + pos[i].x + bit->left,
-                         padding + offset_y + pos[i].y - bit->top,
-                         bit->bitmap.width,
-                         bit->bitmap.rows,
-                         Color{0x00, 0.3});
-        draw_bitmap(canvas, &bit->bitmap,
-                    padding + offset_x + pos[i].x + bit->left,
-                    padding + offset_y + pos[i].y - bit->top);
+        auto const bitmap_x = offset_x + pos[i].x + bit->left;
+        auto const bitmap_y = offset_y + pos[i].y - bit->top;
 
-        canvas.draw_vertical_line(padding + offset_x + pos[i].x, Color{0x00, 0.5});
+        canvas.fill_rect(bitmap_x, bitmap_y,
+                         bit->bitmap.width, bit->bitmap.rows,
+                         Color{0x00, 0.3});
+
+        auto const& bitmap = bit->bitmap;
+
+        // TODO: support more pixel modes
+        if (bitmap.pixel_mode != FT_PIXEL_MODE_GRAY) {
+            spdlog::error("Unsupported pixel mode: {}", bitmap.pixel_mode);
+            continue;
+        }
+
+        canvas.blend_alpha(bitmap_x, bitmap_y,
+                           bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
+                           Color{0xFF});
+
+        canvas.draw_vertical_line(offset_x + pos[i].x, Color{0x00, 0.5});
     }
 
     canvas.save_pgm(config.output);
