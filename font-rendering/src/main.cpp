@@ -91,8 +91,9 @@ int main(int argc, char *argv[])
     dump_face_info(face.get());
 
     // FreeType only supports kerning through the 'kern' table
-    bool const use_kerning = FT_HAS_KERNING(face.get());
-    spdlog::debug("Kerning support: {}", use_kerning);
+    bool const has_kerning = FT_HAS_KERNING(face.get());
+    spdlog::debug("Kerning via the 'kern' table: {}", has_kerning);
+    bool const use_kerning = config.enable_kerning && has_kerning;
 
     spdlog::debug("Setting pixel size to {}", config.font_pixel_size);
     if (auto const error = FT_Set_Pixel_Sizes(face.get(),

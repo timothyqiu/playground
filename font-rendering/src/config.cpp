@@ -24,6 +24,9 @@ Config::Config(int argc, char *argv[])
         ->type_name("SIZE")
         ->default_val(0);
 
+    app.add_flag("--kerning,!--no-kerning", enable_kerning, "Kerning switch")
+        ->default_val(true);
+
     try {
         app.parse(argc, argv);
     }

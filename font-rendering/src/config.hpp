@@ -10,6 +10,7 @@ struct Config
     std::string output;
     size_t font_pixel_size;
     size_t canvas_width;
+    bool enable_kerning;
 
     Config(int argc, char *argv[]);
 };
