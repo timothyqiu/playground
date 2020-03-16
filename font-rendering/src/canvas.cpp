@@ -38,29 +38,24 @@ void Canvas::fill_rect(int x, int y, int w, int h, Color color)
 {
     x += translate_x_;
     y += translate_y_;
+    assert(w >= 0 && h >= 0);
 
-    if (x < 0) {
-        w += x;
-        x = 0;
-    }
-    if (y < 0) {
-        h += y;
-        y = 0;
-    }
-    if (x + w > width_) {
-        w = width_ - x;
-    }
-    if (y + h > height_) {
-        h = height_ - y;
-    }
-    if (w == 0 || h == 0) {
-        return;
-    }
-
-    for (int yy = 0; yy < h; yy++) {
-        auto const line = buffer_.data() + (yy + y) * this->pitch();
-        for (int xx = 0; xx < w; xx++) {
-            auto const pixel = line + (xx + x);
+    for (int i = 0; i < h; i++) {
+        if (i + y < 0) {
+            continue;
+        }
+        if (i + y >= height_) {
+            break;
+        }
+        auto const line = buffer_.data() + (i + y) * this->pitch();
+        for (int j = 0; j < w; j++) {
+            if (j + x < 0) {
+                continue;
+            }
+            if (j + x >= width_) {
+                break;
+            }
+            auto const pixel = line + (j + x);
             *pixel = blend(*pixel, color);
         }
     }
@@ -104,7 +99,7 @@ void Canvas::blend_alpha(int x, int y,
 void Canvas::clear(Color color)
 {
     color.alpha = 1.0;
-    this->fill_rect(0, 0, width_, height_, color);
+    this->fill_rect(-translate_x_, -translate_y_, width_, height_, color);
 }
 
 void Canvas::draw_horizontal_line(int y, Color color)

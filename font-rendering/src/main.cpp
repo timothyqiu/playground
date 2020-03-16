@@ -62,6 +62,37 @@ static void dump_metrics(FT_Size_Metrics const& metrics)
     fmt::print("    Max Advance: {}\n", metrics.max_advance);
 }
 
+static FT_BBox calc_control_box(size_t n, GlyphPtr const *glyphs, FT_Vector const *pos)
+{
+    FT_BBox bbox;
+    bbox.xMin = bbox.yMin =  32000;
+    bbox.xMax = bbox.yMax = -32000;
+
+    for (size_t i = 0; i < n; i++) {
+        FT_BBox glyph_bbox;
+
+        FT_Glyph_Get_CBox(glyphs[i].get(), FT_GLYPH_BBOX_PIXELS, &glyph_bbox);
+
+        glyph_bbox.xMin += pos[i].x;
+        glyph_bbox.xMax += pos[i].x;
+        glyph_bbox.yMin += pos[i].y;
+        glyph_bbox.yMax += pos[i].y;
+
+        bbox.xMin = std::min(bbox.xMin, glyph_bbox.xMin);
+        bbox.yMin = std::min(bbox.yMin, glyph_bbox.yMin);
+        bbox.xMax = std::max(bbox.xMax, glyph_bbox.xMax);
+        bbox.yMax = std::max(bbox.yMax, glyph_bbox.yMax);
+    }
+    if (bbox.xMin > bbox.xMax) {
+        bbox.xMin = 0;
+        bbox.yMin = 0;
+        bbox.xMax = 0;
+        bbox.yMax = 0;
+    }
+
+    return bbox;
+}
+
 int main(int argc, char *argv[])
 {
     Config const config{argc, argv};
@@ -165,38 +196,9 @@ int main(int argc, char *argv[])
         pen_y += (face->glyph->advance.y >> 6);
     }
 
-    FT_BBox bbox;
-    bbox.xMin = bbox.yMin =  32000;
-    bbox.xMax = bbox.yMax = -32000;
-    for (size_t i = 0; i < text.size(); i++) {
-        FT_BBox glyph_bbox;
-        FT_Glyph_Get_CBox(glyphs[i].get(), FT_GLYPH_BBOX_PIXELS, &glyph_bbox);
-
-        glyph_bbox.xMin += pos[i].x;
-        glyph_bbox.xMax += pos[i].x;
-        glyph_bbox.yMin += pos[i].y;
-        glyph_bbox.yMax += pos[i].y;
-
-        bbox.xMin = std::min(bbox.xMin, glyph_bbox.xMin);
-        bbox.yMin = std::min(bbox.yMin, glyph_bbox.yMin);
-        bbox.xMax = std::max(bbox.xMax, glyph_bbox.xMax);
-        bbox.yMax = std::max(bbox.yMax, glyph_bbox.yMax);
-    }
-    if (bbox.xMin > bbox.xMax) {
-        bbox.xMin = 0;
-        bbox.yMin = 0;
-        bbox.xMax = 0;
-        bbox.yMax = 0;
-    }
-
-    auto const bbox_height = bbox.yMax - bbox.yMin;
-    auto const [canvas_height, baseline] = ([&]() -> std::pair<size_t, size_t> {
-        auto const raw = ascender - descender;
-        if (bbox_height > raw) {
-            return {bbox_height, bbox.yMax};
-        }
-        return {raw, ascender};
-    })();
+    FT_BBox const bbox = calc_control_box(text.size(), glyphs.data(), pos.data());
+    auto const canvas_height = ascender - descender;  // bbox.yMax - bbox.yMin;
+    auto const baseline = ascender;
 
     Canvas canvas{
         padding * 2 + (config.canvas_width > 0 ? config.canvas_width : pen_x),
