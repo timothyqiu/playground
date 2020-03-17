@@ -213,18 +213,20 @@ int main(int argc, char *argv[])
     canvas.clear(Color{0xFF});
     canvas.translate(config.canvas_padding, config.canvas_padding);
 
-    for (size_t i = 0; i < num_lines; i++) {
-        auto const baseline = ascender + (ascender - descender + config.line_gap) * i;
+    if (config.enable_annotation) {
+        for (size_t i = 0; i < num_lines; i++) {
+            auto const baseline = ascender + (ascender - descender + config.line_gap) * i;
 
-        canvas.fill_rect(/* x */0,
-                         /* y */baseline - ascender,
-                         /* w */config.content_width > 0 ? config.content_width : pen_x,
-                         /* h */ascender - descender,
-                         Color{0xCC, 1.0});
+            canvas.fill_rect(/* x */0,
+                             /* y */baseline - ascender,
+                             /* w */config.content_width > 0 ? config.content_width : pen_x,
+                             /* h */ascender - descender,
+                             Color{0xCC, 1.0});
 
-        canvas.draw_horizontal_line(baseline - ascender, Color{0x00, 1.0});  // ascender
-        canvas.draw_horizontal_line(baseline, Color{0x00, 1.0});  // baseline
-        canvas.draw_horizontal_line(baseline - descender, Color{0x00, 1.0});  // descender
+            canvas.draw_horizontal_line(baseline - ascender, Color{0x00, 1.0});  // ascender
+            canvas.draw_horizontal_line(baseline, Color{0x00, 1.0});  // baseline
+            canvas.draw_horizontal_line(baseline - descender, Color{0x00, 1.0});  // descender
+        }
     }
 
     auto const offset_x = 0;
@@ -253,20 +255,22 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        canvas.fill_rect(bitmap_x, bitmap_y,
-                         bitmap.width, bitmap.rows,
-                         Color{0x00, 0.3});
+        if (config.enable_annotation) {
+            canvas.fill_rect(bitmap_x, bitmap_y,
+                             bitmap.width, bitmap.rows,
+                             Color{0x00, 0.3});
+
+            // draw a bar at current pen_x, from the top of the cbox, to the bottom of the cbox
+            canvas.fill_rect(offset_x + pos[i].x,
+                             offset_y + pos[i].y - cbox.yMax,
+                             1,
+                             cbox_height,
+                             Color{0x00, 0.5});
+        }
 
         canvas.blend_alpha(bitmap_x, bitmap_y,
                            bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
                            Color{0x00});
-
-        // draw a bar at current pen_x, from the top of the cbox, to the bottom of the cbox
-        canvas.fill_rect(offset_x + pos[i].x,
-                         offset_y + pos[i].y - cbox.yMax,
-                         1,
-                         cbox_height,
-                         Color{0x00, 0.5});
     }
 
     canvas.save_pgm(config.output);

@@ -35,6 +35,9 @@ Config::Config(int argc, char *argv[])
     app.add_flag("--kerning,!--no-kerning", enable_kerning, "Kerning switch")
         ->default_val(true);
 
+    app.add_flag("--annotation,!--no-annotation", enable_annotation, "Annotation switch")
+        ->default_val(true);
+
     try {
         app.parse(argc, argv);
     }

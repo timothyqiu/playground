@@ -13,6 +13,7 @@ struct Config
     size_t canvas_padding;
     size_t line_gap;
     bool enable_kerning;
+    bool enable_annotation;
 
     Config(int argc, char *argv[]);
 };
