@@ -137,8 +137,6 @@ int main(int argc, char *argv[])
 
     dump_metrics(face->size->metrics);
 
-    size_t const padding = 8;
-
     // 32-bit integer in 26.6 fix point format
     auto const ascender = face->size->metrics.ascender >> 6;
     auto const descender = face->size->metrics.descender >> 6;
@@ -196,22 +194,23 @@ int main(int argc, char *argv[])
         pen_y += (face->glyph->advance.y >> 6);
     }
 
-    FT_BBox const bbox = calc_control_box(text.size(), glyphs.data(), pos.data());
-    auto const canvas_height = ascender - descender;  // bbox.yMax - bbox.yMin;
+    FT_BBox const cbox = calc_control_box(text.size(), glyphs.data(), pos.data());
+    auto const canvas_height = ascender - descender;
+    auto const cbox_height = cbox.yMax - cbox.yMin;
     auto const baseline = ascender;
 
     Canvas canvas{
-        padding * 2 + (config.canvas_width > 0 ? config.canvas_width : pen_x),
-        padding * 2 + canvas_height,
+        config.canvas_padding * 2 + (config.content_width > 0 ? config.content_width : pen_x),
+        config.canvas_padding * 2 + canvas_height,
     };
     canvas.clear(Color{0xFF});
-    canvas.fill_rect(/* x */padding,
-                     /* y */padding,
+    canvas.fill_rect(/* x */config.canvas_padding,
+                     /* y */config.canvas_padding,
                      /* w */pen_x,
                      /* h */canvas_height,
                      Color{0xCC, 1.0});
 
-    canvas.translate(padding, padding);
+    canvas.translate(config.canvas_padding, config.canvas_padding);
     canvas.draw_horizontal_line(baseline - ascender, Color{0x00, 1.0});  // ascender
     canvas.draw_horizontal_line(baseline, Color{0x00, 1.0});  // baseline
     canvas.draw_horizontal_line(baseline - descender, Color{0x00, 1.0});  // descender
@@ -250,7 +249,12 @@ int main(int argc, char *argv[])
                            bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
                            Color{0xFF});
 
-        canvas.draw_vertical_line(offset_x + pos[i].x, Color{0x00, 0.5});
+        // draw a bar at current pen_x, from the top of the cbox, to the bottom of the cbox
+        canvas.fill_rect(offset_x + pos[i].x,
+                         offset_y + pos[i].y - cbox.yMax,
+                         1,
+                         cbox_height,
+                         Color{0x00, 0.5});
     }
 
     canvas.save_pgm(config.output);

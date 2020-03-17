@@ -17,12 +17,16 @@ Config::Config(int argc, char *argv[])
         ->default_val("render.pgm");
 
     app.add_option("--size", font_pixel_size, "Font pixel size")
-        ->type_name("SIZE")
+        ->type_name("PIXELS")
         ->default_val(100);
 
-    app.add_option("--canvas-width", canvas_width, "Canvas width, zero means auto")
-        ->type_name("SIZE")
+    app.add_option("--content-width", content_width, "Canvas content width, zero means auto")
+        ->type_name("PIXELS")
         ->default_val(0);
+
+    app.add_option("--canvas-padding", canvas_padding, "Canvas padding")
+        ->type_name("PIXELS")
+        ->default_val(8);
 
     app.add_flag("--kerning,!--no-kerning", enable_kerning, "Kerning switch")
         ->default_val(true);
