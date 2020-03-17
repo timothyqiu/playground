@@ -62,7 +62,7 @@ static void dump_metrics(FT_Size_Metrics const& metrics)
     fmt::print("    Max Advance: {}\n", metrics.max_advance);
 }
 
-static FT_BBox calc_control_box(size_t n, GlyphPtr const *glyphs, FT_Vector const *pos)
+static FT_BBox calc_control_box(size_t n, GlyphPtr const *glyphs)
 {
     FT_BBox bbox;
     bbox.xMin = bbox.yMin =  32000;
@@ -72,11 +72,6 @@ static FT_BBox calc_control_box(size_t n, GlyphPtr const *glyphs, FT_Vector cons
         FT_BBox glyph_bbox;
 
         FT_Glyph_Get_CBox(glyphs[i].get(), FT_GLYPH_BBOX_PIXELS, &glyph_bbox);
-
-        glyph_bbox.xMin += pos[i].x;
-        glyph_bbox.xMax += pos[i].x;
-        glyph_bbox.yMin += pos[i].y;
-        glyph_bbox.yMax += pos[i].y;
 
         bbox.xMin = std::min(bbox.xMin, glyph_bbox.xMin);
         bbox.yMin = std::min(bbox.yMin, glyph_bbox.yMin);
@@ -147,6 +142,7 @@ int main(int argc, char *argv[])
     int pen_x = 0;
     int pen_y = 0;
     FT_UInt last_index = 0; // the undefined glyph has no kerning with anyone
+    size_t num_lines = 1;
 
     std::vector<GlyphPtr> glyphs(text.size());
     std::vector<FT_Vector> pos(text.size());
@@ -175,9 +171,6 @@ int main(int argc, char *argv[])
         }
         last_index = index;
 
-        pos[i].x = pen_x;
-        pos[i].y = pen_y;
-
         if (auto const error = FT_Load_Glyph(face.get(), index, FT_LOAD_DEFAULT); error) {
             spdlog::error("FT_Load_Glyph error: 0x{:02X}", error);
             return EXIT_FAILURE;
@@ -190,33 +183,52 @@ int main(int argc, char *argv[])
         }
         glyphs[i].reset(raw);
 
-        pen_x += (face->glyph->advance.x >> 6);
-        pen_y += (face->glyph->advance.y >> 6);
+        auto const advance_x = face->glyph->advance.x >> 6;
+        auto const advance_y = face->glyph->advance.y >> 6;
+
+        assert(advance_y == 0);  // well, we're doing horizontal layout...
+        if (config.content_width > 0 && pen_x > 0 && pen_x + advance_x > config.content_width) {
+            pen_x = 0;
+            pen_y += (ascender - descender) + config.line_gap;
+
+            last_index = 0;
+            num_lines++;
+        }
+
+        pos[i].x = pen_x;
+        pos[i].y = pen_y;
+
+        pen_x += advance_x;
+        pen_y += advance_y;
     }
 
-    FT_BBox const cbox = calc_control_box(text.size(), glyphs.data(), pos.data());
-    auto const canvas_height = ascender - descender;
+    FT_BBox const cbox = calc_control_box(text.size(), glyphs.data());
+    auto const canvas_height = (ascender - descender) * num_lines + config.line_gap * (num_lines - 1);
     auto const cbox_height = cbox.yMax - cbox.yMin;
-    auto const baseline = ascender;
 
     Canvas canvas{
         config.canvas_padding * 2 + (config.content_width > 0 ? config.content_width : pen_x),
         config.canvas_padding * 2 + canvas_height,
     };
     canvas.clear(Color{0xFF});
-    canvas.fill_rect(/* x */config.canvas_padding,
-                     /* y */config.canvas_padding,
-                     /* w */pen_x,
-                     /* h */canvas_height,
-                     Color{0xCC, 1.0});
-
     canvas.translate(config.canvas_padding, config.canvas_padding);
-    canvas.draw_horizontal_line(baseline - ascender, Color{0x00, 1.0});  // ascender
-    canvas.draw_horizontal_line(baseline, Color{0x00, 1.0});  // baseline
-    canvas.draw_horizontal_line(baseline - descender, Color{0x00, 1.0});  // descender
+
+    for (size_t i = 0; i < num_lines; i++) {
+        auto const baseline = ascender + (ascender - descender + config.line_gap) * i;
+
+        canvas.fill_rect(/* x */0,
+                         /* y */baseline - ascender,
+                         /* w */config.content_width > 0 ? config.content_width : pen_x,
+                         /* h */ascender - descender,
+                         Color{0xCC, 1.0});
+
+        canvas.draw_horizontal_line(baseline - ascender, Color{0x00, 1.0});  // ascender
+        canvas.draw_horizontal_line(baseline, Color{0x00, 1.0});  // baseline
+        canvas.draw_horizontal_line(baseline - descender, Color{0x00, 1.0});  // descender
+    }
 
     auto const offset_x = 0;
-    auto const offset_y = baseline;
+    auto const offset_y = ascender;
 
     for (size_t i = 0; i < text.size(); i++) {
         FT_Glyph glyph = glyphs[i].get();
@@ -233,10 +245,6 @@ int main(int argc, char *argv[])
         auto const bitmap_x = offset_x + pos[i].x + bit->left;
         auto const bitmap_y = offset_y + pos[i].y - bit->top;
 
-        canvas.fill_rect(bitmap_x, bitmap_y,
-                         bit->bitmap.width, bit->bitmap.rows,
-                         Color{0x00, 0.3});
-
         auto const& bitmap = bit->bitmap;
 
         // TODO: support more pixel modes
@@ -245,9 +253,13 @@ int main(int argc, char *argv[])
             continue;
         }
 
+        canvas.fill_rect(bitmap_x, bitmap_y,
+                         bitmap.width, bitmap.rows,
+                         Color{0x00, 0.3});
+
         canvas.blend_alpha(bitmap_x, bitmap_y,
                            bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
-                           Color{0xFF});
+                           Color{0x00});
 
         // draw a bar at current pen_x, from the top of the cbox, to the bottom of the cbox
         canvas.fill_rect(offset_x + pos[i].x,

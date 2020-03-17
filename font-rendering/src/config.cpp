@@ -28,6 +28,10 @@ Config::Config(int argc, char *argv[])
         ->type_name("PIXELS")
         ->default_val(8);
 
+    app.add_option("--line-gap", line_gap, "Line gap")
+        ->type_name("PIXELS")
+        ->default_val(4);
+
     app.add_flag("--kerning,!--no-kerning", enable_kerning, "Kerning switch")
         ->default_val(true);
 
