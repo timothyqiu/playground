@@ -17,6 +17,7 @@
 
 #include "canvas.hpp"
 #include "config.hpp"
+#include "exceptions.hpp"
 #include "utils.hpp"
 
 // FT_Done_XXX may return error, just ignore it...
@@ -89,7 +90,7 @@ static FT_BBox calc_control_box(size_t n, GlyphPtr const *glyphs)
 }
 
 int main(int argc, char *argv[])
-{
+try {
     Config const config{argc, argv};
 
     spdlog::set_level(spdlog::level::debug);
@@ -99,7 +100,7 @@ int main(int argc, char *argv[])
         FT_Library raw;
         if (auto const error = FT_Init_FreeType(&raw); error) {
             spdlog::error("FT_Init_FreeType error: 0x{:02X}", error);
-            return EXIT_FAILURE;
+            throw FreeTypeError{error};
         }
         library.reset(raw);
     }
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
         FT_Face raw;
         if (auto const error = FT_New_Face(library.get(), config.file.c_str(), 0, &raw); error) {
             spdlog::error("FT_New_Face error: 0x{:02X}", error);
-            return EXIT_FAILURE;
+            throw FreeTypeError{error};
         }
         face.reset(raw);
     }
@@ -127,7 +128,7 @@ int main(int argc, char *argv[])
                                               /*height*/config.font_pixel_size); error)
     {
         spdlog::error("FT_Set_Pixel_Sizes error: 0x{:02X}", error);
-        return EXIT_FAILURE;
+        throw FreeTypeError{error};
     }
 
     dump_metrics(face->size->metrics);
@@ -135,6 +136,8 @@ int main(int argc, char *argv[])
     // 32-bit integer in 26.6 fix point format
     auto const ascender = face->size->metrics.ascender >> 6;
     auto const descender = face->size->metrics.descender >> 6;
+
+    auto const linespace = ascender - descender + config.line_gap;
 
     // UTF-32
     std::u32string_view const text{U"AV Type 字体*路径😄"};
@@ -173,13 +176,13 @@ int main(int argc, char *argv[])
 
         if (auto const error = FT_Load_Glyph(face.get(), index, FT_LOAD_DEFAULT); error) {
             spdlog::error("FT_Load_Glyph error: 0x{:02X}", error);
-            return EXIT_FAILURE;
+            throw FreeTypeError{error};
         }
 
         FT_Glyph raw;
         if (auto const error = FT_Get_Glyph(face->glyph, &raw); error) {
             spdlog::error("FT_Get_Glyph error: 0x{:02X}", error);
-            return EXIT_FAILURE;
+            throw FreeTypeError{error};
         }
         glyphs[i].reset(raw);
 
@@ -189,7 +192,7 @@ int main(int argc, char *argv[])
         assert(advance_y == 0);  // well, we're doing horizontal layout...
         if (config.content_width > 0 && pen_x > 0 && pen_x + advance_x > config.content_width) {
             pen_x = 0;
-            pen_y += (ascender - descender) + config.line_gap;
+            pen_y += linespace;
 
             last_index = 0;
             num_lines++;
@@ -203,7 +206,7 @@ int main(int argc, char *argv[])
     }
 
     FT_BBox const cbox = calc_control_box(text.size(), glyphs.data());
-    auto const canvas_height = (ascender - descender) * num_lines + config.line_gap * (num_lines - 1);
+    auto const canvas_height = linespace * num_lines - config.line_gap;
     auto const cbox_height = cbox.yMax - cbox.yMin;
 
     Canvas canvas{
@@ -215,7 +218,7 @@ int main(int argc, char *argv[])
 
     if (config.enable_annotation) {
         for (size_t i = 0; i < num_lines; i++) {
-            auto const baseline = ascender + (ascender - descender + config.line_gap) * i;
+            auto const baseline = ascender + linespace * i;
 
             canvas.fill_rect(/* x */0,
                              /* y */baseline - ascender,
@@ -237,8 +240,8 @@ int main(int argc, char *argv[])
 
         if (glyph->format != FT_GLYPH_FORMAT_BITMAP) {
             if (auto const error = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, nullptr, 0); error) {
-                spdlog::error("FT_Render_Glyph error: 0x{:02X}", error);
-                return EXIT_FAILURE;
+                spdlog::error("FT_Glyph_To_Bitmap error: 0x{:02X}", error);
+                throw FreeTypeError{error};
             }
         }
 
@@ -274,4 +277,8 @@ int main(int argc, char *argv[])
     }
 
     canvas.save_pgm(config.output);
+}
+catch (FreeTypeError const& e) {
+    fmt::print(stderr, "FreeType error: 0x{:02X}\n", e.code());
+    return EXIT_FAILURE;
 }

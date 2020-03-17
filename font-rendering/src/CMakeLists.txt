@@ -5,6 +5,8 @@ add_executable(
   canvas.cpp
   config.hpp
   config.cpp
+  exceptions.hpp
+  exceptions.cpp
   utils.hpp
   utils.cpp)
 target_compile_features(demo PRIVATE cxx_std_17)
