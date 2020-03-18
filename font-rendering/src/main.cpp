@@ -279,6 +279,6 @@ try {
     canvas.save_pgm(config.output);
 }
 catch (FreeTypeError const& e) {
-    fmt::print(stderr, "FreeType error: 0x{:02X}\n", e.code());
+    fmt::print(stderr, "FreeType error 0x{:02X}: {}\n", e.code(), e.what());
     return EXIT_FAILURE;
 }
