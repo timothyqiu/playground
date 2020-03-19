@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -63,32 +64,6 @@ static void dump_metrics(FT_Size_Metrics const& metrics)
     fmt::print("    Max Advance: {}\n", metrics.max_advance);
 }
 
-static FT_BBox calc_control_box(size_t n, GlyphPtr const *glyphs)
-{
-    FT_BBox bbox;
-    bbox.xMin = bbox.yMin =  32000;
-    bbox.xMax = bbox.yMax = -32000;
-
-    for (size_t i = 0; i < n; i++) {
-        FT_BBox glyph_bbox;
-
-        FT_Glyph_Get_CBox(glyphs[i].get(), FT_GLYPH_BBOX_PIXELS, &glyph_bbox);
-
-        bbox.xMin = std::min(bbox.xMin, glyph_bbox.xMin);
-        bbox.yMin = std::min(bbox.yMin, glyph_bbox.yMin);
-        bbox.xMax = std::max(bbox.xMax, glyph_bbox.xMax);
-        bbox.yMax = std::max(bbox.yMax, glyph_bbox.yMax);
-    }
-    if (bbox.xMin > bbox.xMax) {
-        bbox.xMin = 0;
-        bbox.yMin = 0;
-        bbox.xMax = 0;
-        bbox.yMax = 0;
-    }
-
-    return bbox;
-}
-
 int main(int argc, char *argv[])
 try {
     Config const config{argc, argv};
@@ -147,8 +122,8 @@ try {
     FT_UInt last_index = 0; // the undefined glyph has no kerning with anyone
     size_t num_lines = 1;
 
-    std::vector<GlyphPtr> glyphs(text.size());
     std::vector<FT_Vector> pos(text.size());
+    std::map<FT_ULong, GlyphPtr> glyph_cache;
     for (size_t i = 0; i < text.size(); i++) {
         FT_ULong const charcode{text[i]};
 
@@ -174,17 +149,23 @@ try {
         }
         last_index = index;
 
-        if (auto const error = FT_Load_Glyph(face.get(), index, FT_LOAD_DEFAULT); error) {
-            spdlog::error("FT_Load_Glyph error: 0x{:02X}", error);
-            throw FreeTypeError{error};
-        }
+        if (glyph_cache.find(charcode) == std::end(glyph_cache)) {
+            spdlog::debug("Glyph U+{:X} not in cache, generate", charcode);
 
-        FT_Glyph raw;
-        if (auto const error = FT_Get_Glyph(face->glyph, &raw); error) {
-            spdlog::error("FT_Get_Glyph error: 0x{:02X}", error);
-            throw FreeTypeError{error};
+            if (auto const error = FT_Load_Glyph(face.get(), index, FT_LOAD_DEFAULT); error) {
+                spdlog::error("FT_Load_Glyph error: 0x{:02X}", error);
+                throw FreeTypeError{error};
+            }
+
+            FT_Glyph raw;
+            if (auto const error = FT_Get_Glyph(face->glyph, &raw); error) {
+                spdlog::error("FT_Get_Glyph error: 0x{:02X}", error);
+                throw FreeTypeError{error};
+            }
+            glyph_cache[charcode] = GlyphPtr{raw};
+        } else {
+            spdlog::debug("Glyph U+{:X} already cached", charcode);
         }
-        glyphs[i].reset(raw);
 
         auto const advance_x = face->glyph->advance.x >> 6;
         auto const advance_y = face->glyph->advance.y >> 6;
@@ -205,9 +186,7 @@ try {
         pen_y += advance_y;
     }
 
-    FT_BBox const cbox = calc_control_box(text.size(), glyphs.data());
     auto const canvas_height = linespace * num_lines - config.line_gap;
-    auto const cbox_height = cbox.yMax - cbox.yMin;
 
     Canvas canvas{
         config.canvas_padding * 2 + (config.content_width > 0 ? config.content_width : pen_x),
@@ -236,7 +215,8 @@ try {
     auto const offset_y = ascender;
 
     for (size_t i = 0; i < text.size(); i++) {
-        FT_Glyph glyph = glyphs[i].get();
+        FT_Glyph glyph = glyph_cache[text[i]].get();
+        assert(glyph != nullptr);
 
         if (glyph->format != FT_GLYPH_FORMAT_BITMAP) {
             if (auto const error = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, nullptr, 0); error) {
@@ -263,11 +243,10 @@ try {
                              bitmap.width, bitmap.rows,
                              Color{0x00, 0.3});
 
-            // draw a bar at current pen_x, from the top of the cbox, to the bottom of the cbox
             canvas.fill_rect(offset_x + pos[i].x,
-                             offset_y + pos[i].y - cbox.yMax,
+                             offset_y + pos[i].y - ascender,
                              1,
-                             cbox_height,
+                             (ascender - descender),
                              Color{0x00, 0.5});
         }
 
