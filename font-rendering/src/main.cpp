@@ -112,7 +112,8 @@ try {
     auto const ascender = face->size->metrics.ascender >> 6;
     auto const descender = face->size->metrics.descender >> 6;
 
-    auto const linespace = ascender - descender + config.line_gap;
+    auto const basic_height = static_cast<size_t>(ascender - descender);  // glyph may extend to outside
+    auto const linespace = basic_height + config.line_gap;
 
     // UTF-32
     std::u32string_view const text{U"AV Type 字体*路径😄"};
@@ -171,7 +172,7 @@ try {
         auto const advance_y = face->glyph->advance.y >> 6;
 
         assert(advance_y == 0);  // well, we're doing horizontal layout...
-        if (config.content_width > 0 && pen_x > 0 && pen_x + advance_x > config.content_width) {
+        if (config.content_width > 0 && pen_x > 0 && pen_x + advance_x > static_cast<int>(config.content_width)) {
             pen_x = 0;
             pen_y += linespace;
 
@@ -188,21 +189,24 @@ try {
 
     auto const canvas_height = linespace * num_lines - config.line_gap;
 
+    assert(pen_x >= 0);
+    auto const text_width = static_cast<size_t>(pen_x);
+
     Canvas canvas{
-        config.canvas_padding * 2 + (config.content_width > 0 ? config.content_width : pen_x),
+        config.canvas_padding * 2 + (config.content_width > 0 ? config.content_width : text_width),
         config.canvas_padding * 2 + canvas_height,
     };
-    canvas.clear(Color{0xFF});
+    canvas.clear(Color{0xFF, 1.0});
     canvas.translate(config.canvas_padding, config.canvas_padding);
 
     if (config.enable_annotation) {
         for (size_t i = 0; i < num_lines; i++) {
-            auto const baseline = ascender + linespace * i;
+            auto const baseline = ascender + static_cast<int>(linespace * i);
 
             canvas.fill_rect(/* x */0,
                              /* y */baseline - ascender,
-                             /* w */config.content_width > 0 ? config.content_width : pen_x,
-                             /* h */ascender - descender,
+                             /* w */config.content_width > 0 ? config.content_width : text_width,
+                             /* h */basic_height,
                              Color{0xCC, 1.0});
 
             canvas.draw_horizontal_line(baseline - ascender, Color{0x00, 1.0});  // ascender
@@ -246,13 +250,13 @@ try {
             canvas.fill_rect(offset_x + pos[i].x,
                              offset_y + pos[i].y - ascender,
                              1,
-                             (ascender - descender),
+                             basic_height,
                              Color{0x00, 0.5});
         }
 
         canvas.blend_alpha(bitmap_x, bitmap_y,
                            bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
-                           Color{0x00});
+                           Color{0x00, 1.0});
     }
 
     canvas.save_pgm(config.output);

@@ -19,16 +19,16 @@ public:
 
     auto width() const { return width_; }
     auto height() const { return height_; }
-    auto pitch() const;
+    auto pitch() const { return pitch_; }
 
     auto data() -> uint8_t * { return buffer_.data(); }
     auto data() const -> uint8_t const * { return buffer_.data(); }
 
     void translate(int x, int y) { translate_x_ = x; translate_y_ = y; }
 
-    void fill_rect(int x, int y, int w, int h, Color color);
+    void fill_rect(int x, int y, size_t w, size_t h, Color color);
     void blend_alpha(int x, int y,
-                     uint8_t const *data, size_t width, size_t height, size_t pitch,
+                     uint8_t const *data, size_t width, size_t height, int pitch,
                      Color color);
 
     void clear(Color color);
@@ -39,8 +39,9 @@ public:
 
 private:
     std::vector<uint8_t> buffer_;
-    size_t width_;
-    size_t height_;
+    size_t const width_;
+    size_t const height_;
+    int const pitch_;  // should allow negative ones for bottom up data storage
 
     int translate_x_;
     int translate_y_;

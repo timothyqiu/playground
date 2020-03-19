@@ -22,40 +22,36 @@ static inline auto blend(uint8_t bg, Color color)
 }
 
 Canvas::Canvas(size_t width, size_t height)
-    : width_{width}, height_{height}
-    , buffer_(width * height)
+    : buffer_(width * height)
+    , width_{width}, height_{height}
+    , pitch_{static_cast<int>(width)}
     , translate_x_{0}, translate_y_{0}
 {
-    this->clear(Color{});
 }
 
-auto Canvas::pitch() const
-{
-    return width_;
-}
-
-void Canvas::fill_rect(int x, int y, int w, int h, Color color)
+void Canvas::fill_rect(int x, int y, size_t w, size_t h, Color color)
 {
     x += translate_x_;
     y += translate_y_;
-    assert(w >= 0 && h >= 0);
 
-    for (int i = 0; i < h; i++) {
-        if (i + y < 0) {
+    for (size_t i = 0; i < h; i++) {
+        auto const dst_y = static_cast<int>(i) + y;
+        if (dst_y + y < 0) {
             continue;
         }
-        if (i + y >= height_) {
+        if (dst_y >= static_cast<int>(height_)) {
             break;
         }
-        auto const line = buffer_.data() + (i + y) * this->pitch();
-        for (int j = 0; j < w; j++) {
-            if (j + x < 0) {
+        auto const line = buffer_.data() + dst_y * pitch_;
+        for (size_t j = 0; j < w; j++) {
+            auto const dst_x = static_cast<int>(j) + x;
+            if (dst_x < 0) {
                 continue;
             }
-            if (j + x >= width_) {
+            if (dst_x >= static_cast<int>(width_)) {
                 break;
             }
-            auto const pixel = line + (j + x);
+            auto const pixel = line + dst_x;
             *pixel = blend(*pixel, color);
         }
     }
@@ -64,7 +60,7 @@ void Canvas::fill_rect(int x, int y, int w, int h, Color color)
 void Canvas::blend_alpha(int x, int y,
                          uint8_t const *data,
                          size_t width, size_t height,
-                         size_t pitch,
+                         int pitch,
                          Color color)
 {
     x += translate_x_;
@@ -75,18 +71,18 @@ void Canvas::blend_alpha(int x, int y,
         if (dst_y < 0) {
             continue;
         }
-        if (dst_y >= height_) {
+        if (dst_y >= static_cast<int>(height_)) {
             break;
         }
 
-        auto const *src_line = data + pitch * src_y;
-        auto       *dst_line = buffer_.data() + this->pitch() * dst_y;
+        auto const *src_line = data + pitch * static_cast<int>(src_y);
+        auto       *dst_line = buffer_.data() + pitch_ * dst_y;
         for (size_t src_x = 0; src_x < width; src_x++) {
             auto const dst_x = x + static_cast<int>(src_x);
             if (dst_x < 0) {
                 continue;
             }
-            if (dst_x >= width_) {
+            if (dst_x >= static_cast<int>(width_)) {
                 break;
             }
 
@@ -98,7 +94,6 @@ void Canvas::blend_alpha(int x, int y,
 
 void Canvas::clear(Color color)
 {
-    color.alpha = 1.0;
     this->fill_rect(-translate_x_, -translate_y_, width_, height_, color);
 }
 
