@@ -30,6 +30,9 @@ public:
     void blend_alpha(int x, int y,
                      uint8_t const *data, size_t width, size_t height, int pitch,
                      Color color);
+    void mono_alpha(int x, int y,
+                    uint8_t const *data, size_t width, size_t height, int pitch,
+                    Color color);
 
     void clear(Color color);
     void draw_horizontal_line(int y, Color color);

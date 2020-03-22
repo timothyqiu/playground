@@ -98,12 +98,32 @@ try {
     bool const use_kerning = config.enable_kerning && has_kerning;
 
     spdlog::debug("Setting pixel size to {}", config.font_pixel_size);
-    if (auto const error = FT_Set_Pixel_Sizes(face.get(),
-                                              /*width*/config.font_pixel_size,
-                                              /*height*/config.font_pixel_size); error)
-    {
-        spdlog::error("FT_Set_Pixel_Sizes error: 0x{:02X}", error);
-        throw FreeTypeError{error};
+
+    // not sure if this is the right way
+    if (FT_HAS_COLOR(face.get())) {
+        // TODO: proper scaling
+        int best_match = 0;
+        int diff = std::abs(static_cast<int>(config.font_pixel_size) - face->available_sizes[0].width);
+        for (int i = 1; i < face->num_fixed_sizes; i++) {
+            auto const& size = face->available_sizes[i];
+            int current_diff = std::abs(static_cast<int>(config.font_pixel_size) - size.width);
+            if (current_diff < diff) {
+                best_match = i;
+                current_diff = diff;
+            }
+        }
+        if (auto const error = FT_Select_Size(face.get(), best_match); error) {
+            spdlog::error("FT_Select_size error: 0x{:02X}", error);
+            throw FreeTypeError{error};
+        }
+    } else {
+        if (auto const error = FT_Set_Pixel_Sizes(face.get(),
+                                                  /*width*/config.font_pixel_size,
+                                                  /*height*/config.font_pixel_size); error)
+        {
+            spdlog::error("FT_Set_Pixel_Sizes error: 0x{:02X}", error);
+            throw FreeTypeError{error};
+        }
     }
 
     dump_metrics(face->size->metrics);
@@ -236,12 +256,6 @@ try {
 
         auto const& bitmap = bit->bitmap;
 
-        // TODO: support more pixel modes
-        if (bitmap.pixel_mode != FT_PIXEL_MODE_GRAY) {
-            spdlog::error("Unsupported pixel mode: {}", bitmap.pixel_mode);
-            continue;
-        }
-
         if (config.enable_annotation) {
             canvas.fill_rect(bitmap_x, bitmap_y,
                              bitmap.width, bitmap.rows,
@@ -254,9 +268,18 @@ try {
                              Color{0x00, 0.5});
         }
 
-        canvas.blend_alpha(bitmap_x, bitmap_y,
-                           bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
-                           Color{0x00, 1.0});
+        // TODO: support more pixel modes
+        if (bitmap.pixel_mode == FT_PIXEL_MODE_GRAY) {
+            canvas.blend_alpha(bitmap_x, bitmap_y,
+                               bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
+                               Color{0x00, 1.0});
+        } else if (bitmap.pixel_mode == FT_PIXEL_MODE_MONO) {
+            canvas.mono_alpha(bitmap_x, bitmap_y,
+                              bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
+                              Color{0x00, 1.0});
+        } else {
+            spdlog::error("Unsupported pixel mode: {}", bitmap.pixel_mode);
+        }
     }
 
     canvas.save_pgm(config.output);

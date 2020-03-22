@@ -92,6 +92,43 @@ void Canvas::blend_alpha(int x, int y,
     }
 }
 
+void Canvas::mono_alpha(int x, int y,
+                        uint8_t const *data, size_t width, size_t height, int pitch,
+                        Color color)
+{
+    x += translate_x_;
+    y += translate_y_;
+
+    for (size_t src_y = 0; src_y < height; src_y++) {
+        auto const dst_y = y + static_cast<int>(src_y);
+        if (dst_y < 0) {
+            continue;
+        }
+        if (dst_y >= static_cast<int>(height_)) {
+            break;
+        }
+
+        auto const *src_line = data + pitch * static_cast<int>(src_y);
+        auto       *dst_line = buffer_.data() + pitch_ * dst_y;
+        for (size_t src_x = 0; src_x < width; src_x++) {
+            auto const dst_x = x + static_cast<int>(src_x);
+            if (dst_x < 0) {
+                continue;
+            }
+            if (dst_x >= static_cast<int>(width_)) {
+                break;
+            }
+
+            auto const block = src_line[src_x / 8];
+            auto const alpha = (block >> (7 - (src_x % 8))) & 0x01;
+
+            if (alpha) {
+                dst_line[dst_x] = color.gray;
+            }
+        }
+    }
+}
+
 void Canvas::clear(Color color)
 {
     this->fill_rect(-translate_x_, -translate_y_, width_, height_, color);
