@@ -16,9 +16,9 @@ using FilePtr = std::unique_ptr<FILE, DeleterOf<FILE *>>;
 
 static inline auto blend(uint8_t bg, Color color)
 {
-    auto const a = static_cast<double>(bg) / 255;
-    auto const b = static_cast<double>(color.gray) / 255;
-    return static_cast<uint8_t>(std::clamp(a * (1 - color.alpha) + b * color.alpha, 0.0, 1.0) * 255);
+    auto const dst = static_cast<double>(bg) / 255;
+    auto const src = static_cast<double>(color.gray) / 255;
+    return static_cast<uint8_t>(std::clamp(dst * (1 - color.alpha) + src * color.alpha, 0.0, 1.0) * 255);
 }
 
 Canvas::Canvas(size_t width, size_t height)
@@ -66,6 +66,8 @@ void Canvas::blend_alpha(int x, int y,
     x += translate_x_;
     y += translate_y_;
 
+    auto const src_alpha = color.alpha;
+
     for (size_t src_y = 0; src_y < height; src_y++) {
         auto const dst_y = y + static_cast<int>(src_y);
         if (dst_y < 0) {
@@ -86,7 +88,7 @@ void Canvas::blend_alpha(int x, int y,
                 break;
             }
 
-            color.alpha = src_line[src_x] / 255.0;
+            color.alpha = src_alpha * (src_line[src_x] / 255.0);
             dst_line[dst_x] = blend(dst_line[dst_x], color);
         }
     }

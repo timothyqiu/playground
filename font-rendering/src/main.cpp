@@ -31,6 +31,13 @@ using LibraryPtr = std::unique_ptr<std::remove_pointer_t<FT_Library>, DeleterOf<
 using FacePtr = std::unique_ptr<std::remove_pointer_t<FT_Face>, DeleterOf<FT_Face>>;
 using GlyphPtr = std::unique_ptr<std::remove_pointer_t<FT_Glyph>, DeleterOf<FT_Glyph>>;
 
+struct Measurements
+{
+    size_t num_lines = 1;
+    std::map<FT_ULong, GlyphPtr> glyph_cache;
+    std::vector<FT_Vector> pos;
+};
+
 static void dump_face_info(FT_Face face)
 {
     fmt::print("           Num Faces: {}\n", face->num_faces);
@@ -62,6 +69,46 @@ static void dump_metrics(FT_Size_Metrics const& metrics)
     fmt::print("      Descender: {}\n", metrics.descender);
     fmt::print("         Height: {}\n", metrics.height);
     fmt::print("    Max Advance: {}\n", metrics.max_advance);
+}
+
+static void draw_text(Canvas& canvas, Config const& config, Measurements const& measurements,
+                      int offset_x, int offset_y, std::u32string_view text,
+                      Color color)
+{
+    for (size_t i = 0; i < text.size(); i++) {
+        FT_Glyph glyph = measurements.glyph_cache.at(text[i]).get();
+        assert(glyph != nullptr);
+
+        if (glyph->format != FT_GLYPH_FORMAT_BITMAP) {
+            if (auto const error = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, nullptr, 0); error) {
+                spdlog::error("FT_Glyph_To_Bitmap error: 0x{:02X}", error);
+                continue;
+            }
+        }
+
+        auto const bit = reinterpret_cast<FT_BitmapGlyph>(glyph);
+
+        auto const bitmap_x = offset_x + measurements.pos[i].x + bit->left;
+        auto const bitmap_y = offset_y + measurements.pos[i].y - bit->top;
+
+        auto const& bitmap = bit->bitmap;
+
+        if (config.enable_annotation) {
+        }
+
+        // TODO: support more pixel modes
+        if (bitmap.pixel_mode == FT_PIXEL_MODE_GRAY) {
+            canvas.blend_alpha(bitmap_x, bitmap_y,
+                               bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
+                               color);
+        } else if (bitmap.pixel_mode == FT_PIXEL_MODE_MONO) {
+            canvas.mono_alpha(bitmap_x, bitmap_y,
+                              bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
+                              color);
+        } else {
+            spdlog::error("Unsupported pixel mode: {}", bitmap.pixel_mode);
+        }
+    }
 }
 
 int main(int argc, char *argv[])
@@ -141,10 +188,9 @@ try {
     int pen_x = 0;
     int pen_y = 0;
     FT_UInt last_index = 0; // the undefined glyph has no kerning with anyone
-    size_t num_lines = 1;
 
-    std::vector<FT_Vector> pos(text.size());
-    std::map<FT_ULong, GlyphPtr> glyph_cache;
+    Measurements measurements;
+    measurements.pos.resize(text.size());
     for (size_t i = 0; i < text.size(); i++) {
         FT_ULong const charcode{text[i]};
 
@@ -170,7 +216,7 @@ try {
         }
         last_index = index;
 
-        if (glyph_cache.find(charcode) == std::end(glyph_cache)) {
+        if (measurements.glyph_cache.find(charcode) == std::end(measurements.glyph_cache)) {
             spdlog::debug("Glyph U+{:X} not in cache, generate", charcode);
 
             if (auto const error = FT_Load_Glyph(face.get(), index, FT_LOAD_DEFAULT); error) {
@@ -183,7 +229,7 @@ try {
                 spdlog::error("FT_Get_Glyph error: 0x{:02X}", error);
                 throw FreeTypeError{error};
             }
-            glyph_cache[charcode] = GlyphPtr{raw};
+            measurements.glyph_cache[charcode] = GlyphPtr{raw};
         } else {
             spdlog::debug("Glyph U+{:X} already cached", charcode);
         }
@@ -197,30 +243,31 @@ try {
             pen_y += linespace;
 
             last_index = 0;
-            num_lines++;
+            measurements.num_lines++;
         }
 
-        pos[i].x = pen_x;
-        pos[i].y = pen_y;
+        measurements.pos[i].x = pen_x;
+        measurements.pos[i].y = pen_y;
 
         pen_x += advance_x;
         pen_y += advance_y;
     }
-
-    auto const canvas_height = linespace * num_lines - config.line_gap;
 
     assert(pen_x >= 0);
     auto const text_width = static_cast<size_t>(pen_x);
 
     Canvas canvas{
         config.canvas_padding * 2 + (config.content_width > 0 ? config.content_width : text_width),
-        config.canvas_padding * 2 + canvas_height,
+        config.canvas_padding * 2 + (linespace * measurements.num_lines - config.line_gap),
     };
     canvas.clear(Color{0xFF, 1.0});
     canvas.translate(config.canvas_padding, config.canvas_padding);
 
+    auto const offset_x = 0;
+    auto const offset_y = ascender;
+
     if (config.enable_annotation) {
-        for (size_t i = 0; i < num_lines; i++) {
+        for (size_t i = 0; i < measurements.num_lines; i++) {
             auto const baseline = ascender + static_cast<int>(linespace * i);
 
             canvas.fill_rect(/* x */0,
@@ -233,54 +280,37 @@ try {
             canvas.draw_horizontal_line(baseline, Color{0x00, 1.0});  // baseline
             canvas.draw_horizontal_line(baseline - descender, Color{0x00, 1.0});  // descender
         }
-    }
+        for (size_t i = 0; i < text.size(); i++) {
+            FT_Glyph glyph = measurements.glyph_cache.at(text[i]).get();
+            assert(glyph != nullptr);
 
-    auto const offset_x = 0;
-    auto const offset_y = ascender;
-
-    for (size_t i = 0; i < text.size(); i++) {
-        FT_Glyph glyph = glyph_cache[text[i]].get();
-        assert(glyph != nullptr);
-
-        if (glyph->format != FT_GLYPH_FORMAT_BITMAP) {
-            if (auto const error = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, nullptr, 0); error) {
-                spdlog::error("FT_Glyph_To_Bitmap error: 0x{:02X}", error);
-                throw FreeTypeError{error};
+            if (glyph->format != FT_GLYPH_FORMAT_BITMAP) {
+                if (auto const error = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, nullptr, 0); error) {
+                    spdlog::error("FT_Glyph_To_Bitmap error: 0x{:02X}", error);
+                    continue;
+                }
             }
-        }
 
-        auto const bit = reinterpret_cast<FT_BitmapGlyph>(glyph);
+            auto const bit = reinterpret_cast<FT_BitmapGlyph>(glyph);
 
-        auto const bitmap_x = offset_x + pos[i].x + bit->left;
-        auto const bitmap_y = offset_y + pos[i].y - bit->top;
+            auto const bitmap_x = offset_x + measurements.pos[i].x + bit->left;
+            auto const bitmap_y = offset_y + measurements.pos[i].y - bit->top;
 
-        auto const& bitmap = bit->bitmap;
+            auto const& bitmap = bit->bitmap;
 
-        if (config.enable_annotation) {
             canvas.fill_rect(bitmap_x, bitmap_y,
                              bitmap.width, bitmap.rows,
                              Color{0x00, 0.3});
 
-            canvas.fill_rect(offset_x + pos[i].x,
-                             offset_y + pos[i].y - ascender,
+            canvas.fill_rect(offset_x + measurements.pos[i].x,
+                             offset_y + measurements.pos[i].y - ascender,
                              1,
                              basic_height,
                              Color{0x00, 0.5});
         }
-
-        // TODO: support more pixel modes
-        if (bitmap.pixel_mode == FT_PIXEL_MODE_GRAY) {
-            canvas.blend_alpha(bitmap_x, bitmap_y,
-                               bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
-                               Color{0x00, 1.0});
-        } else if (bitmap.pixel_mode == FT_PIXEL_MODE_MONO) {
-            canvas.mono_alpha(bitmap_x, bitmap_y,
-                              bitmap.buffer, bitmap.width, bitmap.rows, bitmap.pitch,
-                              Color{0x00, 1.0});
-        } else {
-            spdlog::error("Unsupported pixel mode: {}", bitmap.pixel_mode);
-        }
     }
+
+    draw_text(canvas, config, measurements, offset_x, offset_y, text, Color{0x00, 1.0});
 
     canvas.save_pgm(config.output);
 }
