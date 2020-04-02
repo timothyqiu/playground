@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=2]
+[gd_scene load_steps=62 format=2]
 
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://World/Tileset.png" type="Texture" id=2]
@@ -458,6 +458,32 @@ points = PoolVector2Array( 0, 0, 16, 0, 16, 16, 0, 16 )
 
 [sub_resource type="Shader" id=50]
 code = "shader_type canvas_item;
+render_mode unshaded;
+
+uniform float cutoff: hint_range(0.0, 1.0) = 1.0;
+uniform float smooth_size: hint_range(0.0, 1.0) = 0.5;
+uniform sampler2D mask: hint_albedo;
+
+void fragment() {
+	float value = texture(mask, UV).r;
+	float alpha = smoothstep(cutoff, cutoff + smooth_size, value * (1.0 - smooth_size) + smooth_size);
+	COLOR = vec4(COLOR.rgb, alpha);
+}"
+
+[sub_resource type="Gradient" id=51]
+
+[sub_resource type="GradientTexture" id=52]
+gradient = SubResource( 51 )
+
+[sub_resource type="ShaderMaterial" id=53]
+shader = SubResource( 50 )
+shader_param/cutoff = 0.0
+shader_param/smooth_size = 0.01
+shader_param/mask = SubResource( 52 )
+
+[sub_resource type="Shader" id=54]
+code = "shader_type canvas_item;
+render_mode unshaded;
 
 uniform vec2 curve_factor = vec2(8.0, 8.0);
 uniform float zoom: hint_range(0.5, 2) = 1.05;
@@ -489,11 +515,81 @@ void fragment() {
 	COLOR = vec4(r, g, b, 1.0) * scanline;
 }"
 
-[sub_resource type="ShaderMaterial" id=51]
-shader = SubResource( 50 )
+[sub_resource type="ShaderMaterial" id=55]
+shader = SubResource( 54 )
 shader_param/curve_factor = Vector2( 8, 8 )
 shader_param/zoom = 1.04
 shader_param/scanline_count = 720.0
+
+[sub_resource type="Animation" id=56]
+resource_name = "TransitionIn"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Transition:material:shader_param/cutoff")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1.5, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("../AudioStreamPlayer2D:volume_db")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 0.5, 1 ),
+"update": 0,
+"values": [ -20.0, 0.0 ]
+}
+
+[sub_resource type="Animation" id=57]
+resource_name = "TransitionOut"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Transition:material:shader_param/cutoff")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1.5, 1 ),
+"update": 0,
+"values": [ 1.0, 0.0 ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath("..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.5 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "transition_out_finished"
+} ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("../AudioStreamPlayer2D:volume_db")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1.5, 1 ),
+"update": 0,
+"values": [ 0.0, -20.0 ]
+}
 
 [node name="World" type="Node2D"]
 script = ExtResource( 4 )
@@ -529,16 +625,31 @@ smoothing_enabled = true
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 3 )
+volume_db = -20.0
 autoplay = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="CRTEffect" type="ColorRect" parent="CanvasLayer"]
-material = SubResource( 51 )
+[node name="Transition" type="ColorRect" parent="CanvasLayer"]
+material = SubResource( 53 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color( 0, 0, 0, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="CRTEffect" type="ColorRect" parent="CanvasLayer"]
+material = SubResource( 55 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer"]
+autoplay = "TransitionIn"
+anims/TransitionIn = SubResource( 56 )
+anims/TransitionOut = SubResource( 57 )
 [connection signal="body_entered" from="Exit" to="." method="_on_Exit_body_entered"]
