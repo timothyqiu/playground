@@ -6,10 +6,11 @@ const FRICTION = 600  # speed approches ZERO
 const AIR_RESISTANCE = 200  # speed approches ZERO
 
 const GRAVITY = 420
-const JUMP_FORCE = 170
+const JUMP_FORCE = 170.0
 
 onready var sprite = $Sprite
 onready var animationPlayer = $AnimationPlayer
+onready var jumpSound = $JumpSound
 
 var velocity = Vector2.ZERO
 
@@ -29,6 +30,7 @@ func _process(delta):
 
 	if is_on_floor():
 		if Input.is_action_just_pressed("jump"):
+			jumpSound.play()
 			velocity.y = -JUMP_FORCE
 	else:
 		animationPlayer.play("Jump")
