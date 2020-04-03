@@ -1,12 +1,10 @@
 extends Node2D
 
-onready var animationPlayer = $CanvasLayer/AnimationPlayer
+signal game_over
+
 
 func _on_Exit_body_entered(body):
-	animationPlayer.play("TransitionOut")
-
-func transition_out_finished():
-	get_tree().reload_current_scene()
+	emit_signal("game_over")
 
 func _on_Player_player_dead():
-	animationPlayer.play("TransitionOut")
+	emit_signal("game_over")

@@ -21,7 +21,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Pixel Platformer"
-run/main_scene="res://World.tscn"
+run/main_scene="res://Monitor.tscn"
 config/icon="res://icon.png"
 
 [display]
