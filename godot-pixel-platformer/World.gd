@@ -7,3 +7,6 @@ func _on_Exit_body_entered(body):
 
 func transition_out_finished():
 	get_tree().reload_current_scene()
+
+func _on_Player_player_dead():
+	animationPlayer.play("TransitionOut")
