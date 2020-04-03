@@ -67,5 +67,5 @@ func hurt():
 	animationPlayer.play("Jump")
 	collision_layer = 0
 	collision_mask = 0
-	velocity = Vector2(0, -JUMP_FORCE)
+	velocity = Vector2(0, -JUMP_FORCE * 1.2)
 	emit_signal("player_dead")
