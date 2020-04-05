@@ -20,9 +20,12 @@ onready var sprite = $Sprite
 onready var animationPlayer = $AnimationPlayer
 onready var jumpSound = $Sounds/Jump
 onready var hurtSound = $Sounds/Hurt
+onready var jumpBufferingTimer = $JumpBufferingTimer
+onready var coyoteTimer = $CoyoteTimer
 
 var state = RUN
 var velocity = Vector2.ZERO
+var is_jumping = false
 
 func _process(delta):
 	match state:
@@ -46,16 +49,28 @@ func run_state(delta):
 
 	velocity.y += GRAVITY * delta
 
+	if Input.is_action_just_pressed("jump"):
+		jumpBufferingTimer.start()
+
 	if is_on_floor():
-		if Input.is_action_just_pressed("jump"):
-			jumpSound.play()
-			velocity.y = -JUMP_FORCE
+		is_jumping = false
+		coyoteTimer.stop()
 	else:
 		animationPlayer.play("Jump")
 		if Input.is_action_just_released("jump") and velocity.y < -JUMP_FORCE / 2:
 			velocity.y = -JUMP_FORCE / 2
+	
+	if jumpBufferingTimer.time_left > 0 and (is_on_floor() or coyoteTimer.time_left > 0):
+		jumpSound.play()
+		velocity.y = -JUMP_FORCE
+		jumpBufferingTimer.stop()
+		coyoteTimer.stop()
+		is_jumping = true
 
+	var was_on_floor = is_on_floor()
 	velocity = move_and_slide(velocity, Vector2.UP)
+	if was_on_floor and not is_jumping and not is_on_floor():
+		coyoteTimer.start()
 
 func dead_state(delta):
 	velocity.y += GRAVITY * delta
