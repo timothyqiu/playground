@@ -5,6 +5,7 @@ onready var animationPlayer = $CanvasLayer/AnimationPlayer
 var worlds = [
 	load("res://World.tscn"),
 	load("res://World2.tscn"),
+	load("res://YouWin.tscn"),
 ]
 var current_world_index = 0
 var current_world

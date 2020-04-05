@@ -61,13 +61,13 @@ shape = SubResource( 3 )
 [node name="LeftWallChecker" type="RayCast2D" parent="."]
 position = Vector2( 0, -8 )
 enabled = true
-cast_to = Vector2( -12, 0 )
+cast_to = Vector2( -11, 0 )
 collision_mask = 2
 
 [node name="RightWallChecker" type="RayCast2D" parent="."]
 position = Vector2( 0, -8 )
 enabled = true
-cast_to = Vector2( 12, 0 )
+cast_to = Vector2( 11, 0 )
 collision_mask = 2
 
 [node name="LeftCliffChecker" type="RayCast2D" parent="."]
