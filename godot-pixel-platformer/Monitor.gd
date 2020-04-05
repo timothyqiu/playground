@@ -46,6 +46,7 @@ func on_game_finished():
 	var next_world_index = current_world_index + 1
 	if next_world_index == worlds.size():
 		mainMenu.show()
+		mainMenu.prepare()
 	else:
 		load_world(current_world_index + 1)
 	animationPlayer.play("TransitionIn")
