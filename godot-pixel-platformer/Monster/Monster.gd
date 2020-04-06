@@ -13,7 +13,13 @@ onready var sprite = $Sprite
 var direction = -1.0
 var velocity = Vector2.ZERO
 
+
 func _process(delta):
+	if $LeftWallChecker.is_colliding() or not $LeftCliffChecker.is_colliding():
+		direction = 1.0
+	if $RightWallChecker.is_colliding() or not $RightCliffChecker.is_colliding():
+		direction = -1.0
+
 	if direction == 0:
 		animationPlayer.play("Idle")
 		var factor = FRICTION if is_on_floor() else AIR_RESISTANCE
@@ -25,13 +31,9 @@ func _process(delta):
 
 	velocity.y += GRAVITY * delta
 
-	velocity = move_and_slide(velocity, Vector2.UP)
 
-func _physics_process(delta):
-	if $LeftWallChecker.is_colliding() or not $LeftCliffChecker.is_colliding():
-		direction = 1.0
-	if $RightWallChecker.is_colliding() or not $RightCliffChecker.is_colliding():
-		direction = -1.0
+func _physics_process(_delta):
+	velocity = move_and_slide(velocity, Vector2.UP)
 
 
 func _on_Area2D_body_entered(body):

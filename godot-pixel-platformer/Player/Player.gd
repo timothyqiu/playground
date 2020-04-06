@@ -8,7 +8,7 @@ const ACCELERATION = 500  # speed approches MAX_SPEED
 const FRICTION = 600  # speed approches ZERO
 const AIR_RESISTANCE = 200  # speed approches ZERO
 
-const GRAVITY = 420
+const GRAVITY = 440
 const JUMP_FORCE = 170.0
 
 enum {
@@ -27,6 +27,7 @@ var state = RUN
 var velocity = Vector2.ZERO
 var is_jumping = false
 
+
 func _process(delta):
 	match state:
 		RUN:
@@ -34,6 +35,28 @@ func _process(delta):
 			
 		DEAD:
 			dead_state(delta)
+
+
+func _physics_process(_delta):
+	var was_on_floor = is_on_floor()
+	velocity = move_and_slide(velocity, Vector2.UP)
+
+	if is_on_floor():
+		is_jumping = false
+		coyoteTimer.stop()
+	elif was_on_floor and not is_jumping:
+		coyoteTimer.start()
+
+
+func _unhandled_input(event):
+	if state != RUN:
+		return
+
+	if event.is_action_pressed("jump"): 
+		jumpBufferingTimer.start()
+	if is_jumping and event.is_action_released("jump") and velocity.y < -JUMP_FORCE / 2:
+		velocity.y = -JUMP_FORCE / 2
+
 
 func run_state(delta):
 	var direction = Input.get_action_strength("right") - Input.get_action_strength("left")
@@ -49,32 +72,26 @@ func run_state(delta):
 
 	velocity.y += GRAVITY * delta
 
-	if Input.is_action_just_pressed("jump"):
-		jumpBufferingTimer.start()
-
-	if is_on_floor():
-		is_jumping = false
-		coyoteTimer.stop()
-	else:
+	if not is_on_floor():
 		animationPlayer.play("Jump")
-		if Input.is_action_just_released("jump") and velocity.y < -JUMP_FORCE / 2:
-			velocity.y = -JUMP_FORCE / 2
 	
-	if jumpBufferingTimer.time_left > 0 and (is_on_floor() or coyoteTimer.time_left > 0):
-		jumpSound.play()
-		velocity.y = -JUMP_FORCE
-		jumpBufferingTimer.stop()
-		coyoteTimer.stop()
-		is_jumping = true
+	var can_jump = is_on_floor() or coyoteTimer.time_left > 0
+	if jumpBufferingTimer.time_left > 0 and can_jump:
+		jump()
 
-	var was_on_floor = is_on_floor()
-	velocity = move_and_slide(velocity, Vector2.UP)
-	if was_on_floor and not is_jumping and not is_on_floor():
-		coyoteTimer.start()
 
 func dead_state(delta):
 	velocity.y += GRAVITY * delta
 	velocity = move_and_slide(velocity, Vector2.UP)
+
+
+func jump():
+	velocity.y = -JUMP_FORCE
+	is_jumping = true
+	jumpBufferingTimer.stop()
+	coyoteTimer.stop()
+	jumpSound.play()
+
 
 func hurt():
 	state = DEAD
