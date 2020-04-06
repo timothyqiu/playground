@@ -483,8 +483,9 @@ __meta__ = {
 shape = SubResource( 49 )
 
 [node name="KillZone" type="Area2D" parent="."]
-position = Vector2( 320, 208 )
-collision_layer = 4
+position = Vector2( 320, 216 )
+collision_layer = 16
+collision_mask = 0
 __meta__ = {
 "_edit_group_": true
 }
@@ -568,5 +569,4 @@ position = Vector2( 360, -24 )
 [node name="Spikes13" parent="Spikes" instance=ExtResource( 5 )]
 position = Vector2( 600, 152 )
 [connection signal="body_entered" from="Exit" to="." method="_on_Exit_body_entered"]
-[connection signal="body_entered" from="KillZone" to="." method="_on_KillZone_body_entered"]
 [connection signal="player_dead" from="Player" to="." method="_on_Player_player_dead"]

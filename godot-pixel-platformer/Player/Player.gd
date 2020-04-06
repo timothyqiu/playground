@@ -99,5 +99,10 @@ func hurt():
 	animationPlayer.play("Jump")
 	collision_layer = 0
 	collision_mask = 0
+	$Hurtbox.collision_mask = 0
 	velocity = Vector2(0, -JUMP_FORCE * 1.2)
 	emit_signal("player_dead")
+
+
+func _on_Hurtbox_area_entered(_area):
+	hurt()

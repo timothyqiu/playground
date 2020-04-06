@@ -481,9 +481,11 @@ shape = SubResource( 49 )
 
 [node name="KillZone" type="Area2D" parent="."]
 position = Vector2( 160, 200 )
-collision_layer = 4
+collision_layer = 16
+collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+position = Vector2( 0, 16 )
 shape = SubResource( 50 )
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
@@ -523,5 +525,4 @@ position = Vector2( 72, 8 )
 [node name="Spikes4" parent="Spikes" instance=ExtResource( 5 )]
 position = Vector2( 232, 120 )
 [connection signal="body_entered" from="Exit" to="." method="_on_Exit_body_entered"]
-[connection signal="body_entered" from="KillZone" to="." method="_on_KillZone_body_entered"]
 [connection signal="player_dead" from="Player" to="." method="_on_Player_player_dead"]

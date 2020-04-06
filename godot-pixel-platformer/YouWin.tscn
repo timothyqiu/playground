@@ -1,4 +1,4 @@
-[gd_scene load_steps=55 format=2]
+[gd_scene load_steps=54 format=2]
 
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://World/Tileset.png" type="Texture" id=2]
@@ -457,9 +457,6 @@ points = PoolVector2Array( 0, 0, 16, 0, 16, 16, 0, 16 )
 [sub_resource type="RectangleShape2D" id=49]
 extents = Vector2( 8, 10 )
 
-[sub_resource type="RectangleShape2D" id=50]
-extents = Vector2( 160, 10 )
-
 [node name="World" type="Node2D"]
 script = ExtResource( 4 )
 
@@ -478,13 +475,6 @@ collision_layer = 8
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
 position = Vector2( 96, 112 )
 shape = SubResource( 49 )
-
-[node name="KillZone" type="Area2D" parent="."]
-position = Vector2( 160, 200 )
-collision_layer = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
-shape = SubResource( 50 )
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 24, -16 )
@@ -514,8 +504,5 @@ position = Vector2( 96, 48 )
 
 [node name="Monster4" parent="Monsters" instance=ExtResource( 3 )]
 position = Vector2( 352, 48 )
-
-[node name="Spikes" type="Node2D" parent="."]
 [connection signal="body_entered" from="Exit" to="." method="_on_Exit_body_entered"]
-[connection signal="body_entered" from="KillZone" to="." method="_on_KillZone_body_entered"]
 [connection signal="player_dead" from="Player" to="." method="_on_Player_player_dead"]
