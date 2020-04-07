@@ -4,7 +4,7 @@ signal game_over
 signal game_finished
 
 
-func _on_Exit_body_entered(body):
+func _on_Exit_body_entered(_body):
 	emit_signal("game_finished")
 
 func _on_Player_player_dead():
