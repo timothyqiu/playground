@@ -80,10 +80,10 @@ anims/Run = SubResource( 4 )
 
 [node name="Sounds" type="Node" parent="."]
 
-[node name="Jump" type="AudioStreamPlayer2D" parent="Sounds"]
+[node name="Jump" type="AudioStreamPlayer" parent="Sounds"]
 stream = ExtResource( 3 )
 
-[node name="Hurt" type="AudioStreamPlayer2D" parent="Sounds"]
+[node name="Hurt" type="AudioStreamPlayer" parent="Sounds"]
 stream = ExtResource( 4 )
 
 [node name="JumpBufferingTimer" type="Timer" parent="."]
