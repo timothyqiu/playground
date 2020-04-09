@@ -13,6 +13,7 @@ enum {
 
 onready var animationTree = $AnimationTree
 onready var animationState = $AnimationTree.get("parameters/playback")
+onready var swordHitbox = $HitboxPivit/SwordHitbox
 
 var state = MOVE
 var velocity = Vector2.ZERO
@@ -40,6 +41,7 @@ func move_state(delta):
 		animationState.travel("Idle")
 	else:
 		roll_direction = direction
+		swordHitbox.knockback_vector = direction
 		animationTree.set("parameters/Idle/blend_position", direction)
 		animationTree.set("parameters/Run/blend_position", direction)
 		animationTree.set("parameters/Attack/blend_position", direction)
