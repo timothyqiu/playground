@@ -48,4 +48,3 @@ position = Vector2( 352, 48 )
 [node name="Exit" parent="." instance=ExtResource( 5 )]
 position = Vector2( 424, 152 )
 [connection signal="player_dead" from="Player" to="." method="_on_Player_player_dead"]
-[connection signal="body_entered" from="Exit" to="." method="_on_Exit_body_entered"]

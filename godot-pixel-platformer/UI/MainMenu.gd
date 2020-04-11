@@ -1,9 +1,14 @@
 extends Control
 
-signal game_start
 
-func prepare():
+func _ready():
 	$Start.grab_focus()
 
+
+func _unhandled_input(event):
+	if event.is_action_pressed("exit"):
+		get_tree().quit()
+
+
 func _on_Start_pressed():
-	emit_signal("game_start")
+	Levels.go_first_level()

@@ -21,8 +21,15 @@ _global_script_class_icons={
 [application]
 
 config/name="Pixel Platformer"
-run/main_scene="res://Monitor.tscn"
+run/main_scene="res://UI/MainMenu.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+CrtEffect="*res://Globals/CRTEffect.tscn"
+SceneTransition="*res://Globals/SceneTransition.tscn"
+BackgroundMusic="*res://Globals/BackgroundMusic.tscn"
+Levels="*res://Globals/Levels.gd"
 
 [display]
 

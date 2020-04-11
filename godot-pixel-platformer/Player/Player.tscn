@@ -58,7 +58,7 @@ tracks/0/keys = {
 }
 
 [sub_resource type="RectangleShape2D" id=5]
-extents = Vector2( 4, 7 )
+extents = Vector2( 3, 7 )
 
 [node name="Player" type="KinematicBody2D"]
 collision_mask = 2

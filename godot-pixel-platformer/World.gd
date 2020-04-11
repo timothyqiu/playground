@@ -1,11 +1,10 @@
 extends Node2D
 
-signal game_over
-signal game_finished
 
+func _unhandled_input(event):
+	if event.is_action_pressed("exit"):
+		SceneTransition.transition_to("res://UI/MainMenu.tscn")
 
-func _on_Exit_body_entered(_body):
-	emit_signal("game_finished")
 
 func _on_Player_player_dead():
-	emit_signal("game_over")
+	Levels.reload()
