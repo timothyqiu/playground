@@ -1,9 +1,9 @@
 extends Node
 
 const levels = [
-	"res://World.tscn",
-	"res://World2.tscn",
-	"res://YouWin.tscn",
+	"res://World/World.tscn",
+	"res://World/World2.tscn",
+	"res://World/YouWin.tscn",
 ]
 
 var game_started_at: int
@@ -13,13 +13,11 @@ var total_deaths: int = 0
 var current_level: int = 2
 
 
-func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
-
-
 func _input(event):
 	if event.is_action_pressed("fullscreen"):
-		OS.window_fullscreen = not OS.window_fullscreen
+		var will_fullscreen = not OS.window_fullscreen
+		OS.window_fullscreen = will_fullscreen
+		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN if will_fullscreen else Input.MOUSE_MODE_VISIBLE)
 		get_tree().set_input_as_handled()
 
 

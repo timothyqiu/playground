@@ -12,5 +12,5 @@ func _ready():
 
 
 func _unhandled_input(event):
-	if event.is_pressed():
+	if event.is_pressed() and not event.is_echo():
 		SceneTransition.transition_to("res://UI/MainMenu.tscn")
