@@ -11,4 +11,4 @@ func _unhandled_input(event):
 
 
 func _on_Start_pressed():
-	Levels.go_first_level()
+	Game.go_first_level()

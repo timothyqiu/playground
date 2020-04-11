@@ -7,4 +7,4 @@ func _unhandled_input(event):
 
 
 func _on_Player_player_dead():
-	Levels.reload()
+	Game.reload()
