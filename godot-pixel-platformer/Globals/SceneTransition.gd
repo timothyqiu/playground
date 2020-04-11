@@ -11,7 +11,10 @@ onready var animation_player = $AnimationPlayer
 
 func _ready():
 	var root = get_tree().root
+	root.pause_mode = Node.PAUSE_MODE_PROCESS
+
 	current_scene = root.get_child(root.get_child_count() - 1)
+	current_scene.pause_mode = Node.PAUSE_MODE_STOP
 
 	audio_player = BackgroundMusic
 
@@ -34,6 +37,7 @@ func _transition_to(path):
 	
 	var s = ResourceLoader.load(path)
 	current_scene = s.instance()
+	current_scene.pause_mode = Node.PAUSE_MODE_STOP
 	
 	get_tree().get_root().add_child(current_scene)
 	get_tree().set_current_scene(current_scene)

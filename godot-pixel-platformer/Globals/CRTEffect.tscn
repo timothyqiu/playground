@@ -9,8 +9,9 @@ shader_param/zoom = 1.04
 shader_param/scanline_count = 720.0
 
 [node name="CRTEffect" type="CanvasLayer"]
+layer = 5
 
-[node name="Preview" parent="." instance_placeholder="res://World.tscn"]
+[node name="Preview" parent="." instance_placeholder="res://World/World.tscn"]
 
 [node name="ColorRect" type="ColorRect" parent="."]
 material = SubResource( 1 )

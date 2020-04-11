@@ -43,10 +43,11 @@ tracks/1/keys = {
 }
 
 [node name="SceneTransition" type="CanvasLayer"]
+layer = 5
 script = ExtResource( 2 )
 audio_volume = -1.0
 
-[node name="Preview" parent="." instance_placeholder="res://World.tscn"]
+[node name="Preview" parent="." instance_placeholder="res://World/World.tscn"]
 
 [node name="ColorRect" type="ColorRect" parent="."]
 material = SubResource( 3 )

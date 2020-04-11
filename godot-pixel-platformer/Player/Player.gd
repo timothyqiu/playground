@@ -24,6 +24,8 @@ onready var jumpBufferingTimer = $JumpBufferingTimer
 onready var coyoteTimer = $CoyoteTimer
 
 var state = RUN
+var strength_left = 0.0
+var strength_right = 0.0
 var velocity = Vector2.ZERO
 var is_jumping = false
 
@@ -49,6 +51,11 @@ func _physics_process(_delta):
 
 
 func _unhandled_input(event):
+	if event.is_action("left"):
+		strength_left = event.get_action_strength("left")
+	if event.is_action("right"):
+		strength_right = event.get_action_strength("right")
+
 	if state != RUN:
 		return
 
@@ -59,7 +66,7 @@ func _unhandled_input(event):
 
 
 func run_state(delta):
-	var direction = Input.get_action_strength("right") - Input.get_action_strength("left")
+	var direction = strength_right - strength_left
 
 	if direction == 0:
 		animationPlayer.play("Idle")
