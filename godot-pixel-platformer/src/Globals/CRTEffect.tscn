@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Globals/CRTEffect.shader" type="Shader" id=1]
+
+
+[sub_resource type="ShaderMaterial" id=1]
+shader = ExtResource( 1 )
+shader_param/curve_factor = Vector2( 8, 8 )
+shader_param/zoom = 1.04
+shader_param/scanline_count = 720.0
+
+[node name="CRTEffect" type="CanvasLayer"]
+layer = 5
+
+[node name="Preview" parent="." instance_placeholder="res://src/World/World.tscn"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource( 1 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}

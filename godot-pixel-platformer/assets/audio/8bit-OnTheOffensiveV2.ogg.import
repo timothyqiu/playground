@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/8bit-OnTheOffensiveV2.ogg-2b726cde70d6e9abceee82889342622f.oggstr"
+
+[deps]
+
+source_file="res://assets/audio/8bit-OnTheOffensiveV2.ogg"
+dest_files=[ "res://.import/8bit-OnTheOffensiveV2.ogg-2b726cde70d6e9abceee82889342622f.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

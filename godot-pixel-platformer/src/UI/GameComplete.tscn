@@ -1,0 +1,55 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://assets/theme/default_theme.tres" type="Theme" id=1]
+[ext_resource path="res://src/UI/GameComplete.gd" type="Script" id=2]
+
+
+
+
+[node name="GameComplete" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Message" type="Label" parent="."]
+anchor_right = 1.0
+margin_top = 32.0
+margin_bottom = 56.0
+text = "Thank you for playing :)"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StatsLabel" type="Label" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -92.0
+margin_right = -168.0
+margin_bottom = -26.0
+text = "Time
+Coins
+Deaths"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StatsValue" type="Label" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 168.0
+margin_top = -92.0
+margin_bottom = -26.0
+text = "00:00
+0
+0"
+__meta__ = {
+"_edit_use_anchors_": false
+}
