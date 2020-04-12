@@ -29,7 +29,7 @@ config/icon="res://icon.png"
 CrtEffect="*res://src/Globals/CRTEffect.tscn"
 SceneTransition="*res://src/Globals/SceneTransition.tscn"
 BackgroundMusic="*res://src/Globals/BackgroundMusic.tscn"
-Game="*res://src/Globals/Game.gd"
+Game="*res://src/Globals/Game.tscn"
 Dialogue="*res://src/UI/Dialogue.tscn"
 
 [display]

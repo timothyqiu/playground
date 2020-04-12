@@ -9,14 +9,6 @@
 [ext_resource path="res://src/Objects/Coin.tscn" type="PackedScene" id=7]
 [ext_resource path="res://src/Objects/SignBoard.tscn" type="PackedScene" id=8]
 
-
-
-
-
-
-
-
-
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 320, 10 )
 
@@ -47,6 +39,9 @@ position = Vector2( 552, -8 )
 dialogue = "Note from a previous adventurer:
 ---
 Be patient."
+
+[node name="Exit" parent="." instance=ExtResource( 6 )]
+position = Vector2( 624, 136 )
 
 [node name="Coins" type="Node2D" parent="."]
 
@@ -193,7 +188,4 @@ position = Vector2( 360, -24 )
 
 [node name="Spikes13" parent="Spikes" instance=ExtResource( 5 )]
 position = Vector2( 600, 152 )
-
-[node name="Exit" parent="." instance=ExtResource( 6 )]
-position = Vector2( 664, 128 )
 [connection signal="player_dead" from="Player" to="." method="_on_Player_player_dead"]

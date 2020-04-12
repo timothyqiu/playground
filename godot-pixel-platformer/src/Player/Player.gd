@@ -14,6 +14,7 @@ const JUMP_FORCE = 170.0
 enum {
 	RUN,
 	DEAD,
+	GO_RIGHT,  # after reaching level exit
 }
 
 onready var sprite = $Sprite
@@ -37,6 +38,9 @@ func _process(delta):
 			
 		DEAD:
 			dead_state(delta)
+			
+		GO_RIGHT:
+			go_right_state(delta)
 
 
 func _physics_process(_delta):
@@ -65,9 +69,7 @@ func _unhandled_input(event):
 		velocity.y = -JUMP_FORCE / 2
 
 
-func run_state(delta):
-	var direction = strength_right - strength_left
-
+func _move(delta, direction):
 	if direction == 0:
 		animationPlayer.play("Idle")
 		var factor = FRICTION if is_on_floor() else AIR_RESISTANCE
@@ -81,6 +83,11 @@ func run_state(delta):
 
 	if not is_on_floor():
 		animationPlayer.play("Jump")
+
+
+func run_state(delta):
+	var direction = strength_right - strength_left
+	_move(delta, direction)
 	
 	var can_jump = is_on_floor() or coyoteTimer.time_left > 0
 	if jumpBufferingTimer.time_left > 0 and can_jump:
@@ -90,6 +97,14 @@ func run_state(delta):
 func dead_state(delta):
 	velocity.y += GRAVITY * delta
 	velocity = move_and_slide(velocity, Vector2.UP)
+
+
+func go_right_state(delta):
+	_move(delta, 0.5)
+
+
+func go_right():
+	state = GO_RIGHT
 
 
 func jump():
