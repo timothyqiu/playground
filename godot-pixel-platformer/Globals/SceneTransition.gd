@@ -33,6 +33,7 @@ func _transition_to(path):
 	animation_player.play_backwards("fade_in")
 	yield(animation_player, "animation_finished")
 	
+	Dialogue.hide_dialogue()
 	current_scene.free()
 	
 	var s = ResourceLoader.load(path)

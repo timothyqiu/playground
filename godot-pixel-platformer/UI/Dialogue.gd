@@ -27,7 +27,7 @@ func _input(event):
 		elif current_index + 1 < dialogues.size():
 			_show_dialogue(current_index + 1)
 		else:
-			_hide_dialogue()
+			hide_dialogue()
 		
 		get_tree().set_input_as_handled()
 	
@@ -50,7 +50,7 @@ func show_dialogue(texts):
 	_show_dialogue(0)
 
 
-func _hide_dialogue():
+func hide_dialogue():
 	label.hide()
 	get_tree().paused = false
 	emit_signal("finished")
