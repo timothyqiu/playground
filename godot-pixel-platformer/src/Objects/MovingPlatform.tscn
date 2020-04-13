@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://assets/tileset/tileset.png" type="Texture" id=1]
+[ext_resource path="res://src/Objects/MovingPlatform.gd" type="Script" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 24, 8 )
@@ -28,6 +29,7 @@ tracks/0/keys = {
 }
 
 [node name="MovingPlatform" type="Node2D"]
+script = ExtResource( 2 )
 
 [node name="KinematicBody" type="KinematicBody2D" parent="."]
 collision_layer = 2

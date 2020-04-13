@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://src/Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/tileset/tileset.tres" type="TileSet" id=2]
@@ -7,18 +7,19 @@
 [ext_resource path="res://src/Objects/Spikes.tscn" type="PackedScene" id=5]
 [ext_resource path="res://src/Objects/Exit.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/Objects/MovingPlatform.tscn" type="PackedScene" id=7]
+[ext_resource path="res://src/Objects/Lever.tscn" type="PackedScene" id=8]
 
-[sub_resource type="Curve2D" id=2]
+[sub_resource type="Curve2D" id=1]
 _data = {
 "points": PoolVector2Array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0 )
 }
 
-[sub_resource type="Curve2D" id=3]
+[sub_resource type="Curve2D" id=2]
 _data = {
-"points": PoolVector2Array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -80 )
+"points": PoolVector2Array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -96 )
 }
 
-[sub_resource type="RectangleShape2D" id=1]
+[sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 320, 10 )
 
 [node name="World" type="Node2D"]
@@ -36,16 +37,16 @@ tile_data = PoolIntArray( -327680, 0, 65540, -262144, 0, 131076, -196608, 0, 131
 position = Vector2( 112, 40 )
 
 [node name="Path2D" parent="TileMap/MovingPlatform" index="1"]
-curve = SubResource( 2 )
+curve = SubResource( 1 )
 
 [node name="MovingPlatform2" parent="TileMap" instance=ExtResource( 7 )]
-position = Vector2( 296, 56 )
+position = Vector2( 296, 72 )
 
 [node name="Path2D" parent="TileMap/MovingPlatform2" index="1"]
-curve = SubResource( 3 )
+curve = SubResource( 2 )
 
 [node name="KillZone" type="Area2D" parent="."]
-position = Vector2( 320, 216 )
+position = Vector2( 320, 248 )
 collision_layer = 16
 collision_mask = 0
 __meta__ = {
@@ -53,7 +54,7 @@ __meta__ = {
 }
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
-shape = SubResource( 1 )
+shape = SubResource( 3 )
 
 [node name="Exit" parent="." instance=ExtResource( 6 )]
 position = Vector2( 368, -24 )
@@ -73,6 +74,10 @@ limit_bottom = 192
 drag_margin_h_enabled = true
 drag_margin_v_enabled = true
 smoothing_enabled = true
+
+[node name="Lever" parent="." instance=ExtResource( 8 )]
+position = Vector2( 72, 56 )
+link = NodePath("../TileMap/MovingPlatform2")
 
 [node name="Monsters" type="Node2D" parent="."]
 
