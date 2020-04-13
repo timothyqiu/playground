@@ -1,0 +1,90 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://src/Player/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://assets/tileset/tileset.tres" type="TileSet" id=2]
+[ext_resource path="res://src/Monster/Monster.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/World/World.gd" type="Script" id=4]
+[ext_resource path="res://src/Objects/Spikes.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/Objects/Exit.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/Objects/MovingPlatform.tscn" type="PackedScene" id=7]
+
+[sub_resource type="Curve2D" id=2]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0 )
+}
+
+[sub_resource type="Curve2D" id=3]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -80 )
+}
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 320, 10 )
+
+[node name="World" type="Node2D"]
+script = ExtResource( 4 )
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 16, 16 )
+collision_layer = 2
+collision_mask = 0
+format = 1
+tile_data = PoolIntArray( -327680, 0, 65540, -262144, 0, 131076, -196608, 0, 131076, -131072, 0, 131076, -65536, 0, 131076, -65515, 0, 65541, -65514, 0, 262146, -65513, 0, 262146, -65512, 0, 262146, -65511, 0, 262146, -65510, 0, 262146, -65509, 0, 262146, -65508, 0, 262146, -65507, 0, 262146, -65506, 0, 262146, -65505, 0, 262146, -65504, 0, 262146, -65503, 0, 262146, -65502, 0, 262146, -65501, 0, 262146, -65500, 0, 262146, -65499, 0, 262146, -65498, 0, 262147, 0, 0, 131076, 21, 0, 131076, 65536, 0, 131076, 65557, 0, 131076, 131072, 0, 131076, 131093, 0, 131076, 196608, 0, 131076, 196629, 0, 131076, 262144, 0, 196613, 262145, 0, 65538, 262146, 0, 65538, 262147, 0, 65538, 262148, 0, 65539, 262158, 0, 65537, 262159, 0, 65538, 262160, 0, 65539, 262164, 0, 65541, 262165, 0, 262152, 327680, 0, 196609, 327681, 0, 196610, 327682, 0, 196610, 327683, 0, 196610, 327684, 0, 196611, 327694, 0, 196609, 327695, 0, 196610, 327696, 0, 262150, 327697, 0, 262146, 327698, 0, 262146, 327699, 0, 262146, 327700, 0, 262152 )
+
+[node name="MovingPlatform" parent="TileMap" instance=ExtResource( 7 )]
+position = Vector2( 112, 40 )
+
+[node name="Path2D" parent="TileMap/MovingPlatform" index="1"]
+curve = SubResource( 2 )
+
+[node name="MovingPlatform2" parent="TileMap" instance=ExtResource( 7 )]
+position = Vector2( 296, 56 )
+
+[node name="Path2D" parent="TileMap/MovingPlatform2" index="1"]
+curve = SubResource( 3 )
+
+[node name="KillZone" type="Area2D" parent="."]
+position = Vector2( 320, 216 )
+collision_layer = 16
+collision_mask = 0
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+shape = SubResource( 1 )
+
+[node name="Exit" parent="." instance=ExtResource( 6 )]
+position = Vector2( 368, -24 )
+
+[node name="Coins" type="Node2D" parent="."]
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 24, 64 )
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2( -40, 0 )
+current = true
+limit_left = 0
+limit_top = -80
+limit_right = 640
+limit_bottom = 192
+drag_margin_h_enabled = true
+drag_margin_v_enabled = true
+smoothing_enabled = true
+
+[node name="Monsters" type="Node2D" parent="."]
+
+[node name="Monster" parent="Monsters" instance=ExtResource( 3 )]
+position = Vector2( 233, 64 )
+
+[node name="Spikes" type="Node2D" parent="."]
+
+[node name="Spikes" parent="Spikes" instance=ExtResource( 5 )]
+position = Vector2( 328, 56 )
+[connection signal="player_dead" from="Player" to="." method="_on_Player_player_dead"]
+
+[editable path="TileMap/MovingPlatform"]
+
+[editable path="TileMap/MovingPlatform2"]

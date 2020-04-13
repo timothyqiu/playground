@@ -3,6 +3,7 @@ extends Node
 const levels = [
 	"res://src/World/World.tscn",
 	"res://src/World/World2.tscn",
+	"res://src/World/World3.tscn",
 	"res://src/World/YouWin.tscn",
 ]
 

@@ -45,7 +45,9 @@ func _process(delta):
 
 func _physics_process(_delta):
 	var was_on_floor = is_on_floor()
-	velocity = move_and_slide(velocity, Vector2.UP)
+
+	var snap = Vector2.ZERO if is_jumping else Vector2.DOWN
+	velocity = move_and_slide_with_snap(velocity, snap, Vector2.UP)
 
 	if is_on_floor():
 		is_jumping = false
@@ -81,7 +83,7 @@ func _move(delta, direction):
 
 	velocity.y += GRAVITY * delta
 
-	if not is_on_floor():
+	if is_jumping:
 		animationPlayer.play("Jump")
 
 
