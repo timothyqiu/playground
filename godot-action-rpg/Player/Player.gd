@@ -17,7 +17,7 @@ onready var swordHitbox = $HitboxPivit/SwordHitbox
 
 var state = MOVE
 var velocity = Vector2.ZERO
-var roll_direction = Vector2.LEFT
+var roll_direction = Vector2.DOWN
 
 func _process(delta):
 	match state:
