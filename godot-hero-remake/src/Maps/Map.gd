@@ -1,5 +1,9 @@
+class_name Map
 extends Node2D
 
+const GameMenu = preload("res://src/UI/GameMenu.tscn")
+
+export var identifier := ""
 export var camera_inset := Vector2.ZERO
 
 var target_destination: String
@@ -32,3 +36,9 @@ func _ready() -> void:
 		rect.size.y = viewport_size.y
 
 	player.set_camera_bounds(rect)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		var menu = GameMenu.instance()
+		get_tree().root.add_child(menu)

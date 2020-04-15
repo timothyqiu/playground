@@ -812,6 +812,7 @@ tracks/0/keys = {
 
 [node name="Town" type="Node2D"]
 script = ExtResource( 6 )
+identifier = "Town"
 camera_inset = Vector2( 1, 1 )
 
 [node name="Floor" type="TileMap" parent="."]
@@ -849,13 +850,14 @@ position = Vector2( 512, 400 )
 
 [node name="Npc" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 816, 272 )
+character_name = "白云城居民"
 
 [node name="Npc2" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 592, 384 )
+character_name = "白云城居民"
 
 [node name="Sprite" parent="Structures/Npc2" index="0"]
 texture = ExtResource( 9 )
-frame = 2
 
 [node name="AnimationPlayer" parent="Structures/Npc2" index="2"]
 anims/idle_down = SubResource( 1 )
@@ -872,10 +874,10 @@ parameters/playback = SubResource( 9 )
 
 [node name="Npc3" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 976, 320 )
+character_name = "白云城居民"
 
 [node name="Sprite" parent="Structures/Npc3" index="0"]
 texture = ExtResource( 10 )
-frame = 2
 
 [node name="AnimationPlayer" parent="Structures/Npc3" index="2"]
 anims/idle_down = SubResource( 10 )
@@ -892,10 +894,10 @@ parameters/playback = SubResource( 18 )
 
 [node name="Npc4" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 432, 280 )
+character_name = "白云城居民"
 
 [node name="Sprite" parent="Structures/Npc4" index="0"]
 texture = ExtResource( 9 )
-frame = 2
 
 [node name="AnimationPlayer" parent="Structures/Npc4" index="2"]
 anims/idle_down = SubResource( 19 )
@@ -912,10 +914,10 @@ parameters/playback = SubResource( 27 )
 
 [node name="Npc5" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 272, 544 )
+character_name = "白云城居民"
 
 [node name="Sprite" parent="Structures/Npc5" index="0"]
 texture = ExtResource( 9 )
-frame = 2
 
 [node name="AnimationPlayer" parent="Structures/Npc5" index="2"]
 anims/idle_down = SubResource( 28 )
@@ -932,10 +934,10 @@ parameters/playback = SubResource( 36 )
 
 [node name="Npc6" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 320, 720 )
+character_name = "白云城居民"
 
 [node name="Sprite" parent="Structures/Npc6" index="0"]
 texture = ExtResource( 11 )
-frame = 2
 
 [node name="AnimationPlayer" parent="Structures/Npc6" index="2"]
 anims/idle_down = SubResource( 37 )
@@ -952,10 +954,10 @@ parameters/playback = SubResource( 45 )
 
 [node name="Npc7" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 608, 720 )
+character_name = "白云城居民"
 
 [node name="Sprite" parent="Structures/Npc7" index="0"]
 texture = ExtResource( 10 )
-frame = 2
 
 [node name="AnimationPlayer" parent="Structures/Npc7" index="2"]
 anims/idle_down = SubResource( 46 )

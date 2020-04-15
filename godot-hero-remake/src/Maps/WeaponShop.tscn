@@ -16,6 +16,7 @@
 
 [node name="WeaponShop" type="Node2D"]
 script = ExtResource( 1 )
+identifier = "WeaponShop"
 
 [node name="Floor" type="TileMap" parent="."]
 tile_set = ExtResource( 3 )
@@ -36,20 +37,20 @@ position = Vector2( 208, 256 )
 
 [node name="Owner" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 256, 144 )
+character_name = "老板"
 
 [node name="Sprite" parent="Structures/Owner" index="0"]
 texture = ExtResource( 8 )
-frame = 2
 
 [node name="AnimationTree" parent="Structures/Owner" index="3"]
 parameters/playback = SubResource( 1 )
 
 [node name="Npc" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 320, 304 )
+character_name = "干小石"
 
 [node name="Sprite" parent="Structures/Npc" index="0"]
 texture = ExtResource( 9 )
-frame = 2
 
 [node name="AnimationTree" parent="Structures/Npc" index="3"]
 parameters/playback = SubResource( 2 )

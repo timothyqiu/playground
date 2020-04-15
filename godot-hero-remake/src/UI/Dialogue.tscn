@@ -5,6 +5,7 @@
 [ext_resource path="res://src/UI/Dialogue.gd" type="Script" id=3]
 
 [node name="Dialogue" type="CanvasLayer"]
+pause_mode = 2
 script = ExtResource( 3 )
 
 [node name="Talkbar" type="TextureRect" parent="."]
@@ -35,9 +36,13 @@ margin_bottom = 67.0
 size_flags_horizontal = 3
 
 [node name="TextureRect" type="TextureRect" parent="Talkbar/HBoxContainer/VBoxContainer"]
-margin_right = 95.0
-margin_bottom = 44.0
+margin_left = 31.0
+margin_right = 63.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 32, 32 )
+size_flags_horizontal = 4
 size_flags_vertical = 3
+expand = true
 stretch_mode = 6
 
 [node name="NameLabel" type="Label" parent="Talkbar/HBoxContainer/VBoxContainer"]

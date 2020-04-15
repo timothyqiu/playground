@@ -21,17 +21,21 @@ func _change_scene(scene_path: String, destination: String = ""):
 	animation_player.play_backwards("fade_in")
 	yield(animation_player, "animation_finished")
 	
-	var scene = load(scene_path)
+	if current_scene is Map:
+		Events.emit_signal("leaving_map", current_scene)
 	
 	var root = get_tree().root
 	root.remove_child(current_scene)
 	current_scene.free()
-	current_scene = scene.instance()
+	
+	current_scene = load(scene_path).instance()
 	current_scene.pause_mode = Node.PAUSE_MODE_STOP
 	current_scene.target_destination = destination
 	root.add_child(current_scene)
-	
 	get_tree().current_scene = current_scene
+	
+	if current_scene is Map:
+		Events.emit_signal("entering_map", current_scene)
 	
 	get_tree().paused = false
 	animation_player.play("fade_in")

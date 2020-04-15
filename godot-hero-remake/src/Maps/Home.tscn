@@ -10,6 +10,7 @@
 
 [node name="Home" type="Node2D"]
 script = ExtResource( 7 )
+identifier = "Home"
 
 [node name="Floor" type="TileMap" parent="."]
 tile_set = ExtResource( 2 )

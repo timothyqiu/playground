@@ -284,6 +284,7 @@ tracks/0/keys = {
 
 [node name="Tavern" type="Node2D"]
 script = ExtResource( 3 )
+identifier = "Tavern"
 
 [node name="Floor" type="TileMap" parent="."]
 tile_set = ExtResource( 1 )
@@ -303,34 +304,39 @@ tile_data = PoolIntArray( 0, 1, 0, 2, 0, 0, 4, 1, 0, 7, 1, 0, 9, 0, 0, 11, 0, 0,
 position = Vector2( 160, 336 )
 
 [node name="Owner" parent="Structures" instance=ExtResource( 7 )]
+position = Vector2( 64, 128 )
+character_name = "小月"
 
 [node name="Sprite" parent="Structures/Owner" index="0"]
-position = Vector2( 64, 128 )
+position = Vector2( 0, 0 )
 texture = ExtResource( 8 )
-frame = 2
 
 [node name="AnimationTree" parent="Structures/Owner" index="3"]
 parameters/playback = SubResource( 1 )
 
 [node name="Npc" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 304, 288 )
+character_name = "拾荒匠"
 
 [node name="Sprite" parent="Structures/Npc" index="0"]
 texture = ExtResource( 9 )
-frame = 2
 
 [node name="AnimationTree" parent="Structures/Npc" index="3"]
 parameters/playback = SubResource( 2 )
 
 [node name="Rouer" parent="Structures" instance=ExtResource( 7 )]
-position = Vector2( 400, 88 )
+position = Vector2( 400, 80 )
+character_name = "柔儿"
+is_stationary = true
 
 [node name="BanditA" parent="Structures" instance=ExtResource( 7 )]
-position = Vector2( 368, 88 )
+position = Vector2( 368, 80 )
+character_name = "秃鹰"
+is_stationary = true
+direction = Vector2( 1, 0 )
 
 [node name="Sprite" parent="Structures/BanditA" index="0"]
 texture = ExtResource( 10 )
-frame = 2
 
 [node name="AnimationPlayer" parent="Structures/BanditA" index="2"]
 anims/idle_down = SubResource( 3 )
@@ -346,11 +352,13 @@ anims/walk_up = SubResource( 10 )
 parameters/playback = SubResource( 11 )
 
 [node name="BanditB" parent="Structures" instance=ExtResource( 7 )]
-position = Vector2( 400, 120 )
+position = Vector2( 400, 112 )
+character_name = "刀疤"
+is_stationary = true
+direction = Vector2( 0, -1 )
 
 [node name="Sprite" parent="Structures/BanditB" index="0"]
 texture = ExtResource( 11 )
-frame = 2
 
 [node name="AnimationPlayer" parent="Structures/BanditB" index="2"]
 anims/idle_down = SubResource( 12 )
