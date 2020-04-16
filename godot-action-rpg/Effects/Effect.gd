@@ -1,7 +1,8 @@
 extends AnimatedSprite
 
 func _ready():
-	connect("animation_finished", self, "_on_animation_finished")
+	var err = connect("animation_finished", self, "_on_animation_finished")
+	assert(err == OK)
 	play("Animate")
 
 

@@ -64,7 +64,7 @@ func attack_state(_delta):
 func attack_animation_finished():
 	state = MOVE
 
-func roll_state(delta):
+func roll_state(_delta):
 	animationState.travel("Roll")
 	velocity = roll_direction * ROLL_SPEED
 	velocity = move_and_slide(velocity)
