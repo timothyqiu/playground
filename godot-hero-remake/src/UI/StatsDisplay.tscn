@@ -1,0 +1,135 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://assets/ui/main_theme.tres" type="Theme" id=1]
+[ext_resource path="res://src/UI/StatsDisplay.gd" type="Script" id=2]
+
+[node name="StatsDisplay" type="HBoxContainer"]
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -190.0
+margin_top = 20.0
+margin_right = 190.0
+margin_bottom = -20.0
+grow_horizontal = 2
+theme = ExtResource( 1 )
+alignment = 1
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Labels" type="VBoxContainer" parent="."]
+margin_left = 88.0
+margin_right = 188.0
+margin_bottom = 320.0
+rect_min_size = Vector2( 100, 0 )
+custom_constants/separation = 8
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Level" type="Label" parent="Labels"]
+margin_top = 69.0
+margin_right = 100.0
+margin_bottom = 88.0
+text = "等级："
+align = 2
+
+[node name="Exp" type="Label" parent="Labels"]
+margin_top = 96.0
+margin_right = 100.0
+margin_bottom = 115.0
+text = "经验："
+align = 2
+
+[node name="Hp" type="Label" parent="Labels"]
+margin_top = 123.0
+margin_right = 100.0
+margin_bottom = 142.0
+text = "生命："
+align = 2
+
+[node name="Atk" type="Label" parent="Labels"]
+margin_top = 150.0
+margin_right = 100.0
+margin_bottom = 169.0
+text = "攻击："
+align = 2
+
+[node name="Def" type="Label" parent="Labels"]
+margin_top = 177.0
+margin_right = 100.0
+margin_bottom = 196.0
+text = "防御："
+align = 2
+
+[node name="Spd" type="Label" parent="Labels"]
+margin_top = 204.0
+margin_right = 100.0
+margin_bottom = 223.0
+text = "速度："
+align = 2
+
+[node name="Money" type="Label" parent="Labels"]
+margin_top = 231.0
+margin_right = 100.0
+margin_bottom = 250.0
+custom_colors/font_color = Color( 1, 1, 0, 1 )
+text = "金钱："
+align = 2
+
+[node name="Values" type="VBoxContainer" parent="."]
+margin_left = 192.0
+margin_right = 292.0
+margin_bottom = 320.0
+rect_min_size = Vector2( 100, 0 )
+custom_constants/separation = 8
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Level" type="Label" parent="Values"]
+margin_top = 69.0
+margin_right = 100.0
+margin_bottom = 88.0
+text = "1"
+
+[node name="Exp" type="Label" parent="Values"]
+margin_top = 96.0
+margin_right = 100.0
+margin_bottom = 115.0
+text = "2/100"
+
+[node name="Hp" type="Label" parent="Values"]
+margin_top = 123.0
+margin_right = 100.0
+margin_bottom = 142.0
+text = "50/50"
+
+[node name="Atk" type="Label" parent="Values"]
+margin_top = 150.0
+margin_right = 100.0
+margin_bottom = 169.0
+text = "10"
+
+[node name="Def" type="Label" parent="Values"]
+margin_top = 177.0
+margin_right = 100.0
+margin_bottom = 196.0
+text = "10"
+
+[node name="Spd" type="Label" parent="Values"]
+margin_top = 204.0
+margin_right = 100.0
+margin_bottom = 223.0
+text = "8"
+
+[node name="Money" type="Label" parent="Values"]
+margin_top = 231.0
+margin_right = 100.0
+margin_bottom = 250.0
+custom_colors/font_color = Color( 1, 1, 0, 1 )
+text = "100"

@@ -1,12 +1,14 @@
 extends CanvasLayer
 
 onready var menubar := $TextureRect
-onready var item_list := $TextureRect/VBoxContainer
+onready var menu_item_list := $TextureRect/VBoxContainer
+onready var items_dialog := $ItemsDialog
+onready var stats_dialog := $StatsDialog
 
 
 func _ready() -> void:
 	get_tree().paused = true
-	item_list.get_children()[0].grab_focus()
+	menu_item_list.get_children()[0].grab_focus()
 	Events.emit_signal("game_paused")
 
 
@@ -24,3 +26,18 @@ func _on_Back_pressed() -> void:
 
 func _on_Exit_pressed() -> void:
 	get_tree().quit()
+
+
+func _on_Items_pressed() -> void:
+	items_dialog.set_items(Game.items)
+	items_dialog.popup_centered()
+
+
+func _on_Stats_pressed() -> void:
+	stats_dialog.popup_centered()
+
+
+func _on_ItemsDialog_item_selected(items: Array, index: int) -> void:
+	Game.use_item(index)
+	items_dialog.set_items(Game.items)
+	items_dialog.show_stats()

@@ -1,5 +1,12 @@
 extends KinematicBody2D
 
+enum NpcRole {
+	NORMAL,
+	WEAPON_SHOP,  # 兵器店
+	PHARMACY,  # 药店
+	PAWNBROKER,  # 典当行
+}
+
 enum NpcState {
 	WALK,
 	IDLE,
@@ -8,6 +15,7 @@ enum NpcState {
 
 export var character_name := "无名氏"
 export var is_stationary := false
+export(NpcRole) var role := NpcRole.NORMAL
 export var max_speed := 30.0
 export var acceleration := 256.0
 export var friction := 256.0
@@ -122,8 +130,19 @@ func _on_Interactable_interact(interacter) -> void:
 func _on_dialogue_finished() -> void:
 	set_direction(direction)
 	
-	if not is_stationary:
-		_enter_walk()
+	match role:
+		NpcRole.WEAPON_SHOP:
+			print("TODO: Buy weapon")
+		
+		NpcRole.PHARMACY:
+			print("TODO: Buy items")
+		
+		NpcRole.PAWNBROKER:
+			print("TODO: Sell items")
+		
+		NpcRole.NORMAL:
+			if not is_stationary:
+				_enter_walk()
 
 
 func to_dict():

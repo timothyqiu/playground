@@ -4,7 +4,7 @@
 [ext_resource path="res://src/NPC/Npc.gd" type="Script" id=2]
 [ext_resource path="res://src/Interactable/Interactable.tscn" type="PackedScene" id=3]
 
-[sub_resource type="CapsuleShape2D" id=24]
+[sub_resource type="CapsuleShape2D" id=1]
 radius = 7.0
 height = 4.0
 
@@ -215,7 +215,7 @@ frame = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = 1.5708
-shape = SubResource( 24 )
+shape = SubResource( 1 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/idle_down = SubResource( 2 )
