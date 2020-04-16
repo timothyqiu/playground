@@ -7,7 +7,6 @@
 
 [node name="ItemsDialog" type="PopupPanel"]
 pause_mode = 2
-visible = true
 margin_right = 424.0
 margin_bottom = 320.0
 rect_min_size = Vector2( 420, 320 )
@@ -254,5 +253,6 @@ margin_right = 384.0
 margin_bottom = 282.0
 text = "现有25金"
 align = 1
+[connection signal="popup_hide" from="." to="." method="_on_ItemsDialog_popup_hide"]
 
 [editable path="VBoxContainer/Display/StatsDisplay"]

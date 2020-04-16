@@ -2,6 +2,7 @@ class_name ItemsDialog
 extends PopupPanel
 
 signal item_selected(items, index)
+signal finished
 
 var items: Array setget set_items
 var depreciation = 1.0
@@ -112,3 +113,7 @@ func set_items(value: Array) -> void:
 			slot.item_id = items[i]
 		else:
 			slot.item_id = Game.NULL_ITEM
+
+
+func _on_ItemsDialog_popup_hide() -> void:
+	emit_signal("finished")

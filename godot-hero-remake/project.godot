@@ -34,7 +34,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/Maps/Map.gd"
 }, {
-"base": "Node",
+"base": "Resource",
 "class": "Stats",
 "language": "GDScript",
 "path": "res://src/Stats.gd"
@@ -51,15 +51,15 @@ _global_script_class_icons={
 [application]
 
 config/name="Hero Remake"
-run/main_scene="res://src/Maps/Tavern.tscn"
+run/main_scene="res://src/Battle/Battle.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
+Game="*res://src/Game/Game.tscn"
 Transition="*res://src/UI/Transition.tscn"
 Dialogue="*res://src/UI/Dialogue.tscn"
 Events="*res://src/Events.gd"
-Game="*res://src/Game.gd"
 BuyDialog="*res://src/UI/BuyDialog.tscn"
 SellDialog="*res://src/UI/SellDialog.tscn"
 
