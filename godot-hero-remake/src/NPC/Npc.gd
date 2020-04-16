@@ -2,9 +2,8 @@ extends KinematicBody2D
 
 enum NpcRole {
 	NORMAL,
-	WEAPON_SHOP,  # 兵器店
-	PHARMACY,  # 药店
-	PAWNBROKER,  # 典当行
+	PEDLAR,
+	PAWNBROKER,
 }
 
 enum NpcState {
@@ -16,6 +15,7 @@ enum NpcState {
 export var character_name := "无名氏"
 export var is_stationary := false
 export(NpcRole) var role := NpcRole.NORMAL
+export(Array, int) var items = []
 export var max_speed := 30.0
 export var acceleration := 256.0
 export var friction := 256.0
@@ -131,26 +131,49 @@ func _on_dialogue_finished() -> void:
 	set_direction(direction)
 	
 	match role:
-		NpcRole.WEAPON_SHOP:
-			print("TODO: Buy weapon")
-		
-		NpcRole.PHARMACY:
-			print("TODO: Buy items")
+		NpcRole.PEDLAR:
+			var err := OK
+			
+			err = BuyDialog.connect("item_bought", self, "_on_item_bought")
+			assert(err == OK)
+			err = BuyDialog.connect("finished", self, "_on_shop_finished", [], CONNECT_ONESHOT)
+			assert(err == OK)
+			
+			BuyDialog.show(items)
 		
 		NpcRole.PAWNBROKER:
-			print("TODO: Sell items")
+			var err := SellDialog.connect("finished", self, "_on_shop_finished", [], CONNECT_ONESHOT)
+			assert(err == OK)
+			
+			SellDialog.show()
 		
 		NpcRole.NORMAL:
 			if not is_stationary:
 				_enter_walk()
 
 
+func _on_item_bought(index) -> void:
+	items[index] = Game.NULL_ITEM
+	BuyDialog.set_items(items)
+
+
+func _on_shop_finished() -> void:
+	match role:
+		NpcRole.PEDLAR:
+			BuyDialog.disconnect("item_bought", self, "_on_item_bought")
+	
+	if not is_stationary:
+		_enter_walk()
+
+
 func to_dict():
 	return {
 		"x": position.x,
 		"y": position.y,
+		"items": items,
 	}
 
 
 func from_dict(data: Dictionary):
 	position = Vector2(data.x, data.y)
+	items = data.items

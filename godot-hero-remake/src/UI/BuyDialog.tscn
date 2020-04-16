@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/UI/BuyDialog.gd" type="Script" id=1]
+[ext_resource path="res://src/UI/ItemsDialog.tscn" type="PackedScene" id=2]
+
+[node name="ShopDialog" type="CanvasLayer"]
+pause_mode = 2
+script = ExtResource( 1 )
+
+[node name="ItemsDialog" parent="." instance=ExtResource( 2 )]
+visible = false
+[connection signal="about_to_show" from="ItemsDialog" to="." method="_on_ItemsDialog_about_to_show"]
+[connection signal="item_selected" from="ItemsDialog" to="." method="_on_ItemsDialog_item_selected"]
+[connection signal="popup_hide" from="ItemsDialog" to="." method="_on_ItemsDialog_popup_hide"]

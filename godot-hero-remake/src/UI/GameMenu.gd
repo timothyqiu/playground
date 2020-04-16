@@ -37,7 +37,7 @@ func _on_Stats_pressed() -> void:
 	stats_dialog.popup_centered()
 
 
-func _on_ItemsDialog_item_selected(items: Array, index: int) -> void:
+func _on_ItemsDialog_item_selected(_items: Array, index: int) -> void:
 	Game.use_item(index)
 	items_dialog.set_items(Game.items)
 	items_dialog.show_stats()

@@ -13,7 +13,7 @@ var current_exp := 0 setget set_exp
 var attack := 1
 var defend := 1
 var speed := 8
-var money := 100
+var money := 200
 
 
 func set_health(value: int) -> void:

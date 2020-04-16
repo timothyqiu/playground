@@ -38,7 +38,8 @@ position = Vector2( 240, 272 )
 [node name="Owner" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 208, 128 )
 character_name = "老板娘"
-role = 2
+role = 1
+items = [ 1, 2, 3, 4, 5, 14, 15 ]
 
 [node name="Sprite" parent="Structures/Owner" index="0"]
 texture = ExtResource( 8 )
@@ -59,7 +60,6 @@ parameters/playback = SubResource( 2 )
 [node name="TransportDestination" parent="." instance=ExtResource( 4 )]
 position = Vector2( 192, 368 )
 identifier = "Door"
-direction = Vector2( 0, 1 )
 
 [node name="MapSwitcher" parent="." instance=ExtResource( 5 )]
 position = Vector2( 192, 416 )

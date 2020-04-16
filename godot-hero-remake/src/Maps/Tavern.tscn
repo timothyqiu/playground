@@ -317,7 +317,7 @@ parameters/playback = SubResource( 1 )
 [node name="Npc" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 304, 288 )
 character_name = "拾荒匠"
-role = 3
+role = 2
 
 [node name="Sprite" parent="Structures/Npc" index="0"]
 texture = ExtResource( 9 )

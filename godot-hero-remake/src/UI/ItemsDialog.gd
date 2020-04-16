@@ -1,8 +1,10 @@
+class_name ItemsDialog
 extends PopupPanel
 
 signal item_selected(items, index)
 
 var items: Array setget set_items
+var depreciation = 1.0
 
 onready var slot_container = $VBoxContainer/ItemSlots
 onready var item_title = $VBoxContainer/TitleBox/Title
@@ -10,11 +12,11 @@ onready var item_stats_label = $VBoxContainer/Display/StatsLabel
 onready var item_stats_value = $VBoxContainer/Display/StatsValue
 onready var item_description = $VBoxContainer/Display/Description
 onready var stats_display = $VBoxContainer/Display/StatsDisplay
+onready var info_label = $VBoxContainer/Info
 
 
 func _ready() -> void:
 	var slots = slot_container.get_children()
-	slots[0].grab_focus()
 	
 	# fix focus order
 	var cols = slot_container.columns
@@ -41,6 +43,8 @@ func _ready() -> void:
 		assert(err == OK)
 		err = slot.connect("focus_entered", self, "_on_focus_slot", [slot])
 		assert(err == OK)
+	
+	slots[0].grab_focus()
 
 
 func _get_item_slot_path(col: int, row: int) -> NodePath:
@@ -62,12 +66,15 @@ func _on_focus_slot(slot: ItemSlot) -> void:
 		
 	if item_exists and slot.item_id < ItemDB.ITEMS.size():
 		var item = ItemDB.ITEMS[slot.item_id]
+		var price = max(1, int(item.money * depreciation))
 		
-		item_title.text = "%s（%d金）" % [item.name, item.money]
+		item_title.text = "%s（%d金）" % [item.name, price]
 		item_description.text = item.description
 		item_stats_value.text = "%d\n%d\n%d\n%d" % [
 			item.exp, item.health, item.attack, item.defend
 		]
+	
+	update_info()
 
 
 func _set_item_display_visible(value: bool) -> void:
@@ -84,6 +91,15 @@ func show_stats() -> void:
 	
 	stats_display.update_stats()
 	stats_display.visible = true
+	
+	update_info()
+
+
+func update_info(text: String = "") -> void:
+	var info = "现有%d金" % Game.stats.money
+	if text:
+		info += "，" + text
+	info_label.text = info
 
 
 func set_items(value: Array) -> void:
@@ -94,3 +110,5 @@ func set_items(value: Array) -> void:
 		
 		if i < items.size():
 			slot.item_id = items[i]
+		else:
+			slot.item_id = Game.NULL_ITEM

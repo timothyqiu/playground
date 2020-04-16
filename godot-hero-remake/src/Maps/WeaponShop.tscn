@@ -39,6 +39,7 @@ position = Vector2( 208, 256 )
 position = Vector2( 256, 144 )
 character_name = "老板"
 role = 1
+items = [ 6, 7, 8, 9, 10, 11, 12, 13 ]
 
 [node name="Sprite" parent="Structures/Owner" index="0"]
 texture = ExtResource( 8 )

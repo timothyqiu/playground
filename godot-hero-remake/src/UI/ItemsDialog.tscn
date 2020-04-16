@@ -248,11 +248,11 @@ margin_top = 48.0
 margin_right = 384.0
 margin_bottom = 96.0
 
-[node name="Label2" type="Label" parent="VBoxContainer"]
+[node name="Info" type="Label" parent="VBoxContainer"]
 margin_top = 263.0
 margin_right = 384.0
 margin_bottom = 282.0
-text = "（金=15）SPACE=确定 ESC=退出"
+text = "现有25金"
 align = 1
 
 [editable path="VBoxContainer/Display/StatsDisplay"]
