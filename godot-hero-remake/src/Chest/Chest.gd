@@ -1,8 +1,11 @@
 extends StaticBody2D
 
 export var opened := false
+export(ItemDB.ItemId) var item_id := ItemDB.ItemId.NULL
+export var money := 0
 
 var interactable := false
+var close_after_message := false
 
 onready var sprite := $AnimatedSprite
 
@@ -22,11 +25,41 @@ func _on_Interactable_interact(_interacter) -> void:
 		return
 	
 	set_opened(true)
+	close_after_message = false
 	
-	var data = [{
-		"text": "你打开了一个宝箱，看看里面有什么？"
-	}]
+	var data = []
+	
+	if money:
+		data.append({
+			"text": "打开宝箱后，发现有%d金币，哈哈……我赚翻了#_$" % money,
+		})
+		Game.stats.money += money
+	
+	if item_id != ItemDB.ItemId.NULL:
+		var item = ItemDB.ITEMS[item_id]
+		var err = Game.put_item(item_id)
+		
+		var message = "呵呵……赚了^_&"
+		if err:
+			message = "可是%s" % err
+			close_after_message = true
+		
+		data.append({
+			"text": "打开宝箱后，发现有一个%s，%s" % [item.name, message],
+		})
+	
+	if data.empty():
+		data.append({
+			"text": "箱子里什么都没有，白高兴一场。"
+		})
+	
+	Events.connect("dialogue_finished", self, "_message_finished")
 	Dialogue.show_dialogue(data)
+
+
+func _message_finished():
+	if close_after_message:
+		set_opened(false)
 
 
 func to_dict():

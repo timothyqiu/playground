@@ -30,15 +30,19 @@ tile_data = PoolIntArray( 0, 1, 0, 2, 0, 0, 4, 1, 0, 7, 1, 0, 9, 0, 0, 11, 0, 0,
 
 [node name="Chest" parent="Structures" instance=ExtResource( 4 )]
 position = Vector2( 240, 80 )
+item_id = 2
 
 [node name="Chest2" parent="Structures" instance=ExtResource( 4 )]
 position = Vector2( 176, 80 )
+item_id = 3
 
 [node name="Chest3" parent="Structures" instance=ExtResource( 4 )]
 position = Vector2( 144, 80 )
+money = 53
 
 [node name="Chest4" parent="Structures" instance=ExtResource( 4 )]
 position = Vector2( 112, 80 )
+money = 44
 
 [node name="Player" parent="Structures" instance=ExtResource( 1 )]
 position = Vector2( 112, 112 )

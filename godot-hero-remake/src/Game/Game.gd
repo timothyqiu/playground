@@ -1,6 +1,5 @@
 extends Node
 
-const NULL_ITEM := 0
 const MAX_ITEMS := 16
 
 enum Phase {
@@ -11,16 +10,17 @@ enum Phase {
 
 export(Phase) var phase = Phase.SAVE_ROUER
 var persist = {}
-var items := [
+export(Array, ItemDB.ItemId) var items := [
 	1, 2, 3, 4,
 	5, 6, 7, 8,
+	9, 10, 11, 12,
 ]
 var stats := Stats.new()
 
 
 func _ready() -> void:
 	for _i in range(items.size(), MAX_ITEMS):
-		items.append(NULL_ITEM)
+		items.append(ItemDB.ItemId.NULL)
 	
 	var err := OK
 	err = Events.connect("leaving_map", self, "_on_leaving_map")
@@ -70,7 +70,7 @@ func _on_entering_map(map: Map) -> void:
 
 func use_item(index: int) -> void:
 	var item_id = items[index]
-	if item_id == NULL_ITEM:
+	if item_id == ItemDB.ItemId.NULL:
 		printerr("Using null item!")
 		return
 	var item: Dictionary = ItemDB.ITEMS[item_id]
@@ -80,11 +80,11 @@ func use_item(index: int) -> void:
 	stats.attack += item.attack
 	stats.defend += item.defend
 	
-	items[index] = NULL_ITEM
+	items[index] = ItemDB.ItemId.NULL
 
 
 func buy_item(item_id: int):
-	if item_id == NULL_ITEM:
+	if item_id == ItemDB.ItemId.NULL:
 		printerr("Buying null item!")
 		return
 	var item: Dictionary = ItemDB.ITEMS[item_id]
@@ -94,7 +94,7 @@ func buy_item(item_id: int):
 	
 	for i in range(items.size()):
 		var id = items[i]
-		if id == NULL_ITEM:
+		if id == ItemDB.ItemId.NULL:
 			items[i] = item_id
 			stats.money -= item.money
 			return
@@ -102,13 +102,28 @@ func buy_item(item_id: int):
 	return "你的背包已经满了"
 
 
+func put_item(item_id: int):
+	if item_id == ItemDB.ItemId.NULL:
+		printerr("Putting null item!")
+		return
+	var item: Dictionary = ItemDB.ITEMS[item_id]
+	
+	for i in range(items.size()):
+		var id = items[i]
+		if id == ItemDB.ItemId.NULL:
+			items[i] = item_id
+			return
+	
+	return "你的背包已经满了"
+
+
 func sell_item(index: int, depreciation: float) -> void:
 	var item_id = items[index]
-	if item_id == NULL_ITEM:
+	if item_id == ItemDB.ItemId.NULL:
 		printerr("Selling null item!")
 		return
 	var item: Dictionary = ItemDB.ITEMS[item_id]
 	
 	stats.money += item.money * depreciation
 	
-	items[index] = NULL_ITEM
+	items[index] = ItemDB.ItemId.NULL

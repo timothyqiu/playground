@@ -1,6 +1,25 @@
 class_name ItemDB
 extends Node
 
+enum ItemId {
+	NULL,
+	RED_ROSE,
+	MUSHROOM,
+	HERB,
+	BIG_HERB,
+	SKULL,
+	MANUAL,
+	HEAVY_SWORD,
+	HOLY_SWORD,
+	DAGGER,
+	ICE_SWORD,
+	ACIENT_ARMOR,
+	ICE_SWORD_2,
+	LEATHER_ARMOR,
+	RED_BOTTLE,
+	BOTTLE,
+}
+
 const ITEMS = [
 	{
 		"name": "（空）",

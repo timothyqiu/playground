@@ -55,13 +55,13 @@ func _get_item_slot_path(col: int, row: int) -> NodePath:
 
 
 func _on_use_slot(index: int, slot: ItemSlot) -> void:
-	if slot.item_id == Game.NULL_ITEM:
+	if slot.item_id == ItemDB.ItemId.NULL:
 		return
 	emit_signal("item_selected", items, index)
 
 
 func _on_focus_slot(slot: ItemSlot) -> void:
-	var item_exists = slot.item_id != Game.NULL_ITEM and slot.item_id < ItemDB.ITEMS.size()
+	var item_exists = slot.item_id != ItemDB.ItemId.NULL and slot.item_id < ItemDB.ITEMS.size()
 	_set_item_display_visible(item_exists)
 	stats_display.visible = false
 		
@@ -112,7 +112,7 @@ func set_items(value: Array) -> void:
 		if i < items.size():
 			slot.item_id = items[i]
 		else:
-			slot.item_id = Game.NULL_ITEM
+			slot.item_id = ItemDB.ItemId.NULL
 
 
 func _on_ItemsDialog_popup_hide() -> void:

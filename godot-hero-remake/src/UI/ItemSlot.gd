@@ -13,7 +13,7 @@ const ATLAS_EMPTY_ICON_OFFSET := 18
 # Item ID:
 # 0 - null
 # 1, 2, 3, ...
-var item_id: int = Game.NULL_ITEM setget set_item_id
+var item_id: int = ItemDB.ItemId.NULL setget set_item_id
 
 onready var atlas := AtlasTexture.new()
 

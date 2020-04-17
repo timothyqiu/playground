@@ -833,15 +833,19 @@ tile_data = PoolIntArray( 24, 18, 0, 65536, 15, 0, 65538, 15, 0, 65540, 15, 0, 6
 
 [node name="Chest" parent="Structures" instance=ExtResource( 4 )]
 position = Vector2( 1072, 688 )
+item_id = 1
 
 [node name="Chest2" parent="Structures" instance=ExtResource( 4 )]
 position = Vector2( 1072, 16 )
+item_id = 1
 
 [node name="Chest3" parent="Structures" instance=ExtResource( 4 )]
 position = Vector2( 80, 80 )
+item_id = 2
 
 [node name="Chest4" parent="Structures" instance=ExtResource( 4 )]
 position = Vector2( 16, 464 )
+item_id = 5
 
 [node name="Player" parent="Structures" instance=ExtResource( 3 )]
 position = Vector2( 512, 400 )

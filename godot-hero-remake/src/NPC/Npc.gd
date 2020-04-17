@@ -183,7 +183,7 @@ func _on_defeat_player() -> void:
 
 
 func _on_item_bought(index) -> void:
-	items[index] = Game.NULL_ITEM
+	items[index] = ItemDB.ItemId.NULL
 	BuyDialog.set_items(items)
 
 
