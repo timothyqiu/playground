@@ -2,6 +2,11 @@ extends Node
 
 const MAX_ITEMS := 16
 
+const MUSICS = [
+	preload("res://assets/audio/music/title.ogg"),
+	preload("res://assets/audio/music/back.ogg"),
+]
+
 enum Phase {
 	SAVE_ROUER,
 	FIND_SWORD,
@@ -9,13 +14,18 @@ enum Phase {
 }
 
 export(Phase) var phase = Phase.SAVE_ROUER
-var persist = {}
 export(Array, ItemDB.ItemId) var items := [
 	1, 2, 3, 4,
 	5, 6, 7, 8,
 	9, 10, 11, 12,
 ]
+
+var music setget set_music
+
+var persist = {}
 var stats := Stats.new()
+
+onready var music_player := $BackgroundMusicPlayer
 
 
 func _ready() -> void:
@@ -127,3 +137,12 @@ func sell_item(index: int, depreciation: float) -> void:
 	stats.money += item.money * depreciation
 	
 	items[index] = ItemDB.ItemId.NULL
+
+
+func set_music(value: int) -> void:
+	var changed = music != value
+	music = value
+	
+	if changed:
+		music_player.stream = MUSICS[music]
+		music_player.play()

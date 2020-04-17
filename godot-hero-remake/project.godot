@@ -57,7 +57,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Hero Remake"
-run/main_scene="res://src/Maps/Home.tscn"
+run/main_scene="res://src/UI/TitleScreen.tscn"
 config/icon="res://icon.png"
 
 [autoload]

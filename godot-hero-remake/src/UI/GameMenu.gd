@@ -25,7 +25,8 @@ func _on_Back_pressed() -> void:
 
 
 func _on_Exit_pressed() -> void:
-	get_tree().quit()
+	Transition.replace_scene("res://src/UI/TitleScreen.tscn")
+	_on_Back_pressed()
 
 
 func _on_Items_pressed() -> void:

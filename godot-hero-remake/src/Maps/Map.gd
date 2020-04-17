@@ -2,6 +2,7 @@ class_name Map
 extends Node2D
 
 const GameMenu = preload("res://src/UI/GameMenu.tscn")
+const music = 1
 
 export var identifier := ""
 export var camera_inset := Vector2.ZERO
@@ -13,6 +14,8 @@ onready var player := $Structures/Player
 
 func _ready() -> void:
 	randomize()
+	
+	Game.music = music
 	
 	if target_destination:
 		for child in get_children():
