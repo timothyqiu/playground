@@ -4,6 +4,7 @@ enum NpcRole {
 	NORMAL,
 	PEDLAR,
 	PAWNBROKER,
+	ENEMY,
 }
 
 enum NpcState {
@@ -147,9 +148,27 @@ func _on_dialogue_finished() -> void:
 			
 			SellDialog.show()
 		
+		NpcRole.ENEMY:
+			var err := OK
+			
+			err = Events.connect("battle_win", self, "_on_death", [], CONNECT_ONESHOT)
+			assert(err == OK)
+			err = Events.connect("battle_lose", self, "_on_defeat_player", [], CONNECT_ONESHOT)
+			assert(err == OK)
+			Transition.push_scene("res://src/Battle/Battle.tscn")
+		
 		NpcRole.NORMAL:
 			if not is_stationary:
 				_enter_walk()
+
+
+func _on_death() -> void:
+	# just a temporary trick
+	position = Vector2(-999, -999)
+
+
+func _on_defeat_player() -> void:
+	print("Game Over!")
 
 
 func _on_item_bought(index) -> void:

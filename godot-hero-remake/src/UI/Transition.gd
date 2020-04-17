@@ -1,5 +1,13 @@
 extends CanvasLayer
 
+enum ChangeMode {
+	REPLACE,
+	PUSH,
+	POP,
+}
+
+var scene_stack = []
+
 onready var rect = $ColorRect
 onready var animation_player = $AnimationPlayer
 onready var current_scene = get_tree().current_scene
@@ -11,31 +19,56 @@ func _ready() -> void:
 	current_scene.pause_mode = Node.PAUSE_MODE_STOP
 
 
-func change_scene(scene_path: String, destination: String = ""):
-	call_deferred("_change_scene", scene_path, destination)
+func replace_scene(scene_path: String, destination: String = ""):
+	call_deferred("_change_scene", ChangeMode.REPLACE, scene_path, destination)
 
 
-func _change_scene(scene_path: String, destination: String = ""):
+func push_scene(scene_path: String):
+	call_deferred("_change_scene", ChangeMode.PUSH, scene_path, "")
+
+
+func pop_scene():
+	call_deferred("_change_scene", ChangeMode.POP, "", "")
+
+
+func _change_scene(mode: int, scene_path: String, destination: String):
 	get_tree().paused = true
 	
 	animation_player.play_backwards("fade_in")
 	yield(animation_player, "animation_finished")
 	
-	if current_scene is Map:
-		Events.emit_signal("leaving_map", current_scene)
-	
 	var root = get_tree().root
-	root.remove_child(current_scene)
-	current_scene.free()
 	
-	current_scene = load(scene_path).instance()
-	current_scene.pause_mode = Node.PAUSE_MODE_STOP
-	current_scene.target_destination = destination
+	match mode:
+		ChangeMode.REPLACE, ChangeMode.POP:
+			if current_scene is Map:
+				Events.emit_signal("leaving_map", current_scene)
+			root.remove_child(current_scene)
+			current_scene.free()
+		
+		ChangeMode.PUSH:
+			root.remove_child(current_scene)
+			scene_stack.push_front(current_scene)
+	
+	match mode:
+		ChangeMode.REPLACE, ChangeMode.PUSH:
+			current_scene = load(scene_path).instance()
+			current_scene.pause_mode = Node.PAUSE_MODE_STOP
+			
+			if current_scene is Map:
+				current_scene.target_destination = destination
+		
+		ChangeMode.POP:
+			current_scene = scene_stack.front()
+			scene_stack.pop_front()
+	
 	root.add_child(current_scene)
 	get_tree().current_scene = current_scene
 	
-	if current_scene is Map:
-		Events.emit_signal("entering_map", current_scene)
+	match mode:
+		ChangeMode.REPLACE, ChangeMode.PUSH:
+			if current_scene is Map:
+				Events.emit_signal("entering_map", current_scene)
 	
 	get_tree().paused = false
 	animation_player.play("fade_in")

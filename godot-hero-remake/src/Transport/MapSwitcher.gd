@@ -10,4 +10,4 @@ func _on_MapSwitcher_area_entered(_area: Area2D) -> void:
 		print("Target scene not defined")
 		return
 	
-	Transition.change_scene(target_scene, destination)
+	Transition.replace_scene(target_scene, destination)
