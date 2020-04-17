@@ -66,6 +66,7 @@ Game="*res://src/Game/Game.tscn"
 Transition="*res://src/UI/Transition.tscn"
 Dialogue="*res://src/UI/Dialogue.tscn"
 Events="*res://src/Events.gd"
+GameMenu="*res://src/UI/GameMenu.tscn"
 BuyDialog="*res://src/UI/BuyDialog.tscn"
 SellDialog="*res://src/UI/SellDialog.tscn"
 

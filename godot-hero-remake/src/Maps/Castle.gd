@@ -11,7 +11,8 @@ func _on_Boss_dead() -> void:
 			}
 		]
 	
-	Events.connect("dialogue_finished", self, "_on_outro_finished", [], CONNECT_ONESHOT)
+	var err := Events.connect("dialogue_finished", self, "_on_outro_finished", [], CONNECT_ONESHOT)
+	assert(err == OK)
 	Dialogue.show_dialogue(data)
 
 

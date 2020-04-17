@@ -17,7 +17,7 @@ export var money := 200
 
 
 func set_health(value: int) -> void:
-	health = clamp(value, 0, max_health)
+	health = int(clamp(value, 0, max_health))
 
 
 func set_exp(value: int) -> void:

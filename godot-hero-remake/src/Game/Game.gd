@@ -41,7 +41,7 @@ func _ready() -> void:
 	assert(err == OK)
 	
 	# hook existing scene
-	_hook_children(get_tree().current_scene)
+	_hook_children(get_tree().root)
 
 
 func _hook_children(parent: Node) -> void:
@@ -116,7 +116,6 @@ func put_item(item_id: int):
 	if item_id == ItemDB.ItemId.NULL:
 		printerr("Putting null item!")
 		return
-	var item: Dictionary = ItemDB.ITEMS[item_id]
 	
 	for i in range(items.size()):
 		var id = items[i]

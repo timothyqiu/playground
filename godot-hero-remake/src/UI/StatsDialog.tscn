@@ -10,10 +10,16 @@ atlas = ExtResource( 3 )
 region = Rect2( 0, 0, 32, 48 )
 
 [node name="StatsDialog" type="PopupPanel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_right = -220.0
-margin_bottom = -40.0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -210.0
+margin_top = -160.0
+margin_right = 210.0
+margin_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
 rect_min_size = Vector2( 420, 320 )
 focus_mode = 2
 theme = ExtResource( 1 )
