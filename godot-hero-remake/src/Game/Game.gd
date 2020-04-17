@@ -20,6 +20,28 @@ func _ready() -> void:
 	assert(err == OK)
 	err = Events.connect("entering_map", self, "_on_entering_map")
 	assert(err == OK)
+	err = get_tree().connect("node_added", self, "_on_node_added")
+	assert(err == OK)
+	
+	# hook existing scene
+	_hook_children(get_tree().current_scene)
+
+
+func _hook_children(parent: Node) -> void:
+	for node in parent.get_children():
+		_on_node_added(node)
+		if node.get_child_count() > 0:
+			_hook_children(node)
+
+
+func _on_node_added(node: Node) -> void:
+	if node is Button:
+		var err := node.connect("mouse_entered", self, "_on_mouse_enter_button", [node])
+		assert(err == OK)
+
+
+func _on_mouse_enter_button(button: Button) -> void:
+	button.grab_focus()
 
 
 func _on_leaving_map(map: Map) -> void:
