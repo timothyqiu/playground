@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://assets/ui/battle_theme.tres" type="Theme" id=1]
 [ext_resource path="res://assets/tilesets/structure_tileset.tres" type="TileSet" id=2]
@@ -10,6 +10,11 @@
 [ext_resource path="res://assets/ui/main_theme.tres" type="Theme" id=8]
 [ext_resource path="res://assets/player.png" type="Texture" id=9]
 [ext_resource path="res://assets/npc/npc11.png" type="Texture" id=10]
+[ext_resource path="res://assets/audio/ack_00.wav" type="AudioStream" id=11]
+[ext_resource path="res://assets/audio/ao_00.wav" type="AudioStream" id=12]
+[ext_resource path="res://assets/audio/dead_00.wav" type="AudioStream" id=13]
+[ext_resource path="res://assets/audio/ao_01.wav" type="AudioStream" id=14]
+[ext_resource path="res://assets/audio/dead_01.wav" type="AudioStream" id=15]
 
 [sub_resource type="Animation" id=1]
 resource_name = "enemy_hurt"
@@ -45,11 +50,14 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0.35 ),
-"transitions": PoolRealArray( 1 ),
+"times": PoolRealArray( 0.35, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
 "values": [ {
 "args": [ true ],
 "method": "_show_hit_effect"
+}, {
+"args": [ true ],
+"method": "_play_hurt_sound"
 } ]
 }
 
@@ -86,11 +94,14 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0.35 ),
-"transitions": PoolRealArray( 1 ),
+"times": PoolRealArray( 0.35, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
 "values": [ {
 "args": [ false ],
 "method": "_show_hit_effect"
+}, {
+"args": [ false ],
+"method": "_play_hurt_sound"
 } ]
 }
 
@@ -198,14 +209,14 @@ __meta__ = {
 }
 
 [node name="PlayerSprite" type="Sprite" parent="Root"]
-position = Vector2( 176, 192 )
+position = Vector2( 196, 192 )
 texture = ExtResource( 9 )
 vframes = 4
 hframes = 3
 frame = 6
 
 [node name="EnemySprite" type="Sprite" parent="Root"]
-position = Vector2( 464, 192 )
+position = Vector2( 468, 192 )
 texture = ExtResource( 10 )
 vframes = 4
 hframes = 2
@@ -214,6 +225,21 @@ frame = 2
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/enemy_hurt = SubResource( 1 )
 anims/player_hurt = SubResource( 2 )
+
+[node name="PlayerDeathSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 13 )
+
+[node name="EnemyDeathSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 15 )
+
+[node name="AttackSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 11 )
+
+[node name="PlayerHurtSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 12 )
+
+[node name="EnemyHurtSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 14 )
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Attack" to="." method="_on_Attack_pressed"]
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Stats" to="." method="_on_Stats_pressed"]
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Items" to="." method="_on_Items_pressed"]

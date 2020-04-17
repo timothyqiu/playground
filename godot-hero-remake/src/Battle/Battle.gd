@@ -35,6 +35,11 @@ onready var message_label := $Root/MessageLabel
 onready var animation_player := $AnimationPlayer
 onready var player_sprite := $Root/PlayerSprite
 onready var enemy_sprite := $Root/EnemySprite
+onready var player_hurt_sound := $PlayerHurtSound
+onready var enemy_hurt_sound := $EnemyHurtSound
+onready var attack_sound := $AttackSound
+onready var player_death_sound := $PlayerDeathSound
+onready var enemy_death_sound := $EnemyDeathSound
 
 
 func _ready() -> void:
@@ -144,8 +149,12 @@ func set_phase(value):
 		BattlePhase.BATTLE_END:
 			if player_stats.health == 0:
 				_show_message("你死了")
+				player_death_sound.play()
+				player_sprite.hide()
 			elif enemy_stats.health == 0:
 				_show_message("胜利！")
+				enemy_death_sound.play()
+				enemy_sprite.hide()
 			else:
 				_show_message("逃跑成功")
 
@@ -183,3 +192,12 @@ func _show_hit_effect(enemy: bool) -> void:
 		text.set_text("Miss")
 	else:
 		text.set_text("%d" % -damage)
+	
+	attack_sound.play()
+
+
+func _play_hurt_sound(enemy: bool) -> void:
+	if enemy:
+		enemy_hurt_sound.play()
+	else:
+		player_hurt_sound.play()
