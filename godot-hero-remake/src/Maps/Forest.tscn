@@ -1,0 +1,1277 @@
+[gd_scene load_steps=87 format=2]
+
+[ext_resource path="res://src/Player/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://assets/tilesets/structure_tileset.tres" type="TileSet" id=2]
+[ext_resource path="res://assets/tilesets/background_tileset.tres" type="TileSet" id=3]
+[ext_resource path="res://src/Maps/Forest.gd" type="Script" id=4]
+[ext_resource path="res://src/Transport/Destination.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/Transport/MapSwitcher.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/NPC/Npc.tscn" type="PackedScene" id=7]
+[ext_resource path="res://assets/npc/npc09.png" type="Texture" id=8]
+[ext_resource path="res://assets/npc/npc08.png" type="Texture" id=9]
+[ext_resource path="res://assets/npc/npc07.png" type="Texture" id=10]
+[ext_resource path="res://assets/npc/npc06.png" type="Texture" id=11]
+[ext_resource path="res://assets/npc/npc05.png" type="Texture" id=12]
+[ext_resource path="res://assets/npc/npc13.png" type="Texture" id=13]
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=1]
+
+[sub_resource type="Animation" id=2]
+resource_name = "idle_down"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "idle_left"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "idle_right"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+
+[sub_resource type="Animation" id=5]
+resource_name = "idle_up"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=6]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=7]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=8]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=9]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=10]
+
+[sub_resource type="Animation" id=11]
+resource_name = "idle_down"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=12]
+resource_name = "idle_left"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=13]
+resource_name = "idle_right"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+
+[sub_resource type="Animation" id=14]
+resource_name = "idle_up"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=15]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=16]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=17]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=18]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=19]
+
+[sub_resource type="Animation" id=20]
+resource_name = "idle_down"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=21]
+resource_name = "idle_left"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=22]
+resource_name = "idle_right"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+
+[sub_resource type="Animation" id=23]
+resource_name = "idle_up"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=24]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=25]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=26]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=27]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=28]
+
+[sub_resource type="Animation" id=29]
+resource_name = "idle_down"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=30]
+resource_name = "idle_left"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=31]
+resource_name = "idle_right"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+
+[sub_resource type="Animation" id=32]
+resource_name = "idle_up"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=33]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=34]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=35]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=36]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=37]
+
+[sub_resource type="Animation" id=38]
+resource_name = "idle_down"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=39]
+resource_name = "idle_left"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=40]
+resource_name = "idle_right"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+
+[sub_resource type="Animation" id=41]
+resource_name = "idle_up"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=42]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=43]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=44]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=45]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=46]
+
+[sub_resource type="Animation" id=47]
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=48]
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=49]
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+
+[sub_resource type="Animation" id=50]
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=51]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=52]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=53]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=54]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=55]
+
+[sub_resource type="Animation" id=56]
+resource_name = "idle_down"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=57]
+resource_name = "idle_left"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=58]
+resource_name = "idle_right"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+
+[sub_resource type="Animation" id=59]
+resource_name = "idle_up"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=60]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=61]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=62]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=63]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=64]
+
+[sub_resource type="Animation" id=65]
+resource_name = "idle_down"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=66]
+resource_name = "idle_left"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=67]
+resource_name = "idle_right"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+
+[sub_resource type="Animation" id=68]
+resource_name = "idle_up"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=69]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=70]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=71]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=72]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=73]
+
+[node name="Forest" type="Node2D"]
+script = ExtResource( 4 )
+identifier = "Forest"
+camera_inset = Vector2( 1, 1 )
+
+[node name="Floor" type="TileMap" parent="."]
+tile_set = ExtResource( 3 )
+cell_size = Vector2( 32, 32 )
+format = 1
+tile_data = PoolIntArray( -1, 6, 0, -65536, 6, 0, -65535, 6, 0, -65534, 6, 0, -65533, 6, 0, -65532, 6, 0, -65531, 6, 0, -65530, 6, 0, -65529, 6, 0, -65528, 6, 0, -65527, 6, 0, -65526, 6, 0, -65525, 6, 0, -65524, 6, 0, -65523, 6, 0, -65522, 6, 0, -65521, 6, 0, -65520, 6, 0, -65519, 6, 0, -65518, 6, 0, -65517, 6, 0, -65516, 6, 0, -65515, 6, 0, -65514, 6, 0, -65513, 6, 0, -65512, 6, 0, -65511, 6, 0, -65510, 6, 0, -65509, 6, 0, -65508, 6, 0, -65507, 6, 0, -65506, 6, 0, -65505, 6, 0, -65504, 6, 0, -65503, 6, 0, -65502, 6, 0, 65535, 6, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 6, 0, 0, 7, 0, 0, 8, 0, 0, 9, 0, 0, 10, 0, 0, 11, 0, 0, 12, 0, 0, 13, 0, 0, 14, 0, 0, 15, 0, 0, 16, 0, 0, 17, 0, 0, 18, 0, 0, 19, 0, 0, 20, 0, 0, 21, 0, 0, 22, 0, 0, 23, 0, 0, 24, 0, 0, 25, 0, 0, 26, 0, 0, 27, 0, 0, 28, 0, 0, 29, 0, 0, 30, 0, 0, 31, 0, 0, 32, 0, 0, 33, 0, 0, 34, 6, 0, 131071, 6, 0, 65536, 0, 0, 65537, 8, 0, 65538, 0, 0, 65539, 0, 0, 65540, 0, 0, 65541, 0, 0, 65542, 0, 0, 65543, 0, 0, 65544, 0, 0, 65545, 0, 0, 65546, 0, 0, 65547, 0, 0, 65548, 0, 0, 65549, 0, 0, 65550, 0, 0, 65551, 0, 0, 65552, 0, 0, 65553, 0, 0, 65554, 0, 0, 65555, 0, 0, 65556, 0, 0, 65557, 0, 0, 65558, 0, 0, 65559, 0, 0, 65560, 0, 0, 65561, 0, 0, 65562, 0, 0, 65563, 0, 0, 65564, 0, 0, 65565, 0, 0, 65566, 0, 0, 65567, 0, 0, 65568, 0, 0, 65569, 0, 0, 65570, 6, 0, 196607, 6, 0, 131072, 0, 0, 131073, 10, 0, 131074, 0, 0, 131075, 0, 0, 131076, 0, 0, 131077, 0, 0, 131078, 0, 0, 131079, 0, 0, 131080, 0, 0, 131081, 0, 0, 131082, 0, 0, 131083, 0, 0, 131084, 0, 0, 131085, 0, 0, 131086, 0, 0, 131087, 0, 0, 131088, 0, 0, 131089, 0, 0, 131090, 0, 0, 131091, 0, 0, 131092, 0, 0, 131093, 0, 0, 131094, 0, 0, 131095, 0, 0, 131096, 0, 0, 131097, 0, 0, 131098, 0, 0, 131099, 0, 0, 131100, 0, 0, 131101, 0, 0, 131102, 0, 0, 131103, 0, 0, 131104, 0, 0, 131105, 0, 0, 131106, 6, 0, 262143, 6, 0, 196608, 0, 0, 196609, 10, 0, 196610, 0, 0, 196611, 0, 0, 196612, 0, 0, 196613, 0, 0, 196614, 0, 0, 196615, 0, 0, 196616, 0, 0, 196617, 0, 0, 196618, 0, 0, 196619, 0, 0, 196620, 0, 0, 196621, 0, 0, 196622, 0, 0, 196623, 0, 0, 196624, 0, 0, 196625, 0, 0, 196626, 0, 0, 196627, 0, 0, 196628, 0, 0, 196629, 0, 0, 196630, 0, 0, 196631, 0, 0, 196632, 0, 0, 196633, 0, 0, 196634, 0, 0, 196635, 0, 0, 196636, 0, 0, 196637, 0, 0, 196638, 0, 0, 196639, 0, 0, 196640, 0, 0, 196641, 0, 0, 196642, 6, 0, 327679, 6, 0, 262144, 0, 0, 262145, 10, 0, 262146, 0, 0, 262147, 0, 0, 262148, 0, 0, 262149, 0, 0, 262150, 0, 0, 262151, 0, 0, 262152, 0, 0, 262153, 0, 0, 262154, 0, 0, 262155, 0, 0, 262156, 0, 0, 262157, 0, 0, 262158, 0, 0, 262159, 0, 0, 262160, 0, 0, 262161, 0, 0, 262162, 0, 0, 262163, 0, 0, 262164, 0, 0, 262165, 0, 0, 262166, 0, 0, 262167, 0, 0, 262168, 0, 0, 262169, 0, 0, 262170, 0, 0, 262171, 0, 0, 262172, 0, 0, 262173, 0, 0, 262174, 0, 0, 262175, 0, 0, 262176, 0, 0, 262177, 0, 0, 262178, 6, 0, 393215, 6, 0, 327680, 0, 0, 327681, 14, 0, 327682, 11, 0, 327683, 11, 0, 327684, 11, 0, 327685, 11, 0, 327686, 11, 0, 327687, 11, 0, 327688, 11, 0, 327689, 11, 0, 327690, 11, 0, 327691, 13, 0, 327692, 0, 0, 327693, 0, 0, 327694, 0, 0, 327695, 0, 0, 327696, 0, 0, 327697, 0, 0, 327698, 0, 0, 327699, 0, 0, 327700, 0, 0, 327701, 0, 0, 327702, 0, 0, 327703, 0, 0, 327704, 0, 0, 327705, 0, 0, 327706, 0, 0, 327707, 0, 0, 327708, 0, 0, 327709, 0, 0, 327710, 0, 0, 327711, 0, 0, 327712, 0, 0, 327713, 0, 0, 327714, 6, 0, 458751, 6, 0, 393216, 0, 0, 393217, 0, 0, 393218, 0, 0, 393219, 0, 0, 393220, 0, 0, 393221, 0, 0, 393222, 0, 0, 393223, 0, 0, 393224, 0, 0, 393225, 0, 0, 393226, 0, 0, 393227, 10, 0, 393228, 0, 0, 393229, 0, 0, 393230, 0, 0, 393231, 0, 0, 393232, 0, 0, 393233, 0, 0, 393234, 0, 0, 393235, 0, 0, 393236, 0, 0, 393237, 0, 0, 393238, 0, 0, 393239, 0, 0, 393240, 0, 0, 393241, 0, 0, 393242, 0, 0, 393243, 0, 0, 393244, 0, 0, 393245, 0, 0, 393246, 0, 0, 393247, 0, 0, 393248, 0, 0, 393249, 0, 0, 393250, 6, 0, 524287, 6, 0, 458752, 0, 0, 458753, 0, 0, 458754, 0, 0, 458755, 0, 0, 458756, 0, 0, 458757, 0, 0, 458758, 0, 0, 458759, 0, 0, 458760, 0, 0, 458761, 0, 0, 458762, 0, 0, 458763, 10, 0, 458764, 0, 0, 458765, 0, 0, 458766, 0, 0, 458767, 0, 0, 458768, 0, 0, 458769, 0, 0, 458770, 0, 0, 458771, 0, 0, 458772, 0, 0, 458773, 0, 0, 458774, 0, 0, 458775, 0, 0, 458776, 0, 0, 458777, 0, 0, 458778, 0, 0, 458779, 0, 0, 458780, 0, 0, 458781, 0, 0, 458782, 0, 0, 458783, 0, 0, 458784, 0, 0, 458785, 0, 0, 458786, 6, 0, 589823, 6, 0, 524288, 0, 0, 524289, 0, 0, 524290, 0, 0, 524291, 0, 0, 524292, 0, 0, 524293, 0, 0, 524294, 0, 0, 524295, 0, 0, 524296, 0, 0, 524297, 0, 0, 524298, 0, 0, 524299, 10, 0, 524300, 0, 0, 524301, 0, 0, 524302, 0, 0, 524303, 0, 0, 524304, 0, 0, 524305, 0, 0, 524306, 0, 0, 524307, 0, 0, 524308, 0, 0, 524309, 0, 0, 524310, 0, 0, 524311, 0, 0, 524312, 0, 0, 524313, 0, 0, 524314, 0, 0, 524315, 0, 0, 524316, 0, 0, 524317, 0, 0, 524318, 0, 0, 524319, 0, 0, 524320, 0, 0, 524321, 0, 0, 524322, 6, 0, 655359, 6, 0, 589824, 0, 0, 589825, 0, 0, 589826, 0, 0, 589827, 0, 0, 589828, 0, 0, 589829, 0, 0, 589830, 0, 0, 589831, 0, 0, 589832, 0, 0, 589833, 0, 0, 589834, 0, 0, 589835, 10, 0, 589836, 0, 0, 589837, 0, 0, 589838, 0, 0, 589839, 0, 0, 589840, 0, 0, 589841, 0, 0, 589842, 0, 0, 589843, 0, 0, 589844, 0, 0, 589845, 0, 0, 589846, 0, 0, 589847, 0, 0, 589848, 0, 0, 589849, 0, 0, 589850, 0, 0, 589851, 0, 0, 589852, 0, 0, 589853, 0, 0, 589854, 0, 0, 589855, 0, 0, 589856, 0, 0, 589857, 0, 0, 589858, 6, 0, 720895, 6, 0, 655360, 0, 0, 655361, 0, 0, 655362, 0, 0, 655363, 0, 0, 655364, 0, 0, 655365, 0, 0, 655366, 0, 0, 655367, 0, 0, 655368, 0, 0, 655369, 0, 0, 655370, 0, 0, 655371, 10, 0, 655372, 0, 0, 655373, 0, 0, 655374, 0, 0, 655375, 0, 0, 655376, 0, 0, 655377, 0, 0, 655378, 0, 0, 655379, 0, 0, 655380, 0, 0, 655381, 0, 0, 655382, 0, 0, 655383, 0, 0, 655384, 0, 0, 655385, 0, 0, 655386, 0, 0, 655387, 0, 0, 655388, 0, 0, 655389, 0, 0, 655390, 0, 0, 655391, 0, 0, 655392, 0, 0, 655393, 0, 0, 655394, 6, 0, 786431, 6, 0, 720896, 0, 0, 720897, 0, 0, 720898, 0, 0, 720899, 0, 0, 720900, 0, 0, 720901, 0, 0, 720902, 0, 0, 720903, 0, 0, 720904, 0, 0, 720905, 0, 0, 720906, 0, 0, 720907, 10, 0, 720908, 0, 0, 720909, 0, 0, 720910, 0, 0, 720911, 0, 0, 720912, 0, 0, 720913, 0, 0, 720914, 0, 0, 720915, 0, 0, 720916, 0, 0, 720917, 0, 0, 720918, 0, 0, 720919, 0, 0, 720920, 0, 0, 720921, 0, 0, 720922, 0, 0, 720923, 0, 0, 720924, 0, 0, 720925, 0, 0, 720926, 0, 0, 720927, 0, 0, 720928, 0, 0, 720929, 0, 0, 720930, 6, 0, 851967, 6, 0, 786432, 0, 0, 786433, 0, 0, 786434, 0, 0, 786435, 0, 0, 786436, 0, 0, 786437, 0, 0, 786438, 0, 0, 786439, 0, 0, 786440, 0, 0, 786441, 0, 0, 786442, 0, 0, 786443, 9, 0, 786444, 11, 0, 786445, 11, 0, 786446, 11, 0, 786447, 11, 0, 786448, 11, 0, 786449, 11, 0, 786450, 11, 0, 786451, 11, 0, 786452, 11, 0, 786453, 11, 0, 786454, 11, 0, 786455, 11, 0, 786456, 11, 0, 786457, 13, 0, 786458, 0, 0, 786459, 0, 0, 786460, 0, 0, 786461, 0, 0, 786462, 0, 0, 786463, 0, 0, 786464, 0, 0, 786465, 1, 0, 786466, 6, 0, 917503, 6, 0, 851968, 0, 0, 851969, 0, 0, 851970, 0, 0, 851971, 0, 0, 851972, 0, 0, 851973, 0, 0, 851974, 0, 0, 851975, 0, 0, 851976, 0, 0, 851977, 0, 0, 851978, 0, 0, 851979, 10, 0, 851980, 0, 0, 851981, 0, 0, 851982, 0, 0, 851983, 0, 0, 851984, 0, 0, 851985, 0, 0, 851986, 0, 0, 851987, 0, 0, 851988, 0, 0, 851989, 0, 0, 851990, 0, 0, 851991, 0, 0, 851992, 0, 0, 851993, 14, 0, 851994, 13, 0, 851995, 0, 0, 851996, 0, 0, 851997, 0, 0, 851998, 0, 0, 851999, 0, 0, 852000, 1, 0, 852001, 1, 0, 852002, 6, 0, 983039, 6, 0, 917504, 0, 0, 917505, 0, 0, 917506, 0, 0, 917507, 0, 0, 917508, 0, 0, 917509, 0, 0, 917510, 0, 0, 917511, 0, 0, 917512, 0, 0, 917513, 0, 0, 917514, 0, 0, 917515, 10, 0, 917516, 0, 0, 917517, 0, 0, 917518, 0, 0, 917519, 0, 0, 917520, 0, 0, 917521, 0, 0, 917522, 0, 0, 917523, 0, 0, 917524, 0, 0, 917525, 0, 0, 917526, 0, 0, 917527, 0, 0, 917528, 0, 0, 917529, 0, 0, 917530, 10, 0, 917531, 0, 0, 917532, 0, 0, 917533, 0, 0, 917534, 0, 0, 917535, 1, 0, 917536, 1, 0, 917537, 1, 0, 917538, 6, 0, 1048575, 6, 0, 983040, 0, 0, 983041, 0, 0, 983042, 0, 0, 983043, 0, 0, 983044, 0, 0, 983045, 0, 0, 983046, 0, 0, 983047, 0, 0, 983048, 0, 0, 983049, 0, 0, 983050, 0, 0, 983051, 10, 0, 983052, 0, 0, 983053, 0, 0, 983054, 0, 0, 983055, 0, 0, 983056, 0, 0, 983057, 0, 0, 983058, 0, 0, 983059, 0, 0, 983060, 0, 0, 983061, 0, 0, 983062, 0, 0, 983063, 0, 0, 983064, 0, 0, 983065, 0, 0, 983066, 10, 0, 983067, 0, 0, 983068, 0, 0, 983069, 0, 0, 983070, 1, 0, 983071, 1, 0, 983072, 1, 0, 983073, 1, 0, 983074, 6, 0, 1114111, 6, 0, 1048576, 0, 0, 1048577, 0, 0, 1048578, 0, 0, 1048579, 0, 0, 1048580, 0, 0, 1048581, 0, 0, 1048582, 0, 0, 1048583, 0, 0, 1048584, 0, 0, 1048585, 0, 0, 1048586, 0, 0, 1048587, 10, 0, 1048588, 0, 0, 1048589, 0, 0, 1048590, 0, 0, 1048591, 0, 0, 1048592, 0, 0, 1048593, 0, 0, 1048594, 0, 0, 1048595, 0, 0, 1048596, 0, 0, 1048597, 0, 0, 1048600, 0, 0, 1048601, 0, 0, 1048602, 10, 0, 1048603, 0, 0, 1048604, 0, 0, 1048605, 1, 0, 1048606, 1, 0, 1048607, 1, 0, 1048608, 1, 0, 1048609, 1, 0, 1048610, 6, 0, 1179647, 6, 0, 1114112, 0, 0, 1114113, 0, 0, 1114114, 0, 0, 1114115, 0, 0, 1114116, 0, 0, 1114117, 0, 0, 1114118, 0, 0, 1114119, 0, 0, 1114120, 0, 0, 1114121, 0, 0, 1114122, 0, 0, 1114123, 10, 0, 1114124, 0, 0, 1114125, 0, 0, 1114126, 0, 0, 1114127, 0, 0, 1114128, 0, 0, 1114129, 0, 0, 1114130, 0, 0, 1114131, 0, 0, 1114137, 0, 0, 1114138, 10, 0, 1114139, 0, 0, 1114140, 1, 0, 1114141, 1, 0, 1114142, 1, 0, 1114143, 1, 0, 1114144, 1, 0, 1114145, 1, 0, 1114146, 6, 0, 1245183, 6, 0, 1179648, 0, 0, 1179649, 0, 0, 1179650, 0, 0, 1179651, 0, 0, 1179652, 0, 0, 1179653, 0, 0, 1179654, 0, 0, 1179655, 0, 0, 1179656, 0, 0, 1179657, 0, 0, 1179658, 0, 0, 1179659, 10, 0, 1179660, 0, 0, 1179661, 0, 0, 1179662, 0, 0, 1179663, 0, 0, 1179674, 1, 0, 1179675, 1, 0, 1179676, 1, 0, 1179677, 1, 0, 1179678, 1, 0, 1179679, 1, 0, 1179680, 1, 0, 1179681, 1, 0, 1179682, 6, 0, 1310719, 6, 0, 1245184, 0, 0, 1245185, 0, 0, 1245186, 0, 0, 1245187, 0, 0, 1245188, 0, 0, 1245189, 0, 0, 1245190, 0, 0, 1245191, 0, 0, 1245192, 0, 0, 1245193, 0, 0, 1245194, 0, 0, 1245195, 10, 0, 1245196, 0, 0, 1245197, 0, 0, 1245198, 0, 0, 1245210, 1, 0, 1245211, 1, 0, 1245212, 1, 0, 1245213, 1, 0, 1245214, 1, 0, 1245215, 1, 0, 1245216, 1, 0, 1245217, 1, 0, 1245218, 6, 0, 1376255, 6, 0, 1310720, 0, 0, 1310721, 0, 0, 1310722, 0, 0, 1310723, 0, 0, 1310724, 0, 0, 1310725, 0, 0, 1310726, 0, 0, 1310727, 0, 0, 1310728, 0, 0, 1310729, 0, 0, 1310730, 0, 0, 1310731, 10, 0, 1310732, 0, 0, 1310733, 0, 0, 1310745, 1, 0, 1310746, 1, 0, 1310747, 1, 0, 1310748, 1, 0, 1310749, 1, 0, 1310750, 1, 0, 1310751, 1, 0, 1310752, 1, 0, 1310753, 1, 0, 1310754, 6, 0, 1441791, 6, 0, 1376256, 0, 0, 1376257, 0, 0, 1376258, 0, 0, 1376259, 0, 0, 1376260, 0, 0, 1376261, 0, 0, 1376262, 0, 0, 1376263, 0, 0, 1376264, 0, 0, 1376265, 0, 0, 1376266, 0, 0, 1376267, 10, 0, 1376268, 0, 0, 1376269, 0, 0, 1376280, 1, 0, 1376281, 1, 0, 1376282, 1, 0, 1376283, 1, 0, 1376284, 1, 0, 1376285, 1, 0, 1376286, 1, 0, 1376287, 1, 0, 1376288, 1, 0, 1376289, 1, 0, 1376290, 6, 0, 1507327, 6, 0, 1441792, 0, 0, 1441793, 0, 0, 1441794, 0, 0, 1441795, 0, 0, 1441796, 0, 0, 1441797, 0, 0, 1441798, 0, 0, 1441799, 0, 0, 1441800, 0, 0, 1441801, 0, 0, 1441802, 0, 0, 1441803, 10, 0, 1441804, 0, 0, 1441805, 0, 0, 1441815, 1, 0, 1441816, 1, 0, 1441817, 1, 0, 1441818, 1, 0, 1441819, 1, 0, 1441820, 1, 0, 1441821, 1, 0, 1441822, 1, 0, 1441823, 1, 0, 1441824, 1, 0, 1441825, 1, 0, 1441826, 6, 0, 1572863, 6, 0, 1507328, 0, 0, 1507329, 0, 0, 1507330, 0, 0, 1507331, 0, 0, 1507332, 0, 0, 1507333, 0, 0, 1507334, 0, 0, 1507335, 0, 0, 1507336, 0, 0, 1507337, 0, 0, 1507338, 0, 0, 1507339, 10, 0, 1507340, 0, 0, 1507341, 0, 0, 1507350, 1, 0, 1507351, 1, 0, 1507352, 1, 0, 1507353, 1, 0, 1507354, 1, 0, 1507355, 1, 0, 1507356, 1, 0, 1507357, 0, 0, 1507358, 0, 0, 1507359, 0, 0, 1507360, 1, 0, 1507361, 1, 0, 1507362, 6, 0, 1638399, 6, 0, 1572864, 0, 0, 1572865, 0, 0, 1572866, 0, 0, 1572867, 0, 0, 1572868, 0, 0, 1572869, 0, 0, 1572870, 0, 0, 1572871, 0, 0, 1572872, 0, 0, 1572873, 0, 0, 1572874, 0, 0, 1572875, 10, 0, 1572876, 0, 0, 1572877, 0, 0, 1572885, 1, 0, 1572886, 1, 0, 1572887, 1, 0, 1572888, 1, 0, 1572889, 1, 0, 1572890, 1, 0, 1572891, 1, 0, 1572892, 1, 0, 1572893, 0, 0, 1572894, 0, 0, 1572895, 0, 0, 1572896, 1, 0, 1572897, 1, 0, 1572898, 6, 0, 1703935, 6, 0, 1638400, 0, 0, 1638401, 0, 0, 1638402, 0, 0, 1638403, 0, 0, 1638404, 0, 0, 1638405, 0, 0, 1638406, 0, 0, 1638407, 0, 0, 1638408, 0, 0, 1638409, 0, 0, 1638411, 10, 0, 1638412, 0, 0, 1638413, 0, 0, 1638420, 1, 0, 1638421, 1, 0, 1638422, 1, 0, 1638423, 1, 0, 1638424, 1, 0, 1638425, 1, 0, 1638426, 1, 0, 1638427, 1, 0, 1638428, 1, 0, 1638429, 1, 0, 1638430, 1, 0, 1638431, 1, 0, 1638432, 1, 0, 1638433, 0, 0, 1638434, 6, 0, 1769471, 6, 0, 1703936, 6, 0, 1703937, 6, 0, 1703938, 6, 0, 1703939, 6, 0, 1703940, 6, 0, 1703941, 6, 0, 1703942, 6, 0, 1703943, 6, 0, 1703944, 6, 0, 1703945, 6, 0, 1703946, 6, 0, 1703947, 6, 0, 1703948, 6, 0, 1703949, 6, 0, 1703950, 6, 0, 1703951, 6, 0, 1703952, 6, 0, 1703953, 6, 0, 1703954, 6, 0, 1703955, 6, 0, 1703956, 6, 0, 1703957, 6, 0, 1703958, 6, 0, 1703959, 6, 0, 1703960, 6, 0, 1703961, 6, 0, 1703962, 6, 0, 1703963, 6, 0, 1703964, 6, 0, 1703965, 6, 0, 1703966, 6, 0, 1703967, 6, 0, 1703968, 6, 0, 1703969, 6, 0, 1703970, 6, 0 )
+
+[node name="Structures" type="TileMap" parent="."]
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 32, 32 )
+cell_y_sort = true
+format = 1
+tile_data = PoolIntArray( 7, 36, 0, 9, 37, 0, 10, 39, 0, 11, 39, 0, 12, 55, 0, 17, 31, 0, 18, 31, 0, 19, 31, 0, 20, 31, 0, 21, 31, 0, 22, 31, 0, 23, 31, 0, 24, 31, 0, 25, 34, 0, 26, 31, 0, 27, 31, 0, 28, 31, 0, 29, 31, 0, 30, 31, 0, 31, 31, 0, 32, 31, 0, 33, 31, 0, 65536, 14, 0, 65538, 14, 0, 65539, 15, 0, 65541, 15, 0, 65546, 39, 0, 65547, 55, 0, 65554, 31, 0, 65560, 31, 0, 65567, 31, 0, 131072, 31, 0, 131074, 31, 0, 131078, 54, 0, 131079, 38, 0, 131082, 55, 0, 131091, 35, 0, 131092, 35, 0, 131103, 106, 0, 196608, 31, 0, 196610, 31, 0, 196611, 35, 0, 196612, 45, 0, 262144, 31, 0, 262146, 31, 0, 262147, 31, 0, 262148, 35, 0, 262149, 31, 0, 262150, 45, 0, 262154, 31, 0, 262155, 31, 0, 262156, 31, 0, 327680, 31, 0, 327692, 31, 0, 327712, 32, 0, 393216, 31, 0, 393217, 31, 0, 393218, 31, 0, 393219, 31, 0, 393225, 31, 0, 393226, 31, 0, 393232, 31, 0, 458759, 45, 0, 458765, 45, 0, 458781, 31, 0, 458784, 32, 0, 524288, 45, 0, 524311, 31, 0, 589824, 45, 0, 589825, 45, 0, 589836, 31, 0, 589838, 45, 0, 655360, 45, 0, 655361, 45, 0, 655362, 45, 0, 655368, 31, 0, 655372, 31, 0, 655373, 31, 0, 655392, 34, 0, 720896, 35, 0, 720897, 35, 0, 720898, 45, 0, 720908, 31, 0, 720910, 31, 0, 720911, 34, 0, 720912, 31, 0, 720925, 34, 0, 720929, 92, 0, 786432, 35, 0, 786433, 45, 0, 786459, 34, 0, 786462, 32, 0, 786464, 92, 0, 851968, 35, 0, 851980, 31, 0, 851981, 31, 0, 851982, 31, 0, 851991, 102, 0, 851999, 92, 0, 917504, 35, 0, 917505, 45, 0, 917516, 31, 0, 917517, 31, 0, 917534, 92, 0, 983040, 45, 0, 983052, 31, 0, 983062, 99, 0, 983063, 101, 0, 983067, 34, 0, 983069, 92, 0, 983072, 105, 0, 1048576, 50, 0, 1048582, 31, 0, 1048592, 99, 0, 1048593, 96, 0, 1048594, 96, 0, 1048595, 96, 0, 1048596, 96, 0, 1048597, 100, 0, 1048598, 58, 0, 1048599, 60, 0, 1048600, 93, 0, 1048601, 34, 0, 1048604, 92, 0, 1114112, 39, 0, 1114113, 48, 0, 1114114, 49, 0, 1114120, 35, 0, 1114127, 92, 0, 1114128, 66, 0, 1114129, 75, 0, 1114130, 75, 0, 1114131, 75, 0, 1114132, 75, 0, 1114133, 78, 0, 1114134, 84, 0, 1114135, 82, 0, 1114136, 60, 0, 1114137, 93, 0, 1114139, 92, 0, 1179648, 39, 0, 1179649, 39, 0, 1179650, 39, 0, 1179651, 49, 0, 1179662, 92, 0, 1179663, 58, 0, 1179664, 84, 0, 1179665, 81, 0, 1179666, 81, 0, 1179667, 81, 0, 1179668, 81, 0, 1179669, 91, 0, 1179670, 91, 0, 1179671, 91, 0, 1179672, 82, 0, 1179673, 60, 0, 1245184, 47, 0, 1245185, 39, 0, 1245186, 39, 0, 1245187, 39, 0, 1245188, 49, 0, 1245197, 92, 0, 1245198, 58, 0, 1245199, 84, 0, 1245200, 91, 0, 1245201, 91, 0, 1245202, 91, 0, 1245203, 91, 0, 1245204, 91, 0, 1245205, 91, 0, 1245206, 91, 0, 1245207, 91, 0, 1245208, 86, 0, 1245209, 61, 0, 1310720, 47, 0, 1310721, 39, 0, 1310722, 39, 0, 1310723, 39, 0, 1310724, 39, 0, 1310725, 49, 0, 1310727, 45, 0, 1310732, 98, 0, 1310733, 62, 0, 1310734, 84, 0, 1310735, 91, 0, 1310736, 91, 0, 1310737, 91, 0, 1310738, 91, 0, 1310739, 91, 0, 1310740, 91, 0, 1310741, 91, 0, 1310742, 91, 0, 1310743, 86, 0, 1310744, 61, 0, 1310748, 103, 0, 1376256, 47, 0, 1376257, 39, 0, 1376258, 39, 0, 1376259, 39, 0, 1376260, 39, 0, 1376261, 39, 0, 1376262, 49, 0, 1376263, 45, 0, 1376264, 45, 0, 1376268, 97, 0, 1376269, 70, 0, 1376270, 90, 0, 1376271, 91, 0, 1376272, 91, 0, 1376273, 91, 0, 1376274, 91, 0, 1376275, 91, 0, 1376276, 91, 0, 1376277, 91, 0, 1376278, 86, 0, 1376279, 61, 0, 1441792, 39, 0, 1441793, 39, 0, 1441794, 39, 0, 1441795, 39, 0, 1441796, 39, 0, 1441797, 39, 0, 1441798, 39, 0, 1441799, 49, 0, 1441800, 45, 0, 1441804, 97, 0, 1441805, 70, 0, 1441806, 90, 0, 1441807, 91, 0, 1441808, 91, 0, 1441809, 91, 0, 1441810, 91, 0, 1441811, 91, 0, 1441812, 91, 0, 1441813, 86, 0, 1441814, 61, 0, 1441821, 95, 0, 1441822, 94, 0, 1507328, 39, 0, 1507329, 46, 0, 1507332, 39, 0, 1507333, 39, 0, 1507334, 39, 0, 1507335, 39, 0, 1507336, 49, 0, 1507340, 97, 0, 1507341, 70, 0, 1507342, 90, 0, 1507343, 91, 0, 1507344, 91, 0, 1507345, 91, 0, 1507346, 91, 0, 1507347, 91, 0, 1507348, 86, 0, 1507349, 61, 0, 1507356, 95, 0, 1507358, 34, 0, 1507359, 94, 0, 1572864, 39, 0, 1572865, 38, 0, 1572868, 47, 0, 1572869, 47, 0, 1572870, 47, 0, 1572871, 39, 0, 1572872, 39, 0, 1572873, 49, 0, 1572876, 97, 0, 1572877, 70, 0, 1572878, 90, 0, 1572879, 91, 0, 1572880, 91, 0, 1572881, 91, 0, 1572882, 91, 0, 1572883, 86, 0, 1572884, 61, 0, 1572892, 93, 0, 1572893, 34, 0, 1572895, 92, 0, 1638400, 39, 0, 1638401, 39, 0, 1638402, 39, 0, 1638403, 39, 0, 1638404, 39, 0, 1638405, 47, 0, 1638406, 47, 0, 1638407, 47, 0, 1638408, 39, 0, 1638409, 39, 0, 1638410, 49, 0, 1638412, 97, 0, 1638413, 70, 0, 1638414, 90, 0, 1638415, 91, 0, 1638416, 91, 0, 1638417, 91, 0, 1638418, 86, 0, 1638419, 61, 0, 1638429, 93, 0, 1638430, 92, 0 )
+
+[node name="Player" parent="Structures" instance=ExtResource( 1 )]
+position = Vector2( 368, 400 )
+
+[node name="Npc" parent="Structures" instance=ExtResource( 7 )]
+position = Vector2( 80, 272 )
+role = 3
+
+[node name="Sprite" parent="Structures/Npc" index="0"]
+texture = ExtResource( 8 )
+
+[node name="AnimationTree" parent="Structures/Npc" index="3"]
+parameters/playback = SubResource( 1 )
+
+[node name="Npc2" parent="Structures" instance=ExtResource( 7 )]
+position = Vector2( 304, 416 )
+role = 3
+
+[node name="Sprite" parent="Structures/Npc2" index="0"]
+texture = ExtResource( 8 )
+
+[node name="AnimationPlayer" parent="Structures/Npc2" index="2"]
+anims/idle_down = SubResource( 2 )
+anims/idle_left = SubResource( 3 )
+anims/idle_right = SubResource( 4 )
+anims/idle_up = SubResource( 5 )
+anims/walk_down = SubResource( 6 )
+anims/walk_left = SubResource( 7 )
+anims/walk_right = SubResource( 8 )
+anims/walk_up = SubResource( 9 )
+
+[node name="AnimationTree" parent="Structures/Npc2" index="3"]
+parameters/playback = SubResource( 10 )
+
+[node name="Npc3" parent="Structures" instance=ExtResource( 7 )]
+position = Vector2( 400, 208 )
+role = 3
+
+[node name="Sprite" parent="Structures/Npc3" index="0"]
+texture = ExtResource( 10 )
+
+[node name="AnimationPlayer" parent="Structures/Npc3" index="2"]
+anims/idle_down = SubResource( 11 )
+anims/idle_left = SubResource( 12 )
+anims/idle_right = SubResource( 13 )
+anims/idle_up = SubResource( 14 )
+anims/walk_down = SubResource( 15 )
+anims/walk_left = SubResource( 16 )
+anims/walk_right = SubResource( 17 )
+anims/walk_up = SubResource( 18 )
+
+[node name="AnimationTree" parent="Structures/Npc3" index="3"]
+parameters/playback = SubResource( 19 )
+
+[node name="Npc4" parent="Structures" instance=ExtResource( 7 )]
+position = Vector2( 496, 144 )
+role = 3
+
+[node name="Sprite" parent="Structures/Npc4" index="0"]
+texture = ExtResource( 10 )
+
+[node name="AnimationPlayer" parent="Structures/Npc4" index="2"]
+anims/idle_down = SubResource( 20 )
+anims/idle_left = SubResource( 21 )
+anims/idle_right = SubResource( 22 )
+anims/idle_up = SubResource( 23 )
+anims/walk_down = SubResource( 24 )
+anims/walk_left = SubResource( 25 )
+anims/walk_right = SubResource( 26 )
+anims/walk_up = SubResource( 27 )
+
+[node name="AnimationTree" parent="Structures/Npc4" index="3"]
+parameters/playback = SubResource( 28 )
+
+[node name="Npc5" parent="Structures" instance=ExtResource( 7 )]
+position = Vector2( 463.5, 272 )
+role = 3
+
+[node name="Sprite" parent="Structures/Npc5" index="0"]
+texture = ExtResource( 9 )
+
+[node name="AnimationPlayer" parent="Structures/Npc5" index="2"]
+anims/idle_down = SubResource( 29 )
+anims/idle_left = SubResource( 30 )
+anims/idle_right = SubResource( 31 )
+anims/idle_up = SubResource( 32 )
+anims/walk_down = SubResource( 33 )
+anims/walk_left = SubResource( 34 )
+anims/walk_right = SubResource( 35 )
+anims/walk_up = SubResource( 36 )
+
+[node name="AnimationTree" parent="Structures/Npc5" index="3"]
+parameters/playback = SubResource( 37 )
+
+[node name="Npc8" parent="Structures" instance=ExtResource( 7 )]
+position = Vector2( 1008, 400 )
+role = 3
+
+[node name="Sprite" parent="Structures/Npc8" index="0"]
+texture = ExtResource( 9 )
+
+[node name="AnimationPlayer" parent="Structures/Npc8" index="2"]
+anims/idle_down = SubResource( 38 )
+anims/idle_left = SubResource( 39 )
+anims/idle_right = SubResource( 40 )
+anims/idle_up = SubResource( 41 )
+anims/walk_down = SubResource( 42 )
+anims/walk_left = SubResource( 43 )
+anims/walk_right = SubResource( 44 )
+anims/walk_up = SubResource( 45 )
+
+[node name="AnimationTree" parent="Structures/Npc8" index="3"]
+parameters/playback = SubResource( 46 )
+
+[node name="Npc6" parent="Structures" instance=ExtResource( 7 )]
+position = Vector2( 624, 208 )
+role = 3
+
+[node name="Sprite" parent="Structures/Npc6" index="0"]
+texture = ExtResource( 11 )
+
+[node name="AnimationPlayer" parent="Structures/Npc6" index="2"]
+anims/idle_down = SubResource( 47 )
+anims/idle_left = SubResource( 48 )
+anims/idle_right = SubResource( 49 )
+anims/idle_up = SubResource( 50 )
+anims/walk_down = SubResource( 51 )
+anims/walk_left = SubResource( 52 )
+anims/walk_right = SubResource( 53 )
+anims/walk_up = SubResource( 54 )
+
+[node name="AnimationTree" parent="Structures/Npc6" index="3"]
+parameters/playback = SubResource( 55 )
+
+[node name="Npc7" parent="Structures" instance=ExtResource( 7 )]
+position = Vector2( 64, 704 )
+role = 3
+
+[node name="Sprite" parent="Structures/Npc7" index="0"]
+texture = ExtResource( 13 )
+
+[node name="AnimationPlayer" parent="Structures/Npc7" index="2"]
+anims/idle_down = SubResource( 56 )
+anims/idle_left = SubResource( 57 )
+anims/idle_right = SubResource( 58 )
+anims/idle_up = SubResource( 59 )
+anims/walk_down = SubResource( 60 )
+anims/walk_left = SubResource( 61 )
+anims/walk_right = SubResource( 62 )
+anims/walk_up = SubResource( 63 )
+
+[node name="AnimationTree" parent="Structures/Npc7" index="3"]
+parameters/playback = SubResource( 64 )
+
+[node name="MiniBoss" parent="Structures" instance=ExtResource( 7 )]
+position = Vector2( 800, 752 )
+character_name = "巫批"
+role = 3
+
+[node name="Sprite" parent="Structures/MiniBoss" index="0"]
+texture = ExtResource( 12 )
+
+[node name="AnimationPlayer" parent="Structures/MiniBoss" index="2"]
+anims/idle_down = SubResource( 65 )
+anims/idle_left = SubResource( 66 )
+anims/idle_right = SubResource( 67 )
+anims/idle_up = SubResource( 68 )
+anims/walk_down = SubResource( 69 )
+anims/walk_left = SubResource( 70 )
+anims/walk_right = SubResource( 71 )
+anims/walk_up = SubResource( 72 )
+
+[node name="AnimationTree" parent="Structures/MiniBoss" index="3"]
+parameters/playback = SubResource( 73 )
+
+[node name="TransportDestination" parent="." instance=ExtResource( 5 )]
+position = Vector2( 48, 80 )
+identifier = "CityGate"
+direction = Vector2( 0, 1 )
+
+[node name="TransportDestination2" parent="." instance=ExtResource( 5 )]
+position = Vector2( 1040, 784 )
+identifier = "CastleGate"
+direction = Vector2( -1, 0 )
+
+[node name="MapSwitcher" parent="." instance=ExtResource( 6 )]
+position = Vector2( 48, 32 )
+target_scene = "res://src/Maps/Town.tscn"
+destination = "Gate"
+
+[node name="CastleGate" parent="." instance=ExtResource( 6 )]
+position = Vector2( 1088, 816 )
+target_scene = "res://src/Maps/Castle.tscn"
+destination = "Gate"
+[connection signal="dead" from="Structures/MiniBoss" to="." method="_on_MiniBoss_dead"]
+[connection signal="decide_can_teleport" from="CastleGate" to="." method="_on_CastleGate_decide_can_teleport"]
+
+[editable path="Structures/Npc"]
+
+[editable path="Structures/Npc2"]
+
+[editable path="Structures/Npc3"]
+
+[editable path="Structures/Npc4"]
+
+[editable path="Structures/Npc5"]
+
+[editable path="Structures/Npc8"]
+
+[editable path="Structures/Npc6"]
+
+[editable path="Structures/Npc7"]
+
+[editable path="Structures/MiniBoss"]

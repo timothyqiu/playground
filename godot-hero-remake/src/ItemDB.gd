@@ -72,7 +72,7 @@ const ITEMS = [
 		"exp": 0,
 		"health": 0,
 		"attack": 4,
-		"defend": 4,
+		"defend": -4,
 	},
 	{
 		"name": "圣剑",

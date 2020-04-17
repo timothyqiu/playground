@@ -5,7 +5,7 @@
 [ext_resource path="res://src/Player/Player.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/Chest/Chest.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Transport/MapSwitcher.tscn" type="PackedScene" id=5]
-[ext_resource path="res://src/Maps/Map.gd" type="Script" id=6]
+[ext_resource path="res://src/Maps/Town.gd" type="Script" id=6]
 [ext_resource path="res://src/Transport/Destination.tscn" type="PackedScene" id=7]
 [ext_resource path="res://src/NPC/Npc.tscn" type="PackedScene" id=8]
 [ext_resource path="res://assets/npc/npc02.png" type="Texture" id=9]
@@ -992,6 +992,12 @@ position = Vector2( 112, 464 )
 target_scene = "res://src/Maps/Pharmacy.tscn"
 destination = "Door"
 
+[node name="CityGate" parent="." instance=ExtResource( 5 )]
+position = Vector2( 592, 816 )
+scale = Vector2( 3, 1 )
+target_scene = "res://src/Maps/Forest.tscn"
+destination = "CityGate"
+
 [node name="TransportDestination" parent="." instance=ExtResource( 7 )]
 position = Vector2( 848, 80 )
 identifier = "Home"
@@ -1011,6 +1017,11 @@ direction = Vector2( 0, 1 )
 position = Vector2( 112, 496 )
 identifier = "Pharmacy"
 direction = Vector2( 0, 1 )
+
+[node name="TransportDestination5" parent="." instance=ExtResource( 7 )]
+position = Vector2( 592, 768 )
+identifier = "Gate"
+[connection signal="decide_can_teleport" from="CityGate" to="." method="_on_CityGate_decide_can_teleport"]
 
 [editable path="Structures/Npc2"]
 

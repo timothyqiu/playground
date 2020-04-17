@@ -1,5 +1,8 @@
 extends KinematicBody2D
 
+signal dead()
+signal dialogue_finished()
+
 enum NpcRole {
 	NORMAL,
 	PEDLAR,
@@ -8,6 +11,7 @@ enum NpcRole {
 }
 
 enum NpcState {
+	DEAD,
 	WALK,
 	IDLE,
 	STATIONARY,
@@ -65,9 +69,6 @@ func _process(delta: float) -> void:
 			_move(delta)
 			if walk_timer.is_stopped():
 				_enter_idle()
-		
-		NpcState.STATIONARY:
-			pass
 
 
 func _move(delta: float) -> void:
@@ -83,6 +84,10 @@ func _move(delta: float) -> void:
 func set_direction(value: Vector2) -> void:
 	animation_tree.set("parameters/idle/blend_position", value)
 	animation_tree.set("parameters/walk/blend_position", value)
+
+
+func is_alive() -> bool:
+	return state != NpcState.DEAD
 
 
 func _enter_walk():
@@ -151,20 +156,26 @@ func _on_dialogue_finished() -> void:
 		NpcRole.ENEMY:
 			var err := OK
 			
-			err = Events.connect("battle_win", self, "_on_death", [], CONNECT_ONESHOT)
-			assert(err == OK)
-			err = Events.connect("battle_lose", self, "_on_defeat_player", [], CONNECT_ONESHOT)
+			err = Events.connect("battle_finished", self, "_on_battle_finished", [], CONNECT_ONESHOT)
 			assert(err == OK)
 			Transition.push_scene("res://src/Battle/Battle.tscn")
 		
 		NpcRole.NORMAL:
 			if not is_stationary:
 				_enter_walk()
+			emit_signal("dialogue_finished")
 
 
-func _on_death() -> void:
-	# just a temporary trick
-	position = Vector2(-999, -999)
+func _on_battle_finished(result: int) -> void:
+	match result:
+		Battle.BattleResult.PLAYER_WIN:
+			# just a temporary trick
+			position = Vector2(-999, -999)
+			state = NpcState.DEAD
+			emit_signal("dead")
+		
+		Battle.BattleResult.PLAYER_LOSE:
+			print("Game Over!")
 
 
 func _on_defeat_player() -> void:
@@ -187,6 +198,7 @@ func _on_shop_finished() -> void:
 
 func to_dict():
 	return {
+		"state": state,
 		"x": position.x,
 		"y": position.y,
 		"items": items,
@@ -194,5 +206,6 @@ func to_dict():
 
 
 func from_dict(data: Dictionary):
+	state = data.state
 	position = Vector2(data.x, data.y)
 	items = data.items

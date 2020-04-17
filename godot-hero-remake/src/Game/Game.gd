@@ -3,6 +3,13 @@ extends Node
 const NULL_ITEM := 0
 const MAX_ITEMS := 16
 
+enum Phase {
+	SAVE_ROUER,
+	FIND_SWORD,
+	SAVE_WORLD,
+}
+
+export(Phase) var phase = Phase.SAVE_ROUER
 var persist = {}
 var items := [
 	1, 2, 3, 4,

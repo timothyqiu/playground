@@ -15,6 +15,4 @@ signal entering_map(map)
 # warning-ignore:unused_signal
 signal battle_win()
 # warning-ignore:unused_signal
-signal battle_lose()
-# warning-ignore:unused_signal
-signal battle_retreat()
+signal battle_finished(result)

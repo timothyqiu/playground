@@ -1,7 +1,14 @@
+class_name Battle
 extends CanvasLayer
 
 const HitEffect = preload("res://src/Battle/HitEffect.tscn")
 const DamageText = preload("res://src/Battle/DamageText.tscn")
+
+enum BattleResult {
+	PLAYER_WIN,
+	PLAYER_LOSE,
+	RETREAT
+}
 
 enum BattlePhase {
 	PLAYER_CHOOSE_ACTION,
@@ -147,15 +154,12 @@ func set_phase(value):
 				_show_message("你死了")
 				player_death_sound.play()
 				player_sprite.hide()
-				Events.emit_signal("battle_lose")
 			elif enemy_stats.health == 0:
 				_show_message("胜利！")
 				enemy_death_sound.play()
 				enemy_sprite.hide()
-				Events.emit_signal("battle_win")
 			else:
 				_show_message("逃跑成功")
-				Events.emit_signal("battle_retreat")
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -165,6 +169,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_pressed() and not event.is_echo():
 		Transition.pop_scene()
 		get_tree().set_input_as_handled()
+		
+		if player_stats.health == 0:
+			Events.emit_signal("battle_finished", BattleResult.PLAYER_LOSE)
+		elif enemy_stats.health == 0:
+			Events.emit_signal("battle_finished", BattleResult.PLAYER_WIN)
+		else:
+			Events.emit_signal("battle_finished", BattleResult.RETREAT)
 
 
 func _show_message(text: String) -> void:
