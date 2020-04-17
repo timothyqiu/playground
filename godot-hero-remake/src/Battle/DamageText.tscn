@@ -1,0 +1,50 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/fonts/damage_font.tres" type="DynamicFont" id=1]
+[ext_resource path="res://src/Battle/DamageText.gd" type="Script" id=2]
+
+[sub_resource type="Animation" id=1]
+resource_name = "Animate"
+tracks/0/type = "bezier"
+tracks/0/path = NodePath("DamageLabel:modulate:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"points": PoolRealArray( 1, -0.25, 0, 0.446416, 0.00144792, 0, -0.321944, 0.000505149, 0.890955, 0.000473738 ),
+"times": PoolRealArray( 0.5, 1 )
+}
+tracks/1/type = "bezier"
+tracks/1/path = NodePath("DamageLabel:rect_position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"points": PoolRealArray( -16, -0.25, 0, 0.674478, -9.9845, -50, -0.699437, 0.199669, 0.25, 0 ),
+"times": PoolRealArray( 0, 1 )
+}
+
+[node name="DamageText" type="Position2D"]
+modulate = Color( 1, 1, 1, 0.821494 )
+script = ExtResource( 2 )
+
+[node name="DamageLabel" type="Label" parent="."]
+margin_left = -32.0
+margin_top = -16.0
+margin_right = 21.0
+margin_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = ExtResource( 1 )
+text = "-100"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "Animate"
+anims/Animate = SubResource( 1 )
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/fightbar.png-f8564e6ded85dbe4b368f3cae7f2f131.stex"
+path="res://.import/bomb.png-f068db0d190ae14baef9f82d9abb8255.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/fightbar.png"
-dest_files=[ "res://.import/fightbar.png-f8564e6ded85dbe4b368f3cae7f2f131.stex" ]
+source_file="res://assets/battle/bomb.png"
+dest_files=[ "res://.import/bomb.png-f068db0d190ae14baef9f82d9abb8255.stex" ]
 
 [params]
 

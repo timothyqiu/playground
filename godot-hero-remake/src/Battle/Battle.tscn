@@ -1,12 +1,98 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://assets/ui/battle_theme.tres" type="Theme" id=1]
 [ext_resource path="res://assets/tilesets/structure_tileset.tres" type="TileSet" id=2]
-[ext_resource path="res://assets/ui/fightbar.png" type="Texture" id=3]
+[ext_resource path="res://assets/battle/fightbar.png" type="Texture" id=3]
 [ext_resource path="res://src/Battle/BattleStats.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Battle/Battle.gd" type="Script" id=5]
 [ext_resource path="res://src/UI/StatsDialog.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/UI/ItemsDialog.tscn" type="PackedScene" id=7]
+[ext_resource path="res://assets/ui/main_theme.tres" type="Theme" id=8]
+[ext_resource path="res://assets/player.png" type="Texture" id=9]
+[ext_resource path="res://assets/npc/npc11.png" type="Texture" id=10]
+
+[sub_resource type="Animation" id=1]
+resource_name = "enemy_hurt"
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Root/EnemySprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0.4, 0.45, 0.5, 0.55, 0.6, 0.65 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 464, 192 ), Vector2( 460, 192 ), Vector2( 468, 192 ), Vector2( 460, 192 ), Vector2( 468, 192 ), Vector2( 464, 192 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Root/PlayerSprite:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.2, 0.75, 0.95 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 176, 192 ), Vector2( 196, 192 ), Vector2( 196, 192 ), Vector2( 176, 192 ) ]
+}
+tracks/2/type = "method"
+tracks/2/path = NodePath(".")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0.35 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [ true ],
+"method": "_show_hit_effect"
+} ]
+}
+
+[sub_resource type="Animation" id=2]
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Root/PlayerSprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0.4, 0.45, 0.5, 0.55, 0.6, 0.65 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 176, 192 ), Vector2( 180, 192 ), Vector2( 172, 192 ), Vector2( 180, 192 ), Vector2( 172, 192 ), Vector2( 176, 192 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Root/EnemySprite:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.2, 0.75, 0.95 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 464, 192 ), Vector2( 444, 192 ), Vector2( 444, 192 ), Vector2( 464, 192 ) ]
+}
+tracks/2/type = "method"
+tracks/2/path = NodePath(".")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0.35 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [ false ],
+"method": "_show_hit_effect"
+} ]
+}
 
 [node name="Battle" type="CanvasLayer"]
 script = ExtResource( 5 )
@@ -91,6 +177,43 @@ margin_bottom = 112.0
 
 [node name="ItemsDialog" parent="Root" instance=ExtResource( 7 )]
 margin_bottom = 322.0
+
+[node name="MessageLabel" type="Label" parent="Root"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -9.5
+margin_right = 20.0
+margin_bottom = 9.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource( 8 )
+text = "你死了"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSprite" type="Sprite" parent="Root"]
+position = Vector2( 176, 192 )
+texture = ExtResource( 9 )
+vframes = 4
+hframes = 3
+frame = 6
+
+[node name="EnemySprite" type="Sprite" parent="Root"]
+position = Vector2( 464, 192 )
+texture = ExtResource( 10 )
+vframes = 4
+hframes = 2
+frame = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/enemy_hurt = SubResource( 1 )
+anims/player_hurt = SubResource( 2 )
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Attack" to="." method="_on_Attack_pressed"]
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Stats" to="." method="_on_Stats_pressed"]
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Items" to="." method="_on_Items_pressed"]
