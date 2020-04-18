@@ -130,7 +130,7 @@ func _on_Interactable_interact(interacter) -> void:
 	var err := Events.connect("dialogue_finished", self, "_on_dialogue_finished", [], CONNECT_ONESHOT)
 	assert(err == OK)
 	
-	Dialogue.show_dialogue(data)
+	DialogueBox.show_dialogue(data)
 
 
 func _on_dialogue_finished() -> void:

@@ -12,6 +12,6 @@ func _on_CityGate_decide_can_teleport(switcher) -> void:
 				"avatar": player.talker_texture,
 			}
 		]
-		Dialogue.show_dialogue(data)
+		DialogueBox.show_dialogue(data)
 	else:
 		switcher.can_teleport = true

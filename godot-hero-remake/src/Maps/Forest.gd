@@ -12,7 +12,7 @@ func _on_CastleGate_decide_can_teleport(switcher) -> void:
 				"avatar": player.talker_texture,
 			}
 		]
-		Dialogue.show_dialogue(data)
+		DialogueBox.show_dialogue(data)
 	else:
 		switcher.can_teleport = true
 
@@ -24,6 +24,6 @@ func _on_MiniBoss_dead() -> void:
 				"name": "作者",
 			}
 		]
-	Dialogue.show_dialogue(data)
+	DialogueBox.show_dialogue(data)
 	
 	Game.phase = Game.Phase.SAVE_WORLD

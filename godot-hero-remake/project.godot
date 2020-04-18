@@ -64,7 +64,7 @@ config/icon="res://icon.png"
 
 Game="*res://src/Game/Game.tscn"
 Transition="*res://src/UI/Transition.tscn"
-Dialogue="*res://src/UI/Dialogue.tscn"
+DialogueBox="*res://src/UI/DialogueBox.tscn"
 Events="*res://src/Events.gd"
 GameMenu="*res://src/UI/GameMenu.tscn"
 BuyDialog="*res://src/UI/BuyDialog.tscn"

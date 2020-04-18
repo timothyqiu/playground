@@ -55,7 +55,7 @@ func _on_Interactable_interact(_interacter) -> void:
 	
 	var err := Events.connect("dialogue_finished", self, "_message_finished")
 	assert(err == OK)
-	Dialogue.show_dialogue(data)
+	DialogueBox.show_dialogue(data)
 
 
 func _message_finished():
