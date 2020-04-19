@@ -41,7 +41,7 @@ func _change_scene(mode: int, scene_path: String, args: Dictionary):
 	
 	match mode:
 		ChangeMode.REPLACE, ChangeMode.POP:
-			if current_scene is Map:
+			if not args.get("skip_persist", false) and current_scene is Map:
 				Events.emit_signal("leaving_map", current_scene)
 			root.remove_child(current_scene)
 			current_scene.free()

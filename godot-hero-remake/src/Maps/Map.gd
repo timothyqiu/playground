@@ -7,6 +7,7 @@ export var identifier := ""
 export var camera_inset := Vector2.ZERO
 
 var target_destination: String
+var target_player = null
 
 onready var floor_tiles = $Floor
 onready var player := $Structures/Player
@@ -22,6 +23,9 @@ func _ready() -> void:
 				player.set_direction(child.direction)
 				player.position = child.position
 				break
+	
+	if target_player:
+		player.from_dict(target_player)
 	
 	var rect = floor_tiles.get_used_rect()
 	rect.position += camera_inset

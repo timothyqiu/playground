@@ -1,16 +1,18 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://assets/ui/menu_panel.tres" type="StyleBox" id=1]
 [ext_resource path="res://assets/ui/main_theme.tres" type="Theme" id=2]
 [ext_resource path="res://src/UI/GameMenu.gd" type="Script" id=3]
 [ext_resource path="res://src/UI/ItemsDialog.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/UI/StatsDialog.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/UI/SaveSlotPanel.tscn" type="PackedScene" id=6]
 
 [node name="GameMenu" type="CanvasLayer"]
 pause_mode = 2
 script = ExtResource( 3 )
 
 [node name="MenuPanel" type="PopupPanel" parent="."]
+visible = true
 anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -200.0
@@ -82,10 +84,19 @@ text = "返回游戏"
 [node name="StatsDialog" parent="." instance=ExtResource( 5 )]
 
 [node name="ItemsDialog" parent="." instance=ExtResource( 4 )]
+
+[node name="SavePanel" parent="." instance=ExtResource( 6 )]
+
+[node name="LoadPanel" parent="." instance=ExtResource( 6 )]
+only_existing = true
 [connection signal="about_to_show" from="MenuPanel" to="." method="_on_MenuPanel_about_to_show"]
 [connection signal="popup_hide" from="MenuPanel" to="." method="_on_MenuPanel_popup_hide"]
 [connection signal="pressed" from="MenuPanel/VBoxContainer/Stats" to="." method="_on_Stats_pressed"]
 [connection signal="pressed" from="MenuPanel/VBoxContainer/Items" to="." method="_on_Items_pressed"]
+[connection signal="pressed" from="MenuPanel/VBoxContainer/Load" to="." method="_on_Load_pressed"]
+[connection signal="pressed" from="MenuPanel/VBoxContainer/Save" to="." method="_on_Save_pressed"]
 [connection signal="pressed" from="MenuPanel/VBoxContainer/Exit" to="." method="_on_Exit_pressed"]
 [connection signal="pressed" from="MenuPanel/VBoxContainer/Back" to="." method="_on_Back_pressed"]
 [connection signal="item_selected" from="ItemsDialog" to="." method="_on_ItemsDialog_item_selected"]
+[connection signal="save_file_selected" from="SavePanel" to="." method="_on_SavePanel_save_file_selected"]
+[connection signal="save_file_selected" from="LoadPanel" to="." method="_on_LoadPanel_save_file_selected"]

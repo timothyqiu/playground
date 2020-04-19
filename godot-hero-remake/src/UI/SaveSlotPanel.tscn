@@ -1,0 +1,77 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/ui/main_theme.tres" type="Theme" id=1]
+[ext_resource path="res://assets/ui/menu_panel.tres" type="StyleBox" id=2]
+[ext_resource path="res://src/UI/SaveSlotPanel.gd" type="Script" id=3]
+
+[node name="SaveSlotPanel" type="PopupPanel"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -191.0
+margin_right = 100.0
+grow_vertical = 0
+rect_min_size = Vector2( 150, 200 )
+theme = ExtResource( 1 )
+custom_styles/panel = ExtResource( 2 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = -190.0
+margin_right = 140.0
+margin_bottom = -10.0
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="1" type="Button" parent="VBoxContainer"]
+margin_top = 4.0
+margin_right = 130.0
+margin_bottom = 25.0
+focus_neighbour_top = NodePath("../Back")
+text = "进度一"
+
+[node name="2" type="Button" parent="VBoxContainer"]
+margin_top = 29.0
+margin_right = 130.0
+margin_bottom = 50.0
+text = "进度二"
+
+[node name="3" type="Button" parent="VBoxContainer"]
+margin_top = 54.0
+margin_right = 130.0
+margin_bottom = 75.0
+text = "进度三"
+
+[node name="4" type="Button" parent="VBoxContainer"]
+margin_top = 79.0
+margin_right = 130.0
+margin_bottom = 100.0
+text = "进度四"
+
+[node name="5" type="Button" parent="VBoxContainer"]
+margin_top = 104.0
+margin_right = 130.0
+margin_bottom = 125.0
+text = "进度五"
+
+[node name="6" type="Button" parent="VBoxContainer"]
+margin_top = 129.0
+margin_right = 130.0
+margin_bottom = 150.0
+text = "进度六"
+
+[node name="Back" type="Button" parent="VBoxContainer"]
+margin_top = 154.0
+margin_right = 130.0
+margin_bottom = 175.0
+focus_neighbour_bottom = NodePath("../Stats")
+text = "返回"
+[connection signal="about_to_show" from="." to="." method="_on_SaveSlotPanel_about_to_show"]
+[connection signal="pressed" from="VBoxContainer/Back" to="." method="_on_Back_pressed"]

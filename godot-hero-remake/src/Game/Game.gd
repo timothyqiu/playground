@@ -144,3 +144,46 @@ func set_music(value: int) -> void:
 	if changed:
 		music_player.stream = MUSICS[music]
 		music_player.play()
+
+
+func load_game(path: String) -> void:
+	var file = File.new()
+	var err = file.open(path, File.READ)
+	if err != OK:
+		printerr("Failed to open file for read: %d" % err)
+		return
+	
+	var data = parse_json(file.get_as_text())
+	file.close()
+	
+	phase = data.phase
+	items = data.items
+	persist = data.persist
+	PlayerStats.from_dict(data.stats)
+	
+	Transition.replace_scene(data.map, {
+		"skip_persist": true,
+		"target_player": data.player,
+	})
+
+
+func save_game(path: String) -> void:
+	var file = File.new()
+	var err = file.open(path, File.WRITE)
+	if err != OK:
+		printerr("Failed to open file for write: %d" % err)
+		return
+	
+	var map = get_tree().current_scene
+	_on_leaving_map(map)
+	
+	var data = {
+		"phase": phase,
+		"items": items,
+		"stats": PlayerStats.to_dict(),
+		"persist": persist,
+		"player": map.player.to_dict(),
+		"map": map.filename,
+	}
+	file.store_string(to_json(data))
+	file.close()

@@ -31,3 +31,27 @@ func set_exp(value: int) -> void:
 		max_health += upgrade_levels * HEALTH_INCR_PER_LEVEL
 		health += (max_health - health) / 2
 		current_exp %= UPGRADE_EXP
+
+
+func to_dict():
+	return {
+		"level": level,
+		"health": health,
+		"max_health": max_health,
+		"current_exp": current_exp,
+		"attack": attack,
+		"defend": defend,
+		"speed": speed,
+		"money": money,
+	}
+
+
+func from_dict(dict):
+	level = dict.level
+	health = dict.health
+	max_health = dict.max_health
+	current_exp = dict.current_exp
+	attack = dict.attack
+	defend = dict.defend
+	speed = dict.speed
+	money = dict.money

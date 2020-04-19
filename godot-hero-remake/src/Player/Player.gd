@@ -66,3 +66,18 @@ func set_camera_bounds(rect: Rect2) -> void:
 	camera.limit_top = rect.position.y
 	camera.limit_right = rect.end.x
 	camera.limit_bottom = rect.end.y
+
+
+func to_dict():
+	var direction = animation_tree.get("parameters/idle/blend_position")
+	return {
+		"x": position.x,
+		"y": position.y,
+		"direction_x": direction.x,
+		"direction_y": direction.y,
+	}
+
+
+func from_dict(data):
+	position = Vector2(data.x, data.y)
+	set_direction(Vector2(data.direction_x, data.direction_y))
