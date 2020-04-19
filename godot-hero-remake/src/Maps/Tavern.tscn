@@ -335,6 +335,7 @@ position = Vector2( 368, 80 )
 character_name = "秃鹰"
 is_stationary = true
 role = 3
+items = [ 3 ]
 direction = Vector2( 1, 0 )
 
 [node name="Sprite" parent="Structures/BanditA" index="0"]
@@ -353,11 +354,18 @@ anims/walk_up = SubResource( 10 )
 [node name="AnimationTree" parent="Structures/BanditA" index="3"]
 parameters/playback = SubResource( 11 )
 
+[node name="Stats" parent="Structures/BanditA" index="7"]
+current_exp = 30
+attack = 4
+defend = 3
+money = 10
+
 [node name="BanditB" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 400, 112 )
 character_name = "刀疤"
 is_stationary = true
 role = 3
+items = [ 9, 4 ]
 direction = Vector2( 0, -1 )
 
 [node name="Sprite" parent="Structures/BanditB" index="0"]
@@ -375,6 +383,14 @@ anims/walk_up = SubResource( 19 )
 
 [node name="AnimationTree" parent="Structures/BanditB" index="3"]
 parameters/playback = SubResource( 20 )
+
+[node name="Stats" parent="Structures/BanditB" index="7"]
+health = 100
+max_health = 100
+current_exp = 50
+attack = 5
+defend = 4
+money = 20
 
 [node name="TransportDestination" parent="." instance=ExtResource( 5 )]
 position = Vector2( 128, 368 )

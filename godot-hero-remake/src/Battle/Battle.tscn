@@ -187,10 +187,8 @@ margin_bottom = 112.0
 [node name="StatsDialog" parent="Root" instance=ExtResource( 6 )]
 
 [node name="ItemsDialog" parent="Root" instance=ExtResource( 7 )]
-margin_bottom = 322.0
 
 [node name="MessageLabel" type="Label" parent="Root"]
-visible = false
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -202,7 +200,11 @@ margin_bottom = 9.5
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource( 8 )
-text = "你死了"
+text = "你死了
+
+获得20经验、30金
+
+你升级了！现在是3级"
 align = 1
 __meta__ = {
 "_edit_use_anchors_": false

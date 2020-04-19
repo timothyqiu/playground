@@ -19,19 +19,19 @@ func _ready() -> void:
 	current_scene.pause_mode = Node.PAUSE_MODE_STOP
 
 
-func replace_scene(scene_path: String, destination: String = ""):
-	call_deferred("_change_scene", ChangeMode.REPLACE, scene_path, destination)
+func replace_scene(scene_path: String, args={}):
+	call_deferred("_change_scene", ChangeMode.REPLACE, scene_path, args)
 
 
-func push_scene(scene_path: String):
-	call_deferred("_change_scene", ChangeMode.PUSH, scene_path, "")
+func push_scene(scene_path: String, args={}):
+	call_deferred("_change_scene", ChangeMode.PUSH, scene_path, args)
 
 
 func pop_scene():
-	call_deferred("_change_scene", ChangeMode.POP, "", "")
+	call_deferred("_change_scene", ChangeMode.POP, "", {})
 
 
-func _change_scene(mode: int, scene_path: String, destination: String):
+func _change_scene(mode: int, scene_path: String, args: Dictionary):
 	get_tree().paused = true
 	
 	animation_player.play_backwards("fade_in")
@@ -55,8 +55,8 @@ func _change_scene(mode: int, scene_path: String, destination: String):
 			current_scene = load(scene_path).instance()
 			current_scene.pause_mode = Node.PAUSE_MODE_STOP
 			
-			if current_scene is Map:
-				current_scene.target_destination = destination
+			for arg in args:
+				current_scene.set(arg, args[arg])
 		
 		ChangeMode.POP:
 			current_scene = scene_stack.front()

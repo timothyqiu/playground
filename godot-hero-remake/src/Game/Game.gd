@@ -23,7 +23,6 @@ export(Array, ItemDB.ItemId) var items := [
 var music setget set_music
 
 var persist = {}
-var stats := Stats.new()
 
 onready var music_player := $BackgroundMusicPlayer
 
@@ -85,10 +84,10 @@ func use_item(index: int) -> void:
 		return
 	var item: Dictionary = ItemDB.ITEMS[item_id]
 	
-	stats.current_exp += item.exp
-	stats.health += item.health
-	stats.attack += item.attack
-	stats.defend += item.defend
+	PlayerStats.current_exp += item.exp
+	PlayerStats.health += item.health
+	PlayerStats.attack += item.attack
+	PlayerStats.defend += item.defend
 	
 	items[index] = ItemDB.ItemId.NULL
 
@@ -99,14 +98,14 @@ func buy_item(item_id: int):
 		return
 	var item: Dictionary = ItemDB.ITEMS[item_id]
 	
-	if item.money > stats.money:
+	if item.money > PlayerStats.money:
 		return "你的钱不够，兄弟"
 	
 	for i in range(items.size()):
 		var id = items[i]
 		if id == ItemDB.ItemId.NULL:
 			items[i] = item_id
-			stats.money -= item.money
+			PlayerStats.money -= item.money
 			return
 	
 	return "你的背包已经满了"
@@ -133,7 +132,7 @@ func sell_item(index: int, depreciation: float) -> void:
 		return
 	var item: Dictionary = ItemDB.ITEMS[item_id]
 	
-	stats.money += item.money * depreciation
+	PlayerStats.money += item.money * depreciation
 	
 	items[index] = ItemDB.ItemId.NULL
 

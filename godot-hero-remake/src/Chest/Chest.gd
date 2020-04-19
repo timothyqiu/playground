@@ -33,7 +33,7 @@ func _on_Interactable_interact(_interacter) -> void:
 		data.append({
 			"text": "打开宝箱后，发现有%d金币，哈哈……我赚翻了#_$" % money,
 		})
-		Game.stats.money += money
+		PlayerStats.money += money
 	
 	if item_id != ItemDB.ItemId.NULL:
 		var item = ItemDB.ITEMS[item_id]

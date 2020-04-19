@@ -25,9 +25,12 @@ var item_used := false
 
 var player_stats: Stats
 var enemy_stats: Stats
+var enemy_items = []
 
 var player_hurt: int
 var enemy_hurt: int
+
+var enemy_texture: Texture
 
 onready var player_stats_display := $Root/Bar/Sections/PlayerStats
 onready var enemy_stats_display := $Root/Bar/Sections/EnemyStats
@@ -48,18 +51,23 @@ onready var enemy_death_sound := $EnemyDeathSound
 func _ready() -> void:
 	randomize()
 	
-	player_stats = Game.stats
-	enemy_stats = Stats.new()
-	enemy_stats.attack = randi() % 10
-	enemy_stats.defend = randi() % 10
+	player_stats = PlayerStats
+	
+	if not enemy_stats:
+		enemy_stats = Stats.new()
 	
 	player_stats_display.set_stats(player_stats)
 	enemy_stats_display.set_stats(enemy_stats)
+	
+	if enemy_texture:
+		enemy_sprite.texture = enemy_texture
 	
 	var avatar = AtlasTexture.new()
 	avatar.atlas = enemy_sprite.texture
 	avatar.region = Rect2(0, 0, 32, 32)
 	enemy_stats_display.set_avatar(avatar)
+	
+	message_label.hide()
 	
 	actions.get_child(0).grab_focus()
 	set_phase(BattlePhase.PLAYER_CHOOSE_ACTION)
@@ -83,11 +91,9 @@ func _on_Attack_pressed() -> void:
 
 
 func _on_ItemsDialog_item_selected(_items, index) -> void:
-	Game.stats = player_stats
 	Game.use_item(index)
 	items_dialog.set_items(Game.items)
 	items_dialog.show_stats()
-	player_stats = Game.stats
 	player_stats_display.set_stats(player_stats)
 	item_used = true
 	
@@ -155,7 +161,34 @@ func set_phase(value):
 				player_death_sound.play()
 				player_sprite.hide()
 			elif enemy_stats.health == 0:
-				_show_message("胜利！")
+				var gains = []
+				
+				if enemy_stats.current_exp > 0:
+					var exp_get = "获得了%d经验" % enemy_stats.current_exp
+					var current_level = PlayerStats.level
+					PlayerStats.current_exp += enemy_stats.current_exp
+					if current_level != PlayerStats.level:
+						exp_get += "，升到了%d级" % PlayerStats.level
+					gains.append(exp_get)
+				
+				if enemy_stats.money > 0:
+					gains.append("获得了%d金币" % enemy_stats.money)
+				
+				var items_get = ""
+				for item_id in enemy_items:
+					var item = ItemDB.ITEMS[item_id]
+					items_get += "%s、" % item.name
+					Game.put_item(item_id)  # FIXME: item overflow?
+				if not items_get.empty():
+					items_get.erase(items_get.length() - 1, 1)
+					gains.append("获得了%s" % items_get)
+				
+				var text = ""
+				if not gains.empty():
+					for gain in gains:
+						text += "\n" + gain
+				
+				_show_message("胜利！" + text)
 				enemy_death_sound.play()
 				enemy_sprite.hide()
 			else:

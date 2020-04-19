@@ -7,7 +7,8 @@ enum NpcRole {
 	NORMAL,
 	PEDLAR,
 	PAWNBROKER,
-	ENEMY,
+	PASSIVE_ENEMY,
+	ACTIVE_ENEMY,
 }
 
 enum NpcState {
@@ -20,7 +21,7 @@ enum NpcState {
 export var character_name := "无名氏"
 export var is_stationary := false
 export(NpcRole) var role := NpcRole.NORMAL
-export(Array, int) var items = []
+export(Array, ItemDB.ItemId) var items = []
 export var max_speed := 30.0
 export var acceleration := 256.0
 export var friction := 256.0
@@ -30,6 +31,7 @@ var state = NpcState.IDLE
 var velocity := Vector2.ZERO
 var talker_texture := AtlasTexture.new()
 
+onready var stats := $Stats
 onready var sprite := $Sprite
 onready var animation_tree := $AnimationTree
 onready var animation_state:AnimationNodeStateMachine = $AnimationTree.get("parameters/playback")
@@ -42,6 +44,9 @@ func _ready() -> void:
 	
 	talker_texture.atlas = sprite.texture
 	talker_texture.region = Rect2(0, 0, 32, 32)
+	
+	if role == NpcRole.ACTIVE_ENEMY:
+		$Interactable.is_passive = false
 	
 	if is_stationary:
 		_enter_stationary(direction)
@@ -153,12 +158,16 @@ func _on_dialogue_finished() -> void:
 			
 			SellDialog.show()
 		
-		NpcRole.ENEMY:
+		NpcRole.PASSIVE_ENEMY, NpcRole.ACTIVE_ENEMY:
 			var err := OK
 			
 			err = Events.connect("battle_finished", self, "_on_battle_finished", [], CONNECT_ONESHOT)
 			assert(err == OK)
-			Transition.push_scene("res://src/Battle/Battle.tscn")
+			Transition.push_scene("res://src/Battle/Battle.tscn", {
+				"enemy_stats": stats,
+				"enemy_texture": sprite.texture,
+				"enemy_items": items,
+			})
 		
 		NpcRole.NORMAL:
 			if not is_stationary:

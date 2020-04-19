@@ -39,7 +39,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/Maps/Map.gd"
 }, {
-"base": "Resource",
+"base": "Node",
 "class": "Stats",
 "language": "GDScript",
 "path": "res://src/Stats.gd"
@@ -69,6 +69,7 @@ Events="*res://src/Events.gd"
 GameMenu="*res://src/UI/GameMenu.tscn"
 BuyDialog="*res://src/UI/BuyDialog.tscn"
 SellDialog="*res://src/UI/SellDialog.tscn"
+PlayerStats="*res://src/Player/PlayerStats.tscn"
 
 [display]
 

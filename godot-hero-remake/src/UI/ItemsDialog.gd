@@ -97,7 +97,7 @@ func show_stats() -> void:
 
 
 func update_info(text: String = "") -> void:
-	var info = "现有%d金" % Game.stats.money
+	var info = "现有%d金" % PlayerStats.money
 	if text:
 		info += "，" + text
 	info_label.text = info

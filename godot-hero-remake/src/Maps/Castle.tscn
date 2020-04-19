@@ -1472,7 +1472,7 @@ parameters/playback = SubResource( 1 )
 
 [node name="Enemy" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 528, -880 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Enemy" index="0"]
 texture = ExtResource( 10 )
@@ -1492,6 +1492,7 @@ parameters/playback = SubResource( 10 )
 
 [node name="Boss" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 112, -880 )
+character_name = "大魔王"
 role = 3
 
 [node name="Sprite" parent="Structures/Boss" index="0"]
@@ -1510,9 +1511,15 @@ anims/walk_up = SubResource( 18 )
 [node name="AnimationTree" parent="Structures/Boss" index="3"]
 parameters/playback = SubResource( 19 )
 
+[node name="Stats" parent="Structures/Boss" index="7"]
+health = 500
+max_health = 500
+attack = 35
+defend = 30
+
 [node name="Enemy3" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 112, -496 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Enemy3" index="0"]
 texture = ExtResource( 13 )
@@ -1532,7 +1539,7 @@ parameters/playback = SubResource( 28 )
 
 [node name="Enemy4" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 112, -256 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Enemy4" index="0"]
 texture = ExtResource( 14 )
@@ -1552,7 +1559,7 @@ parameters/playback = SubResource( 37 )
 
 [node name="Enemy5" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 384, -304 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Enemy5" index="0"]
 texture = ExtResource( 13 )
@@ -1573,7 +1580,7 @@ parameters/playback = SubResource( 46 )
 [node name="TigerA" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 176, -720 )
 is_stationary = true
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/TigerA" index="0"]
 texture = ExtResource( 12 )
@@ -1594,7 +1601,7 @@ parameters/playback = SubResource( 55 )
 [node name="TigerB" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 464, -720 )
 is_stationary = true
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/TigerB" index="0"]
 texture = ExtResource( 12 )
@@ -1614,7 +1621,7 @@ parameters/playback = SubResource( 64 )
 
 [node name="Enemy6" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 144, -48 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Enemy6" index="0"]
 texture = ExtResource( 10 )
@@ -1634,7 +1641,7 @@ parameters/playback = SubResource( 73 )
 
 [node name="Enemy7" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 528, -41 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Enemy7" index="0"]
 texture = ExtResource( 10 )
@@ -1654,7 +1661,7 @@ parameters/playback = SubResource( 82 )
 
 [node name="Enemy8" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 448, 208 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Enemy8" index="0"]
 texture = ExtResource( 10 )
@@ -1674,7 +1681,7 @@ parameters/playback = SubResource( 91 )
 
 [node name="Enemy9" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 208, 192 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Enemy9" index="0"]
 texture = ExtResource( 15 )

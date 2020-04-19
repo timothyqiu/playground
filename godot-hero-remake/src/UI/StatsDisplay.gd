@@ -10,7 +10,7 @@ onready var money := $Values/Money
 
 
 func update_stats() -> void:
-	var stats: Stats = Game.stats
+	var stats: Stats = PlayerStats
 	
 	level.text = "%d" % stats.level
 	ep.text = "%d/%d" % [stats.current_exp, stats.UPGRADE_EXP]

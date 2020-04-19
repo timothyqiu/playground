@@ -1,5 +1,5 @@
 class_name Stats
-extends Resource
+extends Node
 
 const UPGRADE_EXP := 100
 const HEALTH_INCR_PER_LEVEL := 30
@@ -13,7 +13,7 @@ export var current_exp := 0 setget set_exp
 export var attack := 1
 export var defend := 1
 export var speed := 8
-export var money := 200
+export var money := 0
 
 
 func set_health(value: int) -> void:

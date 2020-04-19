@@ -1067,7 +1067,7 @@ position = Vector2( 368, 400 )
 
 [node name="Npc" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 80, 272 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Npc" index="0"]
 texture = ExtResource( 8 )
@@ -1077,7 +1077,7 @@ parameters/playback = SubResource( 1 )
 
 [node name="Npc2" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 304, 416 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Npc2" index="0"]
 texture = ExtResource( 8 )
@@ -1097,7 +1097,7 @@ parameters/playback = SubResource( 10 )
 
 [node name="Npc3" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 400, 208 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Npc3" index="0"]
 texture = ExtResource( 10 )
@@ -1117,7 +1117,7 @@ parameters/playback = SubResource( 19 )
 
 [node name="Npc4" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 496, 144 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Npc4" index="0"]
 texture = ExtResource( 10 )
@@ -1137,7 +1137,7 @@ parameters/playback = SubResource( 28 )
 
 [node name="Npc5" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 463.5, 272 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Npc5" index="0"]
 texture = ExtResource( 9 )
@@ -1157,7 +1157,7 @@ parameters/playback = SubResource( 37 )
 
 [node name="Npc8" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 1008, 400 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Npc8" index="0"]
 texture = ExtResource( 9 )
@@ -1177,7 +1177,7 @@ parameters/playback = SubResource( 46 )
 
 [node name="Npc6" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 624, 208 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Npc6" index="0"]
 texture = ExtResource( 11 )
@@ -1197,7 +1197,7 @@ parameters/playback = SubResource( 55 )
 
 [node name="Npc7" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 64, 704 )
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/Npc7" index="0"]
 texture = ExtResource( 13 )
@@ -1218,7 +1218,7 @@ parameters/playback = SubResource( 64 )
 [node name="MiniBoss" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 800, 752 )
 character_name = "巫批"
-role = 3
+role = 4
 
 [node name="Sprite" parent="Structures/MiniBoss" index="0"]
 texture = ExtResource( 12 )
