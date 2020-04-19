@@ -9,3 +9,4 @@ items = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 9 ]
 
 [node name="BackgroundMusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 2 )
+bus = "Music"

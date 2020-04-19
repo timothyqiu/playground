@@ -129,8 +129,8 @@ func _on_Interactable_interact(interacter) -> void:
 		}
 	]
 	
-	var facing_interacter = interacter.global_position - global_position
-	_enter_stationary(facing_interacter.normalized())
+	# they shared the same parent, or just use global_position
+	_enter_stationary(position.direction_to(interacter.position))
 	
 	var err := Events.connect("dialogue_finished", self, "_on_dialogue_finished", [], CONNECT_ONESHOT)
 	assert(err == OK)

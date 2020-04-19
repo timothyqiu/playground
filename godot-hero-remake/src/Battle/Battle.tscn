@@ -230,18 +230,23 @@ anims/player_hurt = SubResource( 2 )
 
 [node name="PlayerDeathSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 13 )
+bus = "SoundFX"
 
 [node name="EnemyDeathSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 15 )
+bus = "SoundFX"
 
 [node name="AttackSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 11 )
+bus = "SoundFX"
 
 [node name="PlayerHurtSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 12 )
+bus = "SoundFX"
 
 [node name="EnemyHurtSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 14 )
+bus = "SoundFX"
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Attack" to="." method="_on_Attack_pressed"]
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Stats" to="." method="_on_Stats_pressed"]
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Items" to="." method="_on_Items_pressed"]
