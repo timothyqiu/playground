@@ -22,3 +22,4 @@ func _on_Exit_pressed() -> void:
 
 func _on_LoadPanel_save_file_selected(path) -> void:
 	Game.load_game(path)
+	load_panel.hide()

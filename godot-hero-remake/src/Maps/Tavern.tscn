@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=2]
+[gd_scene load_steps=42 format=2]
 
 [ext_resource path="res://assets/tilesets/background_tileset.tres" type="TileSet" id=1]
 [ext_resource path="res://src/Player/Player.tscn" type="PackedScene" id=2]
@@ -11,13 +11,65 @@
 [ext_resource path="res://assets/npc/npc02.png" type="Texture" id=9]
 [ext_resource path="res://assets/npc/npc08.png" type="Texture" id=10]
 [ext_resource path="res://assets/npc/npc07.png" type="Texture" id=11]
+[ext_resource path="res://src/Dialogue.gd" type="Script" id=12]
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=1]
+[sub_resource type="Resource" id=1]
+script = ExtResource( 12 )
+phase = 0
+content = "{这年头生意不好做啊！城外有一群强盗，经常来吃东西都不给钱……
+}他们的头头是不是叫巫批？
+{就是这个大坏蛋！
+{嘘……小声点，不要被别人听到。"
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=2]
+[sub_resource type="Resource" id=2]
+script = ExtResource( 12 )
+phase = 3
+content = "{你居然赶走了强盗，真是太感谢了！"
 
-[sub_resource type="Animation" id=3]
-resource_name = "idle_down"
+[sub_resource type="AnimationNodeStateMachinePlayback" id=3]
+
+[sub_resource type="Resource" id=29]
+script = ExtResource( 12 )
+phase = 0
+content = "{收废旧物品罗！有烂刀烂剑、破旧衣物拿来买哦！
+{小朋友，你要是有不用的东西就拿来卖了吧。可以用卖的钱买你最需要的东西。"
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=4]
+
+[sub_resource type="Resource" id=26]
+script = ExtResource( 12 )
+phase = 0
+content = "{救命啊！
+{你们……你们……别这样，求求你们了！
+{我……我是不会跟你们走的，你们还是放了我吧……
+{呜……呜……"
+
+[sub_resource type="Resource" id=27]
+script = ExtResource( 12 )
+phase = 2
+content = "}柔儿你没事吧？
+{呜……幸好你来了，不然……不然……
+}好了，现在没事了，以后可要小心点。
+{我知道了，谢谢你小飞刀。
+}没什么啦！想当年……[此处省略自夸文字一万]
+}算了，不说了。
+}我看，我得去会会他们的头头「巫批」
+{你……你不要去，他们好凶的！
+}放心，我不会有事的。"
+
+[sub_resource type="Resource" id=28]
+script = ExtResource( 12 )
+phase = 3
+content = "{你要小心啊！"
+
+[sub_resource type="Resource" id=23]
+script = ExtResource( 12 )
+phase = 0
+content = "{小子，识相的最好走远点，不然我就不客气了。
+}再说一遍「住手，然后给我滚！」
+{他妈的，你小子是不是活的不耐烦了？给老子敬酒不吃吃罚酒，好！今天就修理修理你！"
+
+[sub_resource type="Animation" id=5]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -29,143 +81,9 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 0 ]
-}
-
-[sub_resource type="Animation" id=4]
-resource_name = "idle_left"
-length = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 2 ]
-}
-
-[sub_resource type="Animation" id=5]
-resource_name = "idle_right"
-length = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 6 ]
 }
 
 [sub_resource type="Animation" id=6]
-resource_name = "idle_up"
-length = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 4 ]
-}
-
-[sub_resource type="Animation" id=7]
-resource_name = "walk_down"
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 0, 1 ]
-}
-
-[sub_resource type="Animation" id=8]
-resource_name = "walk_left"
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 2, 3 ]
-}
-
-[sub_resource type="Animation" id=9]
-resource_name = "walk_right"
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 6, 7 ]
-}
-
-[sub_resource type="Animation" id=10]
-resource_name = "walk_up"
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 4, 5 ]
-}
-
-[sub_resource type="AnimationNodeStateMachinePlayback" id=11]
-
-[sub_resource type="Animation" id=12]
-resource_name = "idle_down"
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 0 ]
-}
-
-[sub_resource type="Animation" id=13]
-resource_name = "idle_left"
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -180,8 +98,7 @@ tracks/0/keys = {
 "values": [ 2 ]
 }
 
-[sub_resource type="Animation" id=14]
-resource_name = "idle_right"
+[sub_resource type="Animation" id=7]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -196,8 +113,7 @@ tracks/0/keys = {
 "values": [ 6 ]
 }
 
-[sub_resource type="Animation" id=15]
-resource_name = "idle_up"
+[sub_resource type="Animation" id=8]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -212,8 +128,7 @@ tracks/0/keys = {
 "values": [ 4 ]
 }
 
-[sub_resource type="Animation" id=16]
-resource_name = "walk_down"
+[sub_resource type="Animation" id=9]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -229,8 +144,7 @@ tracks/0/keys = {
 "values": [ 0, 1 ]
 }
 
-[sub_resource type="Animation" id=17]
-resource_name = "walk_left"
+[sub_resource type="Animation" id=10]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -246,8 +160,7 @@ tracks/0/keys = {
 "values": [ 2, 3 ]
 }
 
-[sub_resource type="Animation" id=18]
-resource_name = "walk_right"
+[sub_resource type="Animation" id=11]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -263,8 +176,7 @@ tracks/0/keys = {
 "values": [ 6, 7 ]
 }
 
-[sub_resource type="Animation" id=19]
-resource_name = "walk_up"
+[sub_resource type="Animation" id=12]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -280,7 +192,149 @@ tracks/0/keys = {
 "values": [ 4, 5 ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=20]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=13]
+
+[sub_resource type="Resource" id=24]
+script = ExtResource( 12 )
+phase = 0
+content = "{放了你？嘿嘿……别做梦了！
+{告诉你吧，我们大王看上你了，决定让你做他的押寨夫人。
+{嘿嘿……小娘子，你就乖乖的跟我们走吧！{哈哈……
+}住手！放开她。
+{小子，你叫谁呢？
+}叫你们住手！
+{哈哈哈……秃鹰，听到了吗？他叫我们住手。"
+
+[sub_resource type="Resource" id=25]
+script = ExtResource( 12 )
+phase = 2
+content = "{好家伙，还有两下子嘛！
+{看我的"
+
+[sub_resource type="Animation" id=14]
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=15]
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=16]
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+
+[sub_resource type="Animation" id=17]
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=18]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=19]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=20]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=21]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=22]
 
 [node name="Tavern" type="Node2D"]
 script = ExtResource( 3 )
@@ -290,7 +344,7 @@ identifier = "Tavern"
 tile_set = ExtResource( 1 )
 cell_size = Vector2( 32, 32 )
 format = 1
-tile_data = PoolIntArray( -65539, 7, 0, -65538, 7, 0, -65537, 7, 0, -131072, 7, 0, -131071, 7, 0, -131070, 7, 0, -131069, 7, 0, -131068, 7, 0, -131067, 7, 0, -131066, 7, 0, -131065, 7, 0, -131064, 7, 0, -131063, 7, 0, -131062, 7, 0, -131061, 7, 0, -131060, 7, 0, -131059, 7, 0, -131058, 7, 0, -131057, 7, 0, -131056, 7, 0, -3, 7, 0, -2, 7, 0, -1, 6, 0, -65536, 6, 0, -65535, 6, 0, -65534, 6, 0, -65533, 6, 0, -65532, 6, 0, -65531, 6, 0, -65530, 6, 0, -65529, 6, 0, -65528, 6, 0, -65527, 6, 0, -65526, 6, 0, -65525, 6, 0, -65524, 6, 0, -65523, 6, 0, -65522, 6, 0, -65521, 7, 0, -65520, 7, 0, 65533, 7, 0, 65534, 7, 0, 65535, 6, 0, 6, 6, 0, 14, 6, 0, 15, 7, 0, 16, 7, 0, 131069, 7, 0, 131070, 7, 0, 131071, 6, 0, 65542, 6, 0, 65550, 6, 0, 65551, 7, 0, 65552, 7, 0, 196605, 7, 0, 196606, 7, 0, 196607, 6, 0, 131072, 4, 0, 131073, 4, 0, 131074, 4, 0, 131075, 4, 0, 131076, 4, 0, 131077, 4, 0, 131078, 6, 0, 131079, 4, 0, 131080, 4, 0, 131081, 4, 0, 131082, 4, 0, 131083, 4, 0, 131084, 4, 0, 131085, 4, 0, 131086, 6, 0, 131087, 7, 0, 131088, 7, 0, 262141, 7, 0, 262142, 7, 0, 262143, 6, 0, 196608, 4, 0, 196609, 4, 0, 196610, 4, 0, 196611, 4, 0, 196612, 4, 0, 196613, 4, 0, 196614, 6, 0, 196615, 4, 0, 196616, 4, 0, 196617, 4, 0, 196618, 4, 0, 196619, 4, 0, 196620, 4, 0, 196621, 4, 0, 196622, 6, 0, 196623, 7, 0, 196624, 7, 0, 327677, 7, 0, 327678, 7, 0, 327679, 6, 0, 262144, 4, 0, 262145, 4, 0, 262146, 4, 0, 262147, 4, 0, 262148, 4, 0, 262149, 4, 0, 262150, 6, 0, 262151, 4, 0, 262152, 4, 0, 262153, 4, 0, 262154, 4, 0, 262155, 4, 0, 262156, 4, 0, 262157, 4, 0, 262158, 6, 0, 262159, 7, 0, 262160, 7, 0, 393213, 7, 0, 393214, 7, 0, 393215, 6, 0, 327680, 4, 0, 327681, 4, 0, 327682, 4, 0, 327683, 4, 0, 327684, 4, 0, 327685, 4, 0, 327686, 4, 0, 327687, 4, 0, 327688, 4, 0, 327689, 4, 0, 327690, 4, 0, 327691, 4, 0, 327692, 4, 0, 327693, 4, 0, 327694, 6, 0, 327695, 7, 0, 327696, 7, 0, 458749, 7, 0, 458750, 7, 0, 458751, 6, 0, 393216, 4, 0, 393217, 4, 0, 393218, 4, 0, 393219, 4, 0, 393220, 4, 0, 393221, 4, 0, 393222, 4, 0, 393223, 4, 0, 393224, 4, 0, 393225, 4, 0, 393226, 4, 0, 393227, 4, 0, 393228, 4, 0, 393229, 4, 0, 393230, 6, 0, 393231, 7, 0, 393232, 7, 0, 524285, 7, 0, 524286, 7, 0, 524287, 6, 0, 458752, 4, 0, 458753, 4, 0, 458754, 4, 0, 458755, 4, 0, 458756, 4, 0, 458757, 4, 0, 458758, 4, 0, 458759, 4, 0, 458760, 4, 0, 458761, 4, 0, 458762, 4, 0, 458763, 4, 0, 458764, 4, 0, 458765, 4, 0, 458766, 6, 0, 458767, 7, 0, 458768, 7, 0, 589821, 7, 0, 589822, 7, 0, 589823, 6, 0, 524288, 4, 0, 524289, 4, 0, 524290, 4, 0, 524291, 4, 0, 524292, 4, 0, 524293, 4, 0, 524294, 4, 0, 524295, 4, 0, 524296, 4, 0, 524297, 4, 0, 524298, 4, 0, 524299, 4, 0, 524300, 4, 0, 524301, 4, 0, 524302, 6, 0, 524303, 7, 0, 524304, 7, 0, 655357, 7, 0, 655358, 7, 0, 655359, 6, 0, 589824, 4, 0, 589825, 4, 0, 589826, 4, 0, 589827, 4, 0, 589828, 4, 0, 589829, 4, 0, 589830, 4, 0, 589831, 4, 0, 589832, 4, 0, 589833, 4, 0, 589834, 4, 0, 589835, 4, 0, 589836, 4, 0, 589837, 4, 0, 589838, 6, 0, 589839, 7, 0, 589840, 7, 0, 720893, 7, 0, 720894, 7, 0, 720895, 6, 0, 655360, 4, 0, 655361, 4, 0, 655362, 4, 0, 655363, 4, 0, 655364, 4, 0, 655365, 4, 0, 655366, 4, 0, 655367, 4, 0, 655368, 4, 0, 655369, 4, 0, 655370, 4, 0, 655371, 4, 0, 655372, 4, 0, 655373, 4, 0, 655374, 6, 0, 655375, 7, 0, 655376, 7, 0, 786429, 7, 0, 786430, 7, 0, 786431, 6, 0, 720896, 4, 0, 720897, 4, 0, 720898, 4, 0, 720899, 4, 0, 720900, 4, 0, 720901, 4, 0, 720902, 4, 0, 720903, 4, 0, 720904, 4, 0, 720905, 4, 0, 720906, 4, 0, 720907, 4, 0, 720908, 4, 0, 720909, 4, 0, 720910, 6, 0, 720911, 7, 0, 720912, 7, 0, 851965, 7, 0, 851966, 7, 0, 851967, 6, 0, 786432, 6, 0, 786433, 6, 0, 786434, 6, 0, 786435, 4, 0, 786436, 4, 0, 786437, 6, 0, 786438, 6, 0, 786439, 6, 0, 786440, 6, 0, 786441, 6, 0, 786442, 6, 0, 786443, 6, 0, 786444, 6, 0, 786445, 6, 0, 786446, 6, 0, 786447, 7, 0, 786448, 7, 0, 917501, 7, 0, 917502, 7, 0, 917503, 7, 0, 851968, 7, 0, 851969, 7, 0, 851970, 7, 0, 851971, 7, 0, 851972, 7, 0, 851973, 7, 0, 851974, 7, 0, 851975, 7, 0, 851976, 7, 0, 851977, 7, 0, 851978, 7, 0, 851979, 7, 0, 851980, 7, 0, 851981, 7, 0, 851982, 7, 0, 851983, 7, 0, 851984, 7, 0 )
+tile_data = PoolIntArray( -65539, 7, 0, -65538, 7, 0, -65537, 7, 0, -131072, 7, 0, -131071, 7, 0, -131070, 7, 0, -131069, 7, 0, -131068, 7, 0, -131067, 7, 0, -131066, 7, 0, -131065, 7, 0, -131064, 7, 0, -131063, 7, 0, -131062, 7, 0, -131061, 7, 0, -131060, 7, 0, -131059, 7, 0, -131058, 7, 0, -131057, 7, 0, -131056, 7, 0, -3, 7, 0, -2, 7, 0, -1, 6, 0, -65536, 6, 0, -65535, 6, 0, -65534, 6, 0, -65533, 6, 0, -65532, 6, 0, -65531, 6, 0, -65530, 6, 0, -65529, 6, 0, -65528, 6, 0, -65527, 6, 0, -65526, 6, 0, -65525, 6, 0, -65524, 6, 0, -65523, 6, 0, -65522, 6, 0, -65521, 7, 0, -65520, 7, 0, 65533, 7, 0, 65534, 7, 0, 65535, 6, 0, 6, 6, 0, 14, 6, 0, 15, 7, 0, 16, 7, 0, 131069, 7, 0, 131070, 7, 0, 131071, 6, 0, 65542, 6, 0, 65550, 6, 0, 65551, 7, 0, 65552, 7, 0, 196605, 7, 0, 196606, 7, 0, 196607, 6, 0, 131072, 4, 0, 131073, 4, 0, 131074, 4, 0, 131075, 4, 0, 131076, 4, 0, 131077, 4, 0, 131078, 6, 0, 131079, 4, 0, 131080, 4, 0, 131081, 4, 0, 131082, 4, 0, 131083, 4, 0, 131084, 4, 0, 131085, 4, 0, 131086, 6, 0, 131087, 7, 0, 131088, 7, 0, 262141, 7, 0, 262142, 7, 0, 262143, 6, 0, 196608, 4, 0, 196609, 4, 0, 196610, 4, 0, 196611, 4, 0, 196612, 4, 0, 196613, 4, 0, 196614, 6, 0, 196615, 4, 0, 196616, 4, 0, 196617, 4, 0, 196618, 4, 0, 196619, 4, 0, 196620, 4, 0, 196621, 4, 0, 196622, 6, 0, 196623, 7, 0, 196624, 7, 0, 327677, 7, 0, 327678, 7, 0, 327679, 6, 0, 262144, 4, 0, 262145, 4, 0, 262146, 4, 0, 262147, 4, 0, 262148, 4, 0, 262149, 4, 0, 262150, 6, 0, 262151, 4, 0, 262152, 4, 0, 262153, 4, 0, 262154, 4, 0, 262155, 4, 0, 262156, 4, 0, 262157, 4, 0, 262158, 6, 0, 262159, 7, 0, 262160, 7, 0, 393213, 7, 0, 393214, 7, 0, 393215, 6, 0, 327680, 4, 0, 327681, 4, 0, 327682, 4, 0, 327683, 4, 0, 327684, 4, 0, 327685, 4, 0, 327686, 4, 0, 327687, 4, 0, 327688, 4, 0, 327689, 4, 0, 327690, 4, 0, 327691, 4, 0, 327692, 4, 0, 327693, 4, 0, 327694, 6, 0, 327695, 7, 0, 327696, 7, 0, 458749, 7, 0, 458750, 7, 0, 458751, 6, 0, 393216, 4, 0, 393217, 4, 0, 393218, 4, 0, 393219, 4, 0, 393220, 4, 0, 393221, 4, 0, 393222, 4, 0, 393223, 4, 0, 393224, 4, 0, 393225, 4, 0, 393226, 4, 0, 393227, 4, 0, 393228, 4, 0, 393229, 4, 0, 393230, 6, 0, 393231, 7, 0, 393232, 7, 0, 524285, 7, 0, 524286, 7, 0, 524287, 6, 0, 458752, 4, 0, 458753, 4, 0, 458754, 4, 0, 458755, 4, 0, 458756, 4, 0, 458757, 4, 0, 458758, 4, 0, 458759, 4, 0, 458760, 4, 0, 458761, 4, 0, 458762, 4, 0, 458763, 4, 0, 458764, 4, 0, 458765, 4, 0, 458766, 6, 0, 458767, 7, 0, 458768, 7, 0, 589821, 7, 0, 589822, 7, 0, 589823, 6, 0, 524288, 4, 0, 524289, 4, 0, 524290, 4, 0, 524291, 4, 0, 524292, 4, 0, 524293, 4, 0, 524294, 4, 0, 524295, 4, 0, 524296, 4, 0, 524297, 4, 0, 524298, 4, 0, 524299, 4, 0, 524300, 4, 0, 524301, 4, 0, 524302, 6, 0, 524303, 7, 0, 524304, 7, 0, 655357, 7, 0, 655358, 7, 0, 655359, 6, 0, 589824, 4, 0, 589825, 4, 0, 589826, 4, 0, 589827, 4, 0, 589828, 4, 0, 589829, 4, 0, 589830, 4, 0, 589831, 4, 0, 589832, 4, 0, 589833, 4, 0, 589834, 4, 0, 589835, 4, 0, 589836, 4, 0, 589837, 4, 0, 589838, 6, 0, 589839, 7, 0, 589840, 7, 0, 720893, 7, 0, 720894, 7, 0, 720895, 6, 0, 655360, 4, 0, 655361, 4, 0, 655362, 4, 0, 655363, 4, 0, 655364, 4, 0, 655365, 4, 0, 655366, 4, 0, 655367, 4, 0, 655368, 4, 0, 655369, 4, 0, 655370, 4, 0, 655371, 4, 0, 655372, 4, 0, 655373, 4, 0, 655374, 6, 0, 655375, 7, 0, 655376, 7, 0, 786429, 7, 0, 786430, 7, 0, 786431, 6, 0, 720896, 4, 0, 720897, 4, 0, 720898, 4, 0, 720899, 4, 0, 720900, 4, 0, 720901, 4, 0, 720902, 4, 0, 720903, 4, 0, 720904, 4, 0, 720905, 4, 0, 720906, 4, 0, 720907, 4, 0, 720908, 4, 0, 720909, 4, 0, 720910, 6, 0, 720911, 7, 0, 720912, 7, 0, 851965, 7, 0, 851966, 7, 0, 851967, 6, 0, 786432, 6, 0, 786433, 6, 0, 786434, 6, 0, 786435, 4, 0, 786436, 4, 0, 786437, 6, 0, 786438, 6, 0, 786439, 6, 0, 786440, 6, 0, 786441, 6, 0, 786442, 6, 0, 786443, 6, 0, 786444, 6, 0, 786445, 6, 0, 786446, 6, 0, 786447, 7, 0, 786448, 7, 0, 917501, 7, 0, 917502, 7, 0, 917503, 7, 0, 851968, 7, 0, 851969, 7, 0, 851970, 7, 0, 851971, 6, 0, 851972, 6, 0, 851973, 7, 0, 851974, 7, 0, 851975, 7, 0, 851976, 7, 0, 851977, 7, 0, 851978, 7, 0, 851979, 7, 0, 851980, 7, 0, 851981, 7, 0, 851982, 7, 0, 851983, 7, 0, 851984, 7, 0 )
 
 [node name="Structures" type="TileMap" parent="."]
 tile_set = ExtResource( 4 )
@@ -306,29 +360,32 @@ position = Vector2( 160, 336 )
 [node name="Owner" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 64, 128 )
 character_name = "小月"
+dialogues = [ SubResource( 1 ), SubResource( 2 ) ]
 
 [node name="Sprite" parent="Structures/Owner" index="0"]
 position = Vector2( 0, 0 )
 texture = ExtResource( 8 )
 
 [node name="AnimationTree" parent="Structures/Owner" index="3"]
-parameters/playback = SubResource( 1 )
+parameters/playback = SubResource( 3 )
 
 [node name="Npc" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 304, 288 )
 character_name = "收荒匠"
 role = 2
+dialogues = [ SubResource( 29 ) ]
 
 [node name="Sprite" parent="Structures/Npc" index="0"]
 texture = ExtResource( 9 )
 
 [node name="AnimationTree" parent="Structures/Npc" index="3"]
-parameters/playback = SubResource( 2 )
+parameters/playback = SubResource( 4 )
 
 [node name="Rouer" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 400, 80 )
 character_name = "柔儿"
 is_stationary = true
+dialogues = [ SubResource( 26 ), SubResource( 27 ), SubResource( 28 ) ]
 
 [node name="BanditA" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 368, 80 )
@@ -337,22 +394,23 @@ is_stationary = true
 role = 3
 items = [ 3 ]
 direction = Vector2( 1, 0 )
+dialogues = [ SubResource( 23 ) ]
 
 [node name="Sprite" parent="Structures/BanditA" index="0"]
 texture = ExtResource( 10 )
 
 [node name="AnimationPlayer" parent="Structures/BanditA" index="2"]
-anims/idle_down = SubResource( 3 )
-anims/idle_left = SubResource( 4 )
-anims/idle_right = SubResource( 5 )
-anims/idle_up = SubResource( 6 )
-anims/walk_down = SubResource( 7 )
-anims/walk_left = SubResource( 8 )
-anims/walk_right = SubResource( 9 )
-anims/walk_up = SubResource( 10 )
+anims/idle_down = SubResource( 5 )
+anims/idle_left = SubResource( 6 )
+anims/idle_right = SubResource( 7 )
+anims/idle_up = SubResource( 8 )
+anims/walk_down = SubResource( 9 )
+anims/walk_left = SubResource( 10 )
+anims/walk_right = SubResource( 11 )
+anims/walk_up = SubResource( 12 )
 
 [node name="AnimationTree" parent="Structures/BanditA" index="3"]
-parameters/playback = SubResource( 11 )
+parameters/playback = SubResource( 13 )
 
 [node name="Stats" parent="Structures/BanditA" index="7"]
 current_exp = 30
@@ -367,22 +425,23 @@ is_stationary = true
 role = 3
 items = [ 9, 4 ]
 direction = Vector2( 0, -1 )
+dialogues = [ SubResource( 24 ), SubResource( 25 ) ]
 
 [node name="Sprite" parent="Structures/BanditB" index="0"]
 texture = ExtResource( 11 )
 
 [node name="AnimationPlayer" parent="Structures/BanditB" index="2"]
-anims/idle_down = SubResource( 12 )
-anims/idle_left = SubResource( 13 )
-anims/idle_right = SubResource( 14 )
-anims/idle_up = SubResource( 15 )
-anims/walk_down = SubResource( 16 )
-anims/walk_left = SubResource( 17 )
-anims/walk_right = SubResource( 18 )
-anims/walk_up = SubResource( 19 )
+anims/idle_down = SubResource( 14 )
+anims/idle_left = SubResource( 15 )
+anims/idle_right = SubResource( 16 )
+anims/idle_up = SubResource( 17 )
+anims/walk_down = SubResource( 18 )
+anims/walk_left = SubResource( 19 )
+anims/walk_right = SubResource( 20 )
+anims/walk_up = SubResource( 21 )
 
 [node name="AnimationTree" parent="Structures/BanditB" index="3"]
-parameters/playback = SubResource( 20 )
+parameters/playback = SubResource( 22 )
 
 [node name="Stats" parent="Structures/BanditB" index="7"]
 health = 60
@@ -400,9 +459,11 @@ identifier = "Door"
 position = Vector2( 128, 416 )
 target_scene = "res://src/Maps/Town.tscn"
 destination = "Tavern"
-[connection signal="interaction_finished" from="Structures/Rouer" to="." method="_on_Rouer_interaction_finished"]
+[connection signal="interact" from="Structures/Rouer" to="." method="_on_Rouer_interact"]
 [connection signal="dead" from="Structures/BanditA" to="." method="_on_BanditA_dead"]
+[connection signal="interact" from="Structures/BanditA" to="." method="_on_BanditA_interact"]
 [connection signal="dead" from="Structures/BanditB" to="." method="_on_BanditB_dead"]
+[connection signal="interact" from="Structures/BanditB" to="." method="_on_BanditB_interact"]
 
 [editable path="Structures/Owner"]
 

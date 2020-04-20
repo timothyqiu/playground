@@ -2,6 +2,7 @@ class_name Npc
 extends KinematicBody2D
 
 signal dead()
+signal interact(interactor)
 signal interaction_finished()
 
 enum NpcRole {
@@ -27,6 +28,7 @@ export var max_speed := 30.0
 export var acceleration := 256.0
 export var friction := 256.0
 export var direction := Vector2.ZERO setget set_direction
+export(Array, Resource) var dialogues = []  # [Dialogue]
 
 var state: int setget set_state
 var velocity := Vector2.ZERO
@@ -117,26 +119,38 @@ func set_state(value: int):
 			animation_state.travel("idle")
 
 
+func _get_active_dialogue():
+	var max_dialogue = null
+	for dialogue in dialogues:
+		if dialogue.is_active() and (max_dialogue == null or max_dialogue.phase < dialogue.phase):
+			max_dialogue = dialogue
+	return max_dialogue
+
+
 func _on_Interactable_interact(interacter) -> void:
-	var data = [
-		{
-			"text": "你好呀！我是%s。" % character_name,
-			"name": character_name,
-			"avatar": talker_texture,
-		},
-		{
-			"text": "再见，%s。" % character_name,
-			"name": interacter.character_name,
-			"avatar": interacter.talker_texture,
-		}
-	]
-	
+	if get_signal_connection_list("interact"):
+		emit_signal("interact", interacter)
+	else:
+		interact(interacter)
+
+
+func talk(interacter):
 	# they shared the same parent, or just use global_position
 	self.state = NpcState.STATIONARY
 	self.direction = position.direction_to(interacter.position)
 	
-	DialogueBox.show_dialogue(data)
+	var dialogue = _get_active_dialogue()
+	if dialogue:
+		dialogue.show(interacter, self)
+	else:
+		DialogueBox.show_dialogue([])
+
+
+func interact(interacter) -> void:
+	self.pause_mode = Node.PAUSE_MODE_PROCESS
+	talk(interacter)
 	yield(Events, "dialogue_finished")
+	self.pause_mode = Node.PAUSE_MODE_INHERIT
 	
 	match role:
 		NpcRole.PEDLAR:
@@ -173,7 +187,11 @@ func _on_Interactable_interact(interacter) -> void:
 					emit_signal("dead")
 				
 				Battle.BattleResult.PLAYER_LOSE:
-					Transition.call_deferred("replace_scene", "res://src/UI/TitleScreen.tscn", {"skip_persist": true})
+					yield(Transition, "transition_finished")
+					Transition.replace_scene("res://src/UI/TitleScreen.tscn", {"skip_persist": true})
+				
+				Battle.BattleResult.RETREAT:
+					interactable._turn_off()
 		
 		NpcRole.NORMAL:
 			if not is_stationary:
@@ -195,6 +213,7 @@ func to_dict():
 		"x": position.x,
 		"y": position.y,
 		"items": items,
+		"is_stationary": is_stationary,
 	}
 
 
@@ -203,3 +222,4 @@ func from_dict(data: Dictionary):
 	self.direction = Vector2(data.direction_x, data.direction_y)
 	position = Vector2(data.x, data.y)
 	items = data.items
+	is_stationary = data.is_stationary

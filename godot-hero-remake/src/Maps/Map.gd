@@ -46,7 +46,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if Game.phase == Game.Phase.INTRO:
-		Game.phase = Game.Phase.SAVE_ROUER
+		Game.phase = Game.Phase.BEAT_TUYIN
 		
 		var data = [
 			{

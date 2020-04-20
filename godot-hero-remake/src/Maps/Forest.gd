@@ -2,7 +2,7 @@ extends Map
 
 
 func _on_CastleGate_decide_can_teleport(switcher) -> void:
-	if Game.phase < Game.Phase.SAVE_WORLD:
+	if Game.phase < Game.Phase.BEAT_BOSS:
 		switcher.can_teleport = false
 		
 		var data = [
@@ -46,9 +46,9 @@ func _on_MiniBoss_dead() -> void:
 			"avatar": player.talker_texture,
 		},
 		{
-			"text": "太好了！终于找到了失落已久的“圣剑”，就用它的威力把大魔王彻底杀死吧！",
+			"text": "太好了！终于找到了失落已久的「圣剑」，就用它的威力把大魔王彻底杀死吧！",
 		},
 	]
 	DialogueBox.show_dialogue(data)
 	
-	Game.phase = Game.Phase.SAVE_WORLD
+	Game.phase = Game.Phase.BEAT_BOSS

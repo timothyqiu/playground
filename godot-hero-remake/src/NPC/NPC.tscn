@@ -5,11 +5,11 @@
 [ext_resource path="res://src/Interactable/Interactable.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/Stats.tscn" type="PackedScene" id=4]
 
-[sub_resource type="CapsuleShape2D" id=1]
+[sub_resource type="CapsuleShape2D" id=23]
 radius = 7.0
 height = 4.0
 
-[sub_resource type="Animation" id=2]
+[sub_resource type="Animation" id=24]
 resource_name = "idle_down"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -24,7 +24,7 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=25]
 resource_name = "idle_left"
 length = 0.1
 tracks/0/type = "value"
@@ -40,7 +40,7 @@ tracks/0/keys = {
 "values": [ 2 ]
 }
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=26]
 resource_name = "idle_right"
 length = 0.1
 tracks/0/type = "value"
@@ -56,7 +56,7 @@ tracks/0/keys = {
 "values": [ 6 ]
 }
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=27]
 resource_name = "idle_up"
 length = 0.1
 tracks/0/type = "value"
@@ -72,7 +72,7 @@ tracks/0/keys = {
 "values": [ 4 ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=28]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -88,7 +88,7 @@ tracks/0/keys = {
 "values": [ 0, 1 ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=29]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -104,7 +104,7 @@ tracks/0/keys = {
 "values": [ 2, 3 ]
 }
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=30]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -120,7 +120,7 @@ tracks/0/keys = {
 "values": [ 6, 7 ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=31]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -199,7 +199,7 @@ transitions = [ "idle", "walk", SubResource( 20 ), "walk", "idle", SubResource( 
 start_node = "idle"
 graph_offset = Vector2( 0, -41.746 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=23]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=32]
 
 [node name="Npc" type="KinematicBody2D"]
 script = ExtResource( 2 )
@@ -216,23 +216,23 @@ frame = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = 1.5708
-shape = SubResource( 1 )
+shape = SubResource( 23 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/idle_down = SubResource( 2 )
-anims/idle_left = SubResource( 3 )
-anims/idle_right = SubResource( 4 )
-anims/idle_up = SubResource( 5 )
-anims/walk_down = SubResource( 6 )
-anims/walk_left = SubResource( 7 )
-anims/walk_right = SubResource( 8 )
-anims/walk_up = SubResource( 9 )
+anims/idle_down = SubResource( 24 )
+anims/idle_left = SubResource( 25 )
+anims/idle_right = SubResource( 26 )
+anims/idle_up = SubResource( 27 )
+anims/walk_down = SubResource( 28 )
+anims/walk_left = SubResource( 29 )
+anims/walk_right = SubResource( 30 )
+anims/walk_up = SubResource( 31 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = SubResource( 22 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
-parameters/playback = SubResource( 23 )
+parameters/playback = SubResource( 32 )
 parameters/idle/blend_position = Vector2( 0, 0 )
 parameters/walk/blend_position = Vector2( 0, 0 )
 

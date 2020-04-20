@@ -53,8 +53,12 @@ func _show_dialogue(index: int) -> void:
 
 
 func show_dialogue(input: Array) -> void:
-	contents = input
-	talkbar.popup()
+	if input.empty():
+		Events.emit_signal("dialogue_started")
+		Events.call_deferred("emit_signal", "dialogue_finished")
+	else:
+		contents = input
+		talkbar.popup()
 
 
 func _on_Talkbar_about_to_show() -> void:

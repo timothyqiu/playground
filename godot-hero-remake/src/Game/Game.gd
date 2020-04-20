@@ -9,13 +9,15 @@ const MUSICS = [
 
 enum Phase {
 	INTRO,
-	SAVE_ROUER,
-	FIND_SWORD,
-	SAVE_WORLD,
+	BEAT_TUYIN,
+	BEAT_DAOBA,
+	GO_OUTSIDE,
+	BEAT_WUPI,
+	BEAT_BOSS,
 	OUTRO,
 }
 
-var phase = Phase.INTRO
+var phase: int = Phase.INTRO
 var items = []
 
 var music setget set_music

@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+signal transition_finished
+
 enum ChangeMode {
 	REPLACE,
 	PUSH,
@@ -32,6 +34,7 @@ func pop_scene():
 
 
 func _change_scene(mode: int, scene_path: String, args: Dictionary):
+	var was_paused = get_tree().paused
 	get_tree().paused = true
 	
 	animation_player.play_backwards("fade_in")
@@ -70,5 +73,7 @@ func _change_scene(mode: int, scene_path: String, args: Dictionary):
 			if current_scene is Map:
 				Events.emit_signal("entering_map", current_scene)
 	
-	get_tree().paused = false
+	get_tree().paused = was_paused
 	animation_player.play("fade_in")
+	
+	emit_signal("transition_finished")
