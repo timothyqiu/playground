@@ -12,10 +12,6 @@ onready var talker_portrait := $Talkbar/HBoxContainer/VBoxContainer/TextureRect
 onready var tween := $Tween
 
 
-func _ready() -> void:
-	talkbar.hide()
-
-
 func _input(event: InputEvent) -> void:
 	if not talkbar.visible:
 		return
@@ -27,11 +23,10 @@ func _input(event: InputEvent) -> void:
 			var next_index = (current_index + 1) % contents.size()
 			if next_index == 0:
 				talkbar.hide()
-				Events.emit_signal("dialogue_finished")
 			else:
 				_show_dialogue(next_index)
 		
-	get_tree().set_input_as_handled()
+		get_tree().set_input_as_handled()
 
 
 func _show_dialogue(index: int) -> void:
@@ -58,7 +53,18 @@ func _show_dialogue(index: int) -> void:
 
 
 func show_dialogue(input: Array) -> void:
-	Events.emit_signal("dialogue_started")
-	talkbar.show()
 	contents = input
+	talkbar.popup()
+
+
+func _on_Talkbar_about_to_show() -> void:
+	Events.emit_signal("dialogue_started")
+	get_tree().paused = true
+	Events.emit_signal("game_paused")
 	_show_dialogue(0)
+
+
+func _on_Talkbar_popup_hide() -> void:
+	get_tree().paused = false
+	Events.emit_signal("game_unpaused")
+	Events.emit_signal("dialogue_finished")

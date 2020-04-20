@@ -66,6 +66,8 @@ func set_camera_bounds(rect: Rect2) -> void:
 	camera.limit_top = rect.position.y
 	camera.limit_right = rect.end.x
 	camera.limit_bottom = rect.end.y
+	
+	camera.force_update_scroll()
 
 
 func to_dict():
