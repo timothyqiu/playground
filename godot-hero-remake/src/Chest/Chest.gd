@@ -53,7 +53,7 @@ func _on_Interactable_interact(_interacter) -> void:
 			"text": "箱子里什么都没有，白高兴一场。"
 		})
 	
-	var err := Events.connect("dialogue_finished", self, "_message_finished")
+	var err := Events.connect("dialogue_finished", self, "_message_finished", [], CONNECT_ONESHOT)
 	assert(err == OK)
 	DialogueBox.show_dialogue(data)
 

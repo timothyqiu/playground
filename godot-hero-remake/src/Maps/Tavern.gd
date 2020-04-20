@@ -20,5 +20,5 @@ func _on_BanditB_dead() -> void:
 
 
 func _on_Rouer_dialogue_finished() -> void:
-	rouer._enter_idle()
+	rouer.state = Npc.NpcState.IDLE
 	Game.phase = Game.Phase.FIND_SWORD

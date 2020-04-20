@@ -1,3 +1,4 @@
+class_name Npc
 extends KinematicBody2D
 
 signal dead()
@@ -25,9 +26,9 @@ export(Array, ItemDB.ItemId) var items = []
 export var max_speed := 30.0
 export var acceleration := 256.0
 export var friction := 256.0
-export var direction := Vector2.ZERO
+export var direction := Vector2.ZERO setget set_direction
 
-var state = NpcState.IDLE
+var state: int setget set_state
 var velocity := Vector2.ZERO
 var talker_texture := AtlasTexture.new()
 
@@ -49,11 +50,12 @@ func _ready() -> void:
 		$Interactable.is_passive = false
 	
 	if is_stationary:
-		_enter_stationary(direction)
+		self.state = NpcState.STATIONARY
+		self.direction = direction
 	elif randi() % 2:
-		_enter_idle()
+		self.state = NpcState.IDLE
 	else:
-		_enter_walk()
+		self.state = NpcState.WALK
 
 
 func _physics_process(_delta: float) -> void:
@@ -68,12 +70,12 @@ func _process(delta: float) -> void:
 		NpcState.IDLE:
 			_move(delta)
 			if idle_timer.is_stopped():
-				_enter_walk()
+				self.state = NpcState.WALK
 		
 		NpcState.WALK:
 			_move(delta)
 			if walk_timer.is_stopped():
-				_enter_idle()
+				self.state = NpcState.IDLE
 
 
 func _move(delta: float) -> void:
@@ -87,32 +89,31 @@ func _move(delta: float) -> void:
 
 
 func set_direction(value: Vector2) -> void:
-	animation_tree.set("parameters/idle/blend_position", value)
-	animation_tree.set("parameters/walk/blend_position", value)
+	direction = value
+	
+	if animation_tree:
+		animation_tree.set("parameters/idle/blend_position", value)
+		animation_tree.set("parameters/walk/blend_position", value)
 
 
 func is_alive() -> bool:
 	return state != NpcState.DEAD
 
 
-func _enter_walk():
-	state = NpcState.WALK
-	direction = Vector2.RIGHT.rotated(randi() % 4 * PI / 2)
-	walk_timer.start(5 + randi() % 5)
-
-
-func _enter_idle():
-	state = NpcState.IDLE
-	direction = Vector2.ZERO
-	idle_timer.start(1 + randi() % 5)
-
-
-func _enter_stationary(dir: Vector2):
-	state = NpcState.STATIONARY
-	velocity = Vector2.ZERO
-	direction = dir
-	set_direction(dir)
-	animation_state.travel("idle")
+func set_state(value: int):
+	state = value
+	match state:
+		NpcState.IDLE:
+			direction = Vector2.ZERO
+			idle_timer.start(1 + randi() % 5)
+		
+		NpcState.WALK:
+			direction = Vector2.RIGHT.rotated(randi() % 4 * PI / 2)
+			walk_timer.start(5 + randi() % 5)
+		
+		NpcState.STATIONARY:
+			velocity = Vector2.ZERO
+			animation_state.travel("idle")
 
 
 func _on_Interactable_interact(interacter) -> void:
@@ -130,7 +131,8 @@ func _on_Interactable_interact(interacter) -> void:
 	]
 	
 	# they shared the same parent, or just use global_position
-	_enter_stationary(position.direction_to(interacter.position))
+	self.state = NpcState.STATIONARY
+	self.direction = position.direction_to(interacter.position)
 	
 	var err := Events.connect("dialogue_finished", self, "_on_dialogue_finished", [], CONNECT_ONESHOT)
 	assert(err == OK)
@@ -171,7 +173,7 @@ func _on_dialogue_finished() -> void:
 		
 		NpcRole.NORMAL:
 			if not is_stationary:
-				_enter_walk()
+				self.state = NpcState.WALK
 			emit_signal("dialogue_finished")
 
 
@@ -184,11 +186,7 @@ func _on_battle_finished(result: int) -> void:
 			emit_signal("dead")
 		
 		Battle.BattleResult.PLAYER_LOSE:
-			print("Game Over!")
-
-
-func _on_defeat_player() -> void:
-	print("Game Over!")
+			Transition.call_deferred("replace_scene", "res://src/UI/TitleScreen.tscn", {"skip_persist": true})
 
 
 func _on_item_bought(index) -> void:
@@ -202,12 +200,14 @@ func _on_shop_finished() -> void:
 			BuyDialog.disconnect("item_bought", self, "_on_item_bought")
 	
 	if not is_stationary:
-		_enter_walk()
+		self.state = NpcState.WALK
 
 
 func to_dict():
 	return {
 		"state": state,
+		"direction_x": direction.x,
+		"direction_y": direction.y,
 		"x": position.x,
 		"y": position.y,
 		"items": items,
@@ -215,6 +215,7 @@ func to_dict():
 
 
 func from_dict(data: Dictionary):
-	state = data.state
+	self.state = data.state
+	self.direction = Vector2(data.direction_x, data.direction_y)
 	position = Vector2(data.x, data.y)
 	items = data.items

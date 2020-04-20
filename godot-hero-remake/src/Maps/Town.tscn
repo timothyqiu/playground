@@ -997,7 +997,7 @@ target_scene = "res://src/Maps/Pharmacy.tscn"
 destination = "Door"
 
 [node name="CityGate" parent="." instance=ExtResource( 5 )]
-position = Vector2( 592, 816 )
+position = Vector2( 592, 828 )
 scale = Vector2( 3, 1 )
 target_scene = "res://src/Maps/Forest.tscn"
 destination = "CityGate"
