@@ -44,6 +44,31 @@ func _ready() -> void:
 	player.set_camera_bounds(rect)
 
 
+func _process(_delta: float) -> void:
+	if Game.phase == Game.Phase.INTRO:
+		Game.phase = Game.Phase.SAVE_ROUER
+		
+		var data = [
+			{
+				"text": "在很久很久以前，白云城的居民过着富足而安定的生活。不过一场巨大的灾难即将降临到这里……",
+			},
+			{
+				"text": "一天，我们故事的主人翁「小飞刀」一觉醒来，故事就从这里开始……"
+			},
+			{
+				"text": "……天亮了，今天天气真不错。",
+				"name": player.character_name,
+				"avatar": player.talker_texture,
+			},
+			{
+				"text": "我该出去转转了，顺便弄点好吃的！嘻嘻……",
+				"name": player.character_name,
+				"avatar": player.talker_texture,
+			}
+		]
+		DialogueBox.show_dialogue(data)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		GameMenu.show_menu()

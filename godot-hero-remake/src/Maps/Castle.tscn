@@ -1472,6 +1472,7 @@ parameters/playback = SubResource( 1 )
 
 [node name="Enemy" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 528, -880 )
+character_name = "全无敌"
 role = 4
 
 [node name="Sprite" parent="Structures/Enemy" index="0"]
@@ -1489,6 +1490,15 @@ anims/walk_up = SubResource( 9 )
 
 [node name="AnimationTree" parent="Structures/Enemy" index="3"]
 parameters/playback = SubResource( 10 )
+
+[node name="Stats" parent="Structures/Enemy" index="7"]
+level = 2
+health = 100
+max_health = 100
+current_exp = 20
+attack = 25
+defend = 60
+money = 100
 
 [node name="Boss" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 112, -880 )
@@ -1579,8 +1589,10 @@ parameters/playback = SubResource( 46 )
 
 [node name="TigerA" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 176, -720 )
+character_name = "巫凌云"
 is_stationary = true
 role = 4
+direction = Vector2( 0, 1 )
 
 [node name="Sprite" parent="Structures/TigerA" index="0"]
 texture = ExtResource( 12 )
@@ -1598,10 +1610,20 @@ anims/walk_up = SubResource( 54 )
 [node name="AnimationTree" parent="Structures/TigerA" index="3"]
 parameters/playback = SubResource( 55 )
 
+[node name="Stats" parent="Structures/TigerA" index="7"]
+level = 2
+health = 250
+max_health = 250
+attack = 60
+defend = 18
+money = 30
+
 [node name="TigerB" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 464, -720 )
+character_name = "巫凌云"
 is_stationary = true
 role = 4
+direction = Vector2( 0, 1 )
 
 [node name="Sprite" parent="Structures/TigerB" index="0"]
 texture = ExtResource( 12 )
@@ -1618,6 +1640,14 @@ anims/walk_up = SubResource( 63 )
 
 [node name="AnimationTree" parent="Structures/TigerB" index="3"]
 parameters/playback = SubResource( 64 )
+
+[node name="Stats" parent="Structures/TigerB" index="7"]
+level = 3
+health = 200
+max_health = 200
+attack = 60
+defend = 0
+money = 30
 
 [node name="Enemy6" parent="Structures" instance=ExtResource( 8 )]
 position = Vector2( 144, -48 )

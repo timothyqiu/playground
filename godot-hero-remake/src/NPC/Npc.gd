@@ -2,7 +2,7 @@ class_name Npc
 extends KinematicBody2D
 
 signal dead()
-signal dialogue_finished()
+signal interaction_finished()
 
 enum NpcRole {
 	NORMAL,
@@ -38,6 +38,7 @@ onready var animation_tree := $AnimationTree
 onready var animation_state:AnimationNodeStateMachine = $AnimationTree.get("parameters/playback")
 onready var walk_timer := $WalkTimer
 onready var idle_timer := $IdleTimer
+onready var interactable := $Interactable
 
 
 func _ready() -> void:
@@ -47,7 +48,7 @@ func _ready() -> void:
 	talker_texture.region = Rect2(0, 0, 32, 32)
 	
 	if role == NpcRole.ACTIVE_ENEMY:
-		$Interactable.is_passive = false
+		interactable.is_passive = false
 	
 	if is_stationary:
 		self.state = NpcState.STATIONARY
@@ -134,73 +135,56 @@ func _on_Interactable_interact(interacter) -> void:
 	self.state = NpcState.STATIONARY
 	self.direction = position.direction_to(interacter.position)
 	
-	var err := Events.connect("dialogue_finished", self, "_on_dialogue_finished", [], CONNECT_ONESHOT)
-	assert(err == OK)
-	
 	DialogueBox.show_dialogue(data)
-
-
-func _on_dialogue_finished() -> void:
-	set_direction(direction)
+	yield(Events, "dialogue_finished")
 	
 	match role:
 		NpcRole.PEDLAR:
-			var err := OK
-			
-			err = BuyDialog.connect("item_bought", self, "_on_item_bought")
-			assert(err == OK)
-			err = BuyDialog.connect("finished", self, "_on_shop_finished", [], CONNECT_ONESHOT)
+			var err := BuyDialog.connect("item_bought", self, "_on_item_bought")
 			assert(err == OK)
 			
 			BuyDialog.show(items)
+			yield(BuyDialog, "finished")
+			
+			BuyDialog.disconnect("item_bought", self, "_on_item_bought")
+			if not is_stationary:
+				self.state = NpcState.WALK
 		
 		NpcRole.PAWNBROKER:
-			var err := SellDialog.connect("finished", self, "_on_shop_finished", [], CONNECT_ONESHOT)
-			assert(err == OK)
-			
 			SellDialog.show()
+			yield(SellDialog, "finished")
+
+			if not is_stationary:
+				self.state = NpcState.WALK
 		
 		NpcRole.PASSIVE_ENEMY, NpcRole.ACTIVE_ENEMY:
-			var err := OK
-			
-			err = Events.connect("battle_finished", self, "_on_battle_finished", [], CONNECT_ONESHOT)
-			assert(err == OK)
 			Transition.push_scene("res://src/Battle/Battle.tscn", {
 				"enemy_stats": stats,
 				"enemy_texture": sprite.texture,
 				"enemy_items": items,
 			})
+			
+			var result = yield(Events, "battle_finished")
+			match result:
+				Battle.BattleResult.PLAYER_WIN:
+					# just a temporary trick
+					position = Vector2(-999, -999)
+					state = NpcState.DEAD
+					emit_signal("dead")
+				
+				Battle.BattleResult.PLAYER_LOSE:
+					Transition.call_deferred("replace_scene", "res://src/UI/TitleScreen.tscn", {"skip_persist": true})
 		
 		NpcRole.NORMAL:
 			if not is_stationary:
 				self.state = NpcState.WALK
-			emit_signal("dialogue_finished")
-
-
-func _on_battle_finished(result: int) -> void:
-	match result:
-		Battle.BattleResult.PLAYER_WIN:
-			# just a temporary trick
-			position = Vector2(-999, -999)
-			state = NpcState.DEAD
-			emit_signal("dead")
-		
-		Battle.BattleResult.PLAYER_LOSE:
-			Transition.call_deferred("replace_scene", "res://src/UI/TitleScreen.tscn", {"skip_persist": true})
+	
+	emit_signal("interaction_finished")
 
 
 func _on_item_bought(index) -> void:
 	items[index] = ItemDB.ItemId.NULL
 	BuyDialog.set_items(items)
-
-
-func _on_shop_finished() -> void:
-	match role:
-		NpcRole.PEDLAR:
-			BuyDialog.disconnect("item_bought", self, "_on_item_bought")
-	
-	if not is_stationary:
-		self.state = NpcState.WALK
 
 
 func to_dict():

@@ -19,6 +19,6 @@ func _on_BanditB_dead() -> void:
 		rouer._on_Interactable_interact(player)
 
 
-func _on_Rouer_dialogue_finished() -> void:
+func _on_Rouer_interaction_finished() -> void:
 	rouer.state = Npc.NpcState.IDLE
 	Game.phase = Game.Phase.FIND_SWORD

@@ -316,7 +316,7 @@ parameters/playback = SubResource( 1 )
 
 [node name="Npc" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 304, 288 )
-character_name = "拾荒匠"
+character_name = "收荒匠"
 role = 2
 
 [node name="Sprite" parent="Structures/Npc" index="0"]
@@ -356,9 +356,9 @@ parameters/playback = SubResource( 11 )
 
 [node name="Stats" parent="Structures/BanditA" index="7"]
 current_exp = 30
-attack = 4
-defend = 3
-money = 10
+attack = 8
+defend = 10
+money = 20
 
 [node name="BanditB" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 400, 112 )
@@ -385,12 +385,12 @@ anims/walk_up = SubResource( 19 )
 parameters/playback = SubResource( 20 )
 
 [node name="Stats" parent="Structures/BanditB" index="7"]
-health = 100
-max_health = 100
+health = 60
+max_health = 60
 current_exp = 50
-attack = 5
-defend = 4
-money = 20
+attack = 12
+defend = 7
+money = 30
 
 [node name="TransportDestination" parent="." instance=ExtResource( 5 )]
 position = Vector2( 128, 368 )
@@ -400,7 +400,7 @@ identifier = "Door"
 position = Vector2( 128, 416 )
 target_scene = "res://src/Maps/Town.tscn"
 destination = "Tavern"
-[connection signal="dialogue_finished" from="Structures/Rouer" to="." method="_on_Rouer_dialogue_finished"]
+[connection signal="interaction_finished" from="Structures/Rouer" to="." method="_on_Rouer_interaction_finished"]
 [connection signal="dead" from="Structures/BanditA" to="." method="_on_BanditA_dead"]
 [connection signal="dead" from="Structures/BanditB" to="." method="_on_BanditB_dead"]
 

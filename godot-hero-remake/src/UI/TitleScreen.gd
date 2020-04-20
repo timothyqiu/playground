@@ -9,7 +9,7 @@ func _ready() -> void:
 
 
 func _on_NewGame_pressed() -> void:
-	Transition.replace_scene("res://src/Maps/Home.tscn")
+	Game.new_game()
 
 
 func _on_Load_pressed() -> void:

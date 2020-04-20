@@ -2,7 +2,7 @@ extends Map
 
 
 func _on_CityGate_decide_can_teleport(switcher) -> void:
-	if Game.phase == Game.Phase.SAVE_ROUER:
+	if Game.phase <= Game.Phase.SAVE_ROUER:
 		switcher.can_teleport = false
 		
 		var data = [

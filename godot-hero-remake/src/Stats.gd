@@ -9,11 +9,11 @@ const DEFEND_INCR_PER_LEVEL := 1
 export var level := 1
 export var health := 50 setget set_health
 export var max_health := 50
-export var current_exp := 0 setget set_exp
+export var current_exp := 10 setget set_exp
 export var attack := 1
 export var defend := 1
 export var speed := 8
-export var money := 0
+export var money := 10
 
 
 func set_health(value: int) -> void:

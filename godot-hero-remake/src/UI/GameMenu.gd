@@ -57,6 +57,7 @@ func _on_MenuPanel_about_to_show() -> void:
 
 func _on_SavePanel_save_file_selected(path) -> void:
 	Game.save_game(path)
+	menu_panel.hide()
 
 
 func _on_LoadPanel_save_file_selected(path) -> void:

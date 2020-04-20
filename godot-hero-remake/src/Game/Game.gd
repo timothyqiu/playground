@@ -8,17 +8,15 @@ const MUSICS = [
 ]
 
 enum Phase {
+	INTRO,
 	SAVE_ROUER,
 	FIND_SWORD,
 	SAVE_WORLD,
+	OUTRO,
 }
 
-export(Phase) var phase = Phase.SAVE_ROUER
-export(Array, ItemDB.ItemId) var items := [
-	1, 2, 3, 4,
-	5, 6, 7, 8,
-	9, 10, 11, 12,
-]
+var phase = Phase.INTRO
+var items = []
 
 var music setget set_music
 
@@ -28,8 +26,7 @@ onready var music_player := $BackgroundMusicPlayer
 
 
 func _ready() -> void:
-	for _i in range(items.size(), MAX_ITEMS):
-		items.append(ItemDB.ItemId.NULL)
+	reset()
 	
 	var err := OK
 	err = Events.connect("leaving_map", self, "_on_leaving_map")
@@ -75,6 +72,29 @@ func _on_entering_map(map: Map) -> void:
 		var node = get_tree().root.get_node(path)
 		assert(node)
 		node.from_dict(data[path])
+
+
+func reset() -> void:
+	phase = Phase.INTRO
+	items = []
+	for _i in range(16):
+		items.append(ItemDB.ItemId.NULL)
+	items[0] = ItemDB.ItemId.HERB
+	PlayerStats.reset()
+	persist = {}
+	
+	if OS.is_debug_build():
+		put_item(ItemDB.ItemId.ACIENT_ARMOR)
+		put_item(ItemDB.ItemId.ACIENT_ARMOR)
+		put_item(ItemDB.ItemId.MANUAL)
+		put_item(ItemDB.ItemId.MANUAL)
+		put_item(ItemDB.ItemId.MANUAL)
+		put_item(ItemDB.ItemId.ICE_SWORD)
+
+
+func new_game() -> void:
+	reset()
+	Transition.replace_scene("res://src/Maps/Home.tscn")
 
 
 func use_item(index: int) -> void:
