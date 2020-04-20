@@ -45,6 +45,9 @@ func _on_MiniBoss_dead() -> void:
 			"name": player.character_name,
 			"avatar": player.talker_texture,
 		},
+		{
+			"text": "太好了！终于找到了失落已久的“圣剑”，就用它的威力把大魔王彻底杀死吧！",
+		},
 	]
 	DialogueBox.show_dialogue(data)
 	

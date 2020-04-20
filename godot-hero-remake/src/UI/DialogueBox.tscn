@@ -1,5 +1,6 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
+[ext_resource path="res://assets/ui/talk_panel.tres" type="StyleBox" id=1]
 [ext_resource path="res://assets/ui/main_theme.tres" type="Theme" id=2]
 [ext_resource path="res://src/UI/DialogueBox.gd" type="Script" id=3]
 
@@ -8,37 +9,40 @@ pause_mode = 2
 script = ExtResource( 3 )
 
 [node name="Talkbar" type="PopupPanel" parent="."]
+visible = true
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -96.0
 rect_min_size = Vector2( 640, 96 )
 theme = ExtResource( 2 )
+custom_styles/panel = ExtResource( 1 )
 popup_exclusive = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Talkbar"]
-anchor_left = 0.05
-anchor_top = 0.15
-anchor_right = 0.95
-anchor_bottom = 0.85
-margin_top = -0.400001
-margin_bottom = -0.600006
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 16.0
+margin_top = 8.0
+margin_right = -28.0
+margin_bottom = -8.0
+alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Talkbar/HBoxContainer"]
-margin_right = 95.0
-margin_bottom = 67.0
+margin_right = 98.0
+margin_bottom = 80.0
 size_flags_horizontal = 3
 
 [node name="TextureRect" type="TextureRect" parent="Talkbar/HBoxContainer/VBoxContainer"]
-margin_left = 31.0
-margin_right = 63.0
-margin_bottom = 44.0
+margin_left = 33.0
+margin_right = 65.0
+margin_bottom = 57.0
 rect_min_size = Vector2( 32, 32 )
 size_flags_horizontal = 4
 size_flags_vertical = 3
@@ -46,21 +50,26 @@ expand = true
 stretch_mode = 6
 
 [node name="NameLabel" type="Label" parent="Talkbar/HBoxContainer/VBoxContainer"]
-margin_top = 48.0
-margin_right = 95.0
-margin_bottom = 67.0
+margin_top = 61.0
+margin_right = 98.0
+margin_bottom = 80.0
 custom_colors/font_color = Color( 1, 1, 0, 1 )
 text = "密儿"
 align = 1
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Talkbar/HBoxContainer"]
-margin_left = 99.0
-margin_right = 576.0
-margin_bottom = 67.0
+margin_left = 102.0
+margin_top = 5.0
+margin_right = 596.0
+margin_bottom = 75.0
+rect_min_size = Vector2( 100, 70 )
 size_flags_horizontal = 3
+size_flags_vertical = 4
 size_flags_stretch_ratio = 5.0
 text = "不知道.(哼，才不告诉你)
-第二行"
+第二行
+第三行"
+scroll_active = false
 __meta__ = {
 "_edit_use_anchors_": false
 }

@@ -5,7 +5,6 @@ export(ItemDB.ItemId) var item_id := ItemDB.ItemId.NULL
 export var money := 0
 
 var interactable := false
-var close_after_message := false
 
 onready var sprite := $AnimatedSprite
 
@@ -25,7 +24,7 @@ func _on_Interactable_interact(_interacter) -> void:
 		return
 	
 	set_opened(true)
-	close_after_message = false
+	var close_after_message := false
 	
 	var data = []
 	
@@ -53,12 +52,9 @@ func _on_Interactable_interact(_interacter) -> void:
 			"text": "箱子里什么都没有，白高兴一场。"
 		})
 	
-	var err := Events.connect("dialogue_finished", self, "_message_finished", [], CONNECT_ONESHOT)
-	assert(err == OK)
 	DialogueBox.show_dialogue(data)
-
-
-func _message_finished():
+	yield(Events, "dialogue_finished")
+	
 	if close_after_message:
 		set_opened(false)
 
