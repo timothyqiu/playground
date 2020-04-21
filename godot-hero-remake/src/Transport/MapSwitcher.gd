@@ -8,7 +8,7 @@ export var destination := ""
 var can_teleport := true
 
 
-func _on_MapSwitcher_area_entered(_area: Area2D) -> void:
+func _on_MapSwitcher_body_entered(body: Node) -> void:
 	emit_signal("decide_can_teleport", self)
 	
 	if not can_teleport:

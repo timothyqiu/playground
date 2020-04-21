@@ -146,14 +146,13 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=10]
 
-[sub_resource type="Resource" id=77]
+[sub_resource type="Resource" id=11]
 script = ExtResource( 14 )
 phase = 0
 content = "}喂！你们的头儿呢？让他来见我。
 {小子，你不想活了。先过我这关吧！"
 
-[sub_resource type="Animation" id=11]
-resource_name = "idle_down"
+[sub_resource type="Animation" id=12]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -167,8 +166,7 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=12]
-resource_name = "idle_left"
+[sub_resource type="Animation" id=13]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -183,8 +181,7 @@ tracks/0/keys = {
 "values": [ 2 ]
 }
 
-[sub_resource type="Animation" id=13]
-resource_name = "idle_right"
+[sub_resource type="Animation" id=14]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -199,8 +196,7 @@ tracks/0/keys = {
 "values": [ 6 ]
 }
 
-[sub_resource type="Animation" id=14]
-resource_name = "idle_up"
+[sub_resource type="Animation" id=15]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -213,22 +209,6 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 4 ]
-}
-
-[sub_resource type="Animation" id=15]
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 0, 1 ]
 }
 
 [sub_resource type="Animation" id=16]
@@ -244,7 +224,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 2, 3 ]
+"values": [ 0, 1 ]
 }
 
 [sub_resource type="Animation" id=17]
@@ -260,7 +240,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 6, 7 ]
+"values": [ 2, 3 ]
 }
 
 [sub_resource type="Animation" id=18]
@@ -276,13 +256,28 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=19]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
 "values": [ 4, 5 ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=19]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=20]
 
-[sub_resource type="Animation" id=20]
-resource_name = "idle_down"
+[sub_resource type="Animation" id=21]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -296,8 +291,7 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=21]
-resource_name = "idle_left"
+[sub_resource type="Animation" id=22]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -312,8 +306,7 @@ tracks/0/keys = {
 "values": [ 2 ]
 }
 
-[sub_resource type="Animation" id=22]
-resource_name = "idle_right"
+[sub_resource type="Animation" id=23]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -328,8 +321,7 @@ tracks/0/keys = {
 "values": [ 6 ]
 }
 
-[sub_resource type="Animation" id=23]
-resource_name = "idle_up"
+[sub_resource type="Animation" id=24]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -342,22 +334,6 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 4 ]
-}
-
-[sub_resource type="Animation" id=24]
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 0, 1 ]
 }
 
 [sub_resource type="Animation" id=25]
@@ -373,7 +349,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 2, 3 ]
+"values": [ 0, 1 ]
 }
 
 [sub_resource type="Animation" id=26]
@@ -389,7 +365,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 6, 7 ]
+"values": [ 2, 3 ]
 }
 
 [sub_resource type="Animation" id=27]
@@ -405,13 +381,28 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=28]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
 "values": [ 4, 5 ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=28]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=29]
 
-[sub_resource type="Animation" id=29]
-resource_name = "idle_down"
+[sub_resource type="Animation" id=30]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -425,8 +416,7 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=30]
-resource_name = "idle_left"
+[sub_resource type="Animation" id=31]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -441,8 +431,7 @@ tracks/0/keys = {
 "values": [ 2 ]
 }
 
-[sub_resource type="Animation" id=31]
-resource_name = "idle_right"
+[sub_resource type="Animation" id=32]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -457,8 +446,7 @@ tracks/0/keys = {
 "values": [ 6 ]
 }
 
-[sub_resource type="Animation" id=32]
-resource_name = "idle_up"
+[sub_resource type="Animation" id=33]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -471,22 +459,6 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 4 ]
-}
-
-[sub_resource type="Animation" id=33]
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 0, 1 ]
 }
 
 [sub_resource type="Animation" id=34]
@@ -502,7 +474,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 2, 3 ]
+"values": [ 0, 1 ]
 }
 
 [sub_resource type="Animation" id=35]
@@ -518,7 +490,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 6, 7 ]
+"values": [ 2, 3 ]
 }
 
 [sub_resource type="Animation" id=36]
@@ -534,12 +506,28 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=37]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
 "values": [ 4, 5 ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=37]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=38]
 
-[sub_resource type="Resource" id=76]
+[sub_resource type="Resource" id=39]
 script = ExtResource( 14 )
 phase = 0
 content = "{小子，把值钱的东西都拿出来吧。大爷我兴许可以饶你不死！呵呵……
@@ -547,8 +535,7 @@ content = "{小子，把值钱的东西都拿出来吧。大爷我兴许可以�
 {给我看看。
 }看刀！"
 
-[sub_resource type="Animation" id=38]
-resource_name = "idle_down"
+[sub_resource type="Animation" id=40]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -562,8 +549,7 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=39]
-resource_name = "idle_left"
+[sub_resource type="Animation" id=41]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -578,8 +564,7 @@ tracks/0/keys = {
 "values": [ 2 ]
 }
 
-[sub_resource type="Animation" id=40]
-resource_name = "idle_right"
+[sub_resource type="Animation" id=42]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -594,8 +579,7 @@ tracks/0/keys = {
 "values": [ 6 ]
 }
 
-[sub_resource type="Animation" id=41]
-resource_name = "idle_up"
+[sub_resource type="Animation" id=43]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -608,38 +592,6 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 4 ]
-}
-
-[sub_resource type="Animation" id=42]
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 0, 1 ]
-}
-
-[sub_resource type="Animation" id=43]
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 2, 3 ]
 }
 
 [sub_resource type="Animation" id=44]
@@ -655,7 +607,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 6, 7 ]
+"values": [ 0, 1 ]
 }
 
 [sub_resource type="Animation" id=45]
@@ -671,12 +623,44 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=46]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=47]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
 "values": [ 4, 5 ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=46]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=48]
 
-[sub_resource type="Animation" id=47]
+[sub_resource type="Animation" id=49]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -688,36 +672,6 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 0 ]
-}
-
-[sub_resource type="Animation" id=48]
-length = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 2 ]
-}
-
-[sub_resource type="Animation" id=49]
-length = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 6 ]
 }
 
 [sub_resource type="Animation" id=50]
@@ -732,12 +686,11 @@ tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ 4 ]
+"values": [ 2 ]
 }
 
 [sub_resource type="Animation" id=51]
-length = 0.8
-loop = true
+length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -745,15 +698,14 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ 0, 1 ]
+"values": [ 6 ]
 }
 
 [sub_resource type="Animation" id=52]
-length = 0.8
-loop = true
+length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -761,10 +713,10 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ 2, 3 ]
+"values": [ 4 ]
 }
 
 [sub_resource type="Animation" id=53]
@@ -780,7 +732,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 6, 7 ]
+"values": [ 0, 1 ]
 }
 
 [sub_resource type="Animation" id=54]
@@ -796,18 +748,50 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=55]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=56]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
 "values": [ 4, 5 ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=55]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=57]
 
-[sub_resource type="Resource" id=56]
+[sub_resource type="Resource" id=58]
 script = ExtResource( 14 )
 phase = 0
 content = "{站住，把身上值钱的东西都拿出来，就饶你不死。
 }哼！有本事就来拿吧。"
 
-[sub_resource type="Animation" id=57]
+[sub_resource type="Animation" id=59]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -819,36 +803,6 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 0 ]
-}
-
-[sub_resource type="Animation" id=58]
-length = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 2 ]
-}
-
-[sub_resource type="Animation" id=59]
-length = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 6 ]
 }
 
 [sub_resource type="Animation" id=60]
@@ -863,12 +817,11 @@ tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ 4 ]
+"values": [ 2 ]
 }
 
 [sub_resource type="Animation" id=61]
-length = 0.8
-loop = true
+length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -876,15 +829,14 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ 0, 1 ]
+"values": [ 6 ]
 }
 
 [sub_resource type="Animation" id=62]
-length = 0.8
-loop = true
+length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -892,10 +844,10 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ 2, 3 ]
+"values": [ 4 ]
 }
 
 [sub_resource type="Animation" id=63]
@@ -911,7 +863,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 6, 7 ]
+"values": [ 0, 1 ]
 }
 
 [sub_resource type="Animation" id=64]
@@ -927,112 +879,10 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.4 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 4, 5 ]
-}
-
-[sub_resource type="AnimationNodeStateMachinePlayback" id=65]
-
-[sub_resource type="Resource" id=66]
-script = ExtResource( 14 )
-phase = 0
-content = "}我找一下强盗头子「巫批」。
-{我就是神勇无敌的巫批！呵呵……
-{害怕了吧！小子？
-}我当是谁呢？原来干尽坏事的就是你啊！受死吧……
-{气死我了，看招。"
-
-[sub_resource type="Animation" id=67]
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 0 ]
-}
-
-[sub_resource type="Animation" id=68]
-length = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 2 ]
-}
-
-[sub_resource type="Animation" id=69]
-length = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 6 ]
-}
-
-[sub_resource type="Animation" id=70]
-length = 0.1
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 4 ]
-}
-
-[sub_resource type="Animation" id=71]
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ 0, 1 ]
-}
-
-[sub_resource type="Animation" id=72]
-length = 0.8
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
 "values": [ 2, 3 ]
 }
 
-[sub_resource type="Animation" id=73]
+[sub_resource type="Animation" id=65]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -1048,7 +898,7 @@ tracks/0/keys = {
 "values": [ 6, 7 ]
 }
 
-[sub_resource type="Animation" id=74]
+[sub_resource type="Animation" id=66]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -1064,7 +914,141 @@ tracks/0/keys = {
 "values": [ 4, 5 ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=75]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=67]
+
+[sub_resource type="Resource" id=68]
+script = ExtResource( 14 )
+phase = 0
+content = "}我找一下强盗头子「巫批」。
+{我就是神勇无敌的巫批！呵呵……
+{害怕了吧！小子？
+}我当是谁呢？原来干尽坏事的就是你啊！受死吧……
+{气死我了，看招。"
+
+[sub_resource type="Animation" id=69]
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=70]
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=71]
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+
+[sub_resource type="Animation" id=72]
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=73]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[sub_resource type="Animation" id=74]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 2, 3 ]
+}
+
+[sub_resource type="Animation" id=75]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 6, 7 ]
+}
+
+[sub_resource type="Animation" id=76]
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=77]
 
 [node name="Forest" type="Node2D"]
 script = ExtResource( 4 )
@@ -1127,27 +1111,34 @@ anims/walk_up = SubResource( 9 )
 [node name="AnimationTree" parent="Structures/Npc2" index="3"]
 parameters/playback = SubResource( 10 )
 
+[node name="Stats" parent="Structures/Npc2" index="7"]
+health = 100
+max_health = 100
+attack = 13
+defend = 8
+money = 15
+
 [node name="Npc3" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 400, 224 )
 character_name = "无敌"
 role = 4
-dialogues = [ SubResource( 77 ) ]
+dialogues = [ SubResource( 11 ) ]
 
 [node name="Sprite" parent="Structures/Npc3" index="0"]
 texture = ExtResource( 10 )
 
 [node name="AnimationPlayer" parent="Structures/Npc3" index="2"]
-anims/idle_down = SubResource( 11 )
-anims/idle_left = SubResource( 12 )
-anims/idle_right = SubResource( 13 )
-anims/idle_up = SubResource( 14 )
-anims/walk_down = SubResource( 15 )
-anims/walk_left = SubResource( 16 )
-anims/walk_right = SubResource( 17 )
-anims/walk_up = SubResource( 18 )
+anims/idle_down = SubResource( 12 )
+anims/idle_left = SubResource( 13 )
+anims/idle_right = SubResource( 14 )
+anims/idle_up = SubResource( 15 )
+anims/walk_down = SubResource( 16 )
+anims/walk_left = SubResource( 17 )
+anims/walk_right = SubResource( 18 )
+anims/walk_up = SubResource( 19 )
 
 [node name="AnimationTree" parent="Structures/Npc3" index="3"]
-parameters/playback = SubResource( 19 )
+parameters/playback = SubResource( 20 )
 
 [node name="Stats" parent="Structures/Npc3" index="7"]
 level = 3
@@ -1163,17 +1154,17 @@ role = 4
 texture = ExtResource( 10 )
 
 [node name="AnimationPlayer" parent="Structures/Npc4" index="2"]
-anims/idle_down = SubResource( 20 )
-anims/idle_left = SubResource( 21 )
-anims/idle_right = SubResource( 22 )
-anims/idle_up = SubResource( 23 )
-anims/walk_down = SubResource( 24 )
-anims/walk_left = SubResource( 25 )
-anims/walk_right = SubResource( 26 )
-anims/walk_up = SubResource( 27 )
+anims/idle_down = SubResource( 21 )
+anims/idle_left = SubResource( 22 )
+anims/idle_right = SubResource( 23 )
+anims/idle_up = SubResource( 24 )
+anims/walk_down = SubResource( 25 )
+anims/walk_left = SubResource( 26 )
+anims/walk_right = SubResource( 27 )
+anims/walk_up = SubResource( 28 )
 
 [node name="AnimationTree" parent="Structures/Npc4" index="3"]
-parameters/playback = SubResource( 28 )
+parameters/playback = SubResource( 29 )
 
 [node name="Npc5" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 32, 288 )
@@ -1185,17 +1176,17 @@ items = [ 1 ]
 texture = ExtResource( 9 )
 
 [node name="AnimationPlayer" parent="Structures/Npc5" index="2"]
-anims/idle_down = SubResource( 29 )
-anims/idle_left = SubResource( 30 )
-anims/idle_right = SubResource( 31 )
-anims/idle_up = SubResource( 32 )
-anims/walk_down = SubResource( 33 )
-anims/walk_left = SubResource( 34 )
-anims/walk_right = SubResource( 35 )
-anims/walk_up = SubResource( 36 )
+anims/idle_down = SubResource( 30 )
+anims/idle_left = SubResource( 31 )
+anims/idle_right = SubResource( 32 )
+anims/idle_up = SubResource( 33 )
+anims/walk_down = SubResource( 34 )
+anims/walk_left = SubResource( 35 )
+anims/walk_right = SubResource( 36 )
+anims/walk_up = SubResource( 37 )
 
 [node name="AnimationTree" parent="Structures/Npc5" index="3"]
-parameters/playback = SubResource( 37 )
+parameters/playback = SubResource( 38 )
 
 [node name="Stats" parent="Structures/Npc5" index="7"]
 health = 60
@@ -1203,30 +1194,30 @@ max_health = 60
 attack = 12
 defend = 5
 speed = 4
-money = 20
+money = 25
 
 [node name="Npc8" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 860, 288 )
 character_name = "巫凌云"
 role = 4
 items = [ 7 ]
-dialogues = [ SubResource( 76 ) ]
+dialogues = [ SubResource( 39 ) ]
 
 [node name="Sprite" parent="Structures/Npc8" index="0"]
 texture = ExtResource( 9 )
 
 [node name="AnimationPlayer" parent="Structures/Npc8" index="2"]
-anims/idle_down = SubResource( 38 )
-anims/idle_left = SubResource( 39 )
-anims/idle_right = SubResource( 40 )
-anims/idle_up = SubResource( 41 )
-anims/walk_down = SubResource( 42 )
-anims/walk_left = SubResource( 43 )
-anims/walk_right = SubResource( 44 )
-anims/walk_up = SubResource( 45 )
+anims/idle_down = SubResource( 40 )
+anims/idle_left = SubResource( 41 )
+anims/idle_right = SubResource( 42 )
+anims/idle_up = SubResource( 43 )
+anims/walk_down = SubResource( 44 )
+anims/walk_left = SubResource( 45 )
+anims/walk_right = SubResource( 46 )
+anims/walk_up = SubResource( 47 )
 
 [node name="AnimationTree" parent="Structures/Npc8" index="3"]
-parameters/playback = SubResource( 46 )
+parameters/playback = SubResource( 48 )
 
 [node name="Stats" parent="Structures/Npc8" index="7"]
 level = 2
@@ -1247,17 +1238,17 @@ items = [ 6 ]
 texture = ExtResource( 11 )
 
 [node name="AnimationPlayer" parent="Structures/Npc6" index="2"]
-anims/idle_down = SubResource( 47 )
-anims/idle_left = SubResource( 48 )
-anims/idle_right = SubResource( 49 )
-anims/idle_up = SubResource( 50 )
-anims/walk_down = SubResource( 51 )
-anims/walk_left = SubResource( 52 )
-anims/walk_right = SubResource( 53 )
-anims/walk_up = SubResource( 54 )
+anims/idle_down = SubResource( 49 )
+anims/idle_left = SubResource( 50 )
+anims/idle_right = SubResource( 51 )
+anims/idle_up = SubResource( 52 )
+anims/walk_down = SubResource( 53 )
+anims/walk_left = SubResource( 54 )
+anims/walk_right = SubResource( 55 )
+anims/walk_up = SubResource( 56 )
 
 [node name="AnimationTree" parent="Structures/Npc6" index="3"]
-parameters/playback = SubResource( 55 )
+parameters/playback = SubResource( 57 )
 
 [node name="Stats" parent="Structures/Npc6" index="7"]
 level = 3
@@ -1270,46 +1261,54 @@ money = 50
 position = Vector2( 64, 528 )
 character_name = "飞将军"
 role = 4
-dialogues = [ SubResource( 56 ) ]
+dialogues = [ SubResource( 58 ) ]
 
 [node name="Sprite" parent="Structures/Npc7" index="0"]
 texture = ExtResource( 13 )
 
 [node name="AnimationPlayer" parent="Structures/Npc7" index="2"]
-anims/idle_down = SubResource( 57 )
-anims/idle_left = SubResource( 58 )
-anims/idle_right = SubResource( 59 )
-anims/idle_up = SubResource( 60 )
-anims/walk_down = SubResource( 61 )
-anims/walk_left = SubResource( 62 )
-anims/walk_right = SubResource( 63 )
-anims/walk_up = SubResource( 64 )
+anims/idle_down = SubResource( 59 )
+anims/idle_left = SubResource( 60 )
+anims/idle_right = SubResource( 61 )
+anims/idle_up = SubResource( 62 )
+anims/walk_down = SubResource( 63 )
+anims/walk_left = SubResource( 64 )
+anims/walk_right = SubResource( 65 )
+anims/walk_up = SubResource( 66 )
 
 [node name="AnimationTree" parent="Structures/Npc7" index="3"]
-parameters/playback = SubResource( 65 )
+parameters/playback = SubResource( 67 )
+
+[node name="Stats" parent="Structures/Npc7" index="7"]
+health = 80
+max_health = 80
+current_exp = 25
+attack = 12
+defend = 8
+money = 30
 
 [node name="MiniBoss" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 800, 752 )
 character_name = "巫批"
 role = 4
 items = [ 8 ]
-dialogues = [ SubResource( 66 ) ]
+dialogues = [ SubResource( 68 ) ]
 
 [node name="Sprite" parent="Structures/MiniBoss" index="0"]
 texture = ExtResource( 12 )
 
 [node name="AnimationPlayer" parent="Structures/MiniBoss" index="2"]
-anims/idle_down = SubResource( 67 )
-anims/idle_left = SubResource( 68 )
-anims/idle_right = SubResource( 69 )
-anims/idle_up = SubResource( 70 )
-anims/walk_down = SubResource( 71 )
-anims/walk_left = SubResource( 72 )
-anims/walk_right = SubResource( 73 )
-anims/walk_up = SubResource( 74 )
+anims/idle_down = SubResource( 69 )
+anims/idle_left = SubResource( 70 )
+anims/idle_right = SubResource( 71 )
+anims/idle_up = SubResource( 72 )
+anims/walk_down = SubResource( 73 )
+anims/walk_left = SubResource( 74 )
+anims/walk_right = SubResource( 75 )
+anims/walk_up = SubResource( 76 )
 
 [node name="AnimationTree" parent="Structures/MiniBoss" index="3"]
-parameters/playback = SubResource( 75 )
+parameters/playback = SubResource( 77 )
 
 [node name="Stats" parent="Structures/MiniBoss" index="7"]
 level = 5

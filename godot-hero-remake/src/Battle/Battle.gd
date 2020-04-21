@@ -172,6 +172,7 @@ func set_phase(value):
 					gains.append(exp_get)
 				
 				if enemy_stats.money > 0:
+					PlayerStats.money += enemy_stats.money
 					gains.append("获得了%d金币" % enemy_stats.money)
 				
 				var items_get = ""

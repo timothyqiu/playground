@@ -6,7 +6,7 @@ func reset() -> void:
 	health = 50
 	max_health = 50
 	current_exp = 0
-	attack = 1
-	defend = 1
+	attack = 10
+	defend = 10
 	speed = 8
 	money = 100
