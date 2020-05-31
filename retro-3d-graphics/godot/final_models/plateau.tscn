@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://materials/grass.tres" type="Material" id=1]
+[ext_resource path="res://materials/stone.tres" type="Material" id=2]
+[ext_resource path="res://meshes/plateau.glb" type="PackedScene" id=3]
+
+[node name="plateau" instance=ExtResource( 3 )]
+
+[node name="Plateau" parent="." index="0"]
+material/0 = ExtResource( 1 )
+material/1 = ExtResource( 2 )

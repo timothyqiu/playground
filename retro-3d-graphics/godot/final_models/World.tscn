@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://final_models/windmill.tscn" type="PackedScene" id=1]
+[ext_resource path="res://final_models/knight.tscn" type="PackedScene" id=2]
+[ext_resource path="res://final_models/plateau.tscn" type="PackedScene" id=3]
+[ext_resource path="res://final_models/sunset.tscn" type="PackedScene" id=4]
+
+[node name="World" type="Spatial"]
+
+[node name="knight" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20.1004, 5.80735 )
+
+[node name="plateau" parent="." instance=ExtResource( 3 )]
+
+[node name="sunset" parent="." instance=ExtResource( 4 )]
+transform = Transform( 11.7157, 0, 0, 0, 11.7157, 0, 0, 0, 11.7157, 0, 0, 0 )
+
+[node name="windmill" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20.1004, 0 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.587785, 0.809017, 0, -0.809017, 0.587785, 0, 0, 0 )
