@@ -1,0 +1,11 @@
+[requires]
+spdlog/1.8.2
+ixwebsocket/11.0.4
+nlohmann_json/3.9.1
+boost/1.75.0
+zlib/1.2.11
+fmt/7.1.2
+cli11/1.9.1
+
+[generators]
+cmake_find_package
