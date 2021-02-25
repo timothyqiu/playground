@@ -6,6 +6,8 @@ struct Options
 public:
     int room_id;
     bool show_entering;
+    bool reconnect;
+    bool verbose;
 
     explicit Options(int argc, char *argv[]);
 };

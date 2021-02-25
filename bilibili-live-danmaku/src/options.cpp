@@ -6,12 +6,14 @@
 
 
 Options::Options(int argc, char *argv[])
-    : room_id{1029}, show_entering{true}
+    : room_id{1029}, show_entering{true}, reconnect{true}, verbose{false}
 {
     CLI::App app{"Bilibili Live Danmaku"};
 
-    app.add_option("-r,--room", room_id, "Room ID");
+    app.add_option("room", room_id, "Room ID");
     app.add_flag("!--no-enter", show_entering, "Disable entering message");
+    app.add_flag("--reconnect,!--no-reconnect", reconnect, "Auto reconnect");
+    app.add_flag("-v,--verbose", verbose, "Verbose output");
 
     try {
         app.parse(argc, argv);

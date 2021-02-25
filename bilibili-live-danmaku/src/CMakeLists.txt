@@ -1,6 +1,8 @@
 add_executable(blive
   main.cpp
   buffer.hpp
+  http.hpp http.cpp
+  api.hpp api.cpp
   inflator.hpp inflator.cpp
   options.hpp options.cpp)
 

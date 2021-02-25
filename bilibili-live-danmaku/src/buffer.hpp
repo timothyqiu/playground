@@ -80,6 +80,13 @@ public:
     {
     }
 
+    auto done() -> std::vector<std::uint8_t>
+    {
+        buffer_.resize(write_index_);
+        write_index_ = 0;
+        return std::move(buffer_);
+    }
+
     auto begin() const -> std::uint8_t const * { return buffer_.data(); }
     auto end() const -> std::uint8_t const * { return buffer_.data() + write_index_; }
     auto size() const -> std::size_t { return write_index_; }
