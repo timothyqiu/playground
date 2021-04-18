@@ -28,15 +28,15 @@ content = "{你居然赶走了强盗，真是太感谢了！"
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=3]
 
-[sub_resource type="Resource" id=29]
+[sub_resource type="Resource" id=4]
 script = ExtResource( 12 )
 phase = 0
 content = "{收废旧物品罗！有烂刀烂剑、破旧衣物拿来买哦！
 {小朋友，你要是有不用的东西就拿来卖了吧。可以用卖的钱买你最需要的东西。"
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=4]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=5]
 
-[sub_resource type="Resource" id=26]
+[sub_resource type="Resource" id=6]
 script = ExtResource( 12 )
 phase = 0
 content = "{救命啊！
@@ -44,7 +44,7 @@ content = "{救命啊！
 {我……我是不会跟你们走的，你们还是放了我吧……
 {呜……呜……"
 
-[sub_resource type="Resource" id=27]
+[sub_resource type="Resource" id=7]
 script = ExtResource( 12 )
 phase = 2
 content = "}柔儿你没事吧？
@@ -57,19 +57,19 @@ content = "}柔儿你没事吧？
 {你……你不要去，他们好凶的！
 }放心，我不会有事的。"
 
-[sub_resource type="Resource" id=28]
+[sub_resource type="Resource" id=8]
 script = ExtResource( 12 )
 phase = 3
 content = "{你要小心啊！"
 
-[sub_resource type="Resource" id=23]
+[sub_resource type="Resource" id=9]
 script = ExtResource( 12 )
 phase = 0
 content = "{小子，识相的最好走远点，不然我就不客气了。
 }再说一遍「住手，然后给我滚！」
 {他妈的，你小子是不是活的不耐烦了？给老子敬酒不吃吃罚酒，好！今天就修理修理你！"
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=10]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -83,7 +83,7 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=11]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -98,7 +98,7 @@ tracks/0/keys = {
 "values": [ 2 ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=12]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -113,7 +113,7 @@ tracks/0/keys = {
 "values": [ 6 ]
 }
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=13]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -128,7 +128,7 @@ tracks/0/keys = {
 "values": [ 4 ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=14]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -144,7 +144,7 @@ tracks/0/keys = {
 "values": [ 0, 1 ]
 }
 
-[sub_resource type="Animation" id=10]
+[sub_resource type="Animation" id=15]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -160,7 +160,7 @@ tracks/0/keys = {
 "values": [ 2, 3 ]
 }
 
-[sub_resource type="Animation" id=11]
+[sub_resource type="Animation" id=16]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -176,7 +176,7 @@ tracks/0/keys = {
 "values": [ 6, 7 ]
 }
 
-[sub_resource type="Animation" id=12]
+[sub_resource type="Animation" id=17]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -192,9 +192,9 @@ tracks/0/keys = {
 "values": [ 4, 5 ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=13]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=18]
 
-[sub_resource type="Resource" id=24]
+[sub_resource type="Resource" id=19]
 script = ExtResource( 12 )
 phase = 0
 content = "{放了你？嘿嘿……别做梦了！
@@ -205,13 +205,13 @@ content = "{放了你？嘿嘿……别做梦了！
 }叫你们住手！
 {哈哈哈……秃鹰，听到了吗？他叫我们住手。"
 
-[sub_resource type="Resource" id=25]
+[sub_resource type="Resource" id=20]
 script = ExtResource( 12 )
 phase = 2
 content = "{好家伙，还有两下子嘛！
 {看我的"
 
-[sub_resource type="Animation" id=14]
+[sub_resource type="Animation" id=21]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -225,7 +225,7 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=15]
+[sub_resource type="Animation" id=22]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -240,7 +240,7 @@ tracks/0/keys = {
 "values": [ 2 ]
 }
 
-[sub_resource type="Animation" id=16]
+[sub_resource type="Animation" id=23]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -255,7 +255,7 @@ tracks/0/keys = {
 "values": [ 6 ]
 }
 
-[sub_resource type="Animation" id=17]
+[sub_resource type="Animation" id=24]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -270,7 +270,7 @@ tracks/0/keys = {
 "values": [ 4 ]
 }
 
-[sub_resource type="Animation" id=18]
+[sub_resource type="Animation" id=25]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -286,7 +286,7 @@ tracks/0/keys = {
 "values": [ 0, 1 ]
 }
 
-[sub_resource type="Animation" id=19]
+[sub_resource type="Animation" id=26]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -302,7 +302,7 @@ tracks/0/keys = {
 "values": [ 2, 3 ]
 }
 
-[sub_resource type="Animation" id=20]
+[sub_resource type="Animation" id=27]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -318,7 +318,7 @@ tracks/0/keys = {
 "values": [ 6, 7 ]
 }
 
-[sub_resource type="Animation" id=21]
+[sub_resource type="Animation" id=28]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -334,7 +334,7 @@ tracks/0/keys = {
 "values": [ 4, 5 ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=22]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=29]
 
 [node name="Tavern" type="Node2D"]
 script = ExtResource( 3 )
@@ -373,19 +373,19 @@ parameters/playback = SubResource( 3 )
 position = Vector2( 304, 288 )
 character_name = "收荒匠"
 role = 2
-dialogues = [ SubResource( 29 ) ]
+dialogues = [ SubResource( 4 ) ]
 
 [node name="Sprite" parent="Structures/Npc" index="0"]
 texture = ExtResource( 9 )
 
 [node name="AnimationTree" parent="Structures/Npc" index="3"]
-parameters/playback = SubResource( 4 )
+parameters/playback = SubResource( 5 )
 
 [node name="Rouer" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 400, 80 )
 character_name = "柔儿"
 is_stationary = true
-dialogues = [ SubResource( 26 ), SubResource( 27 ), SubResource( 28 ) ]
+dialogues = [ SubResource( 6 ), SubResource( 7 ), SubResource( 8 ) ]
 
 [node name="BanditA" parent="Structures" instance=ExtResource( 7 )]
 position = Vector2( 368, 80 )
@@ -394,23 +394,23 @@ is_stationary = true
 role = 3
 items = [ 3 ]
 direction = Vector2( 1, 0 )
-dialogues = [ SubResource( 23 ) ]
+dialogues = [ SubResource( 9 ) ]
 
 [node name="Sprite" parent="Structures/BanditA" index="0"]
 texture = ExtResource( 10 )
 
 [node name="AnimationPlayer" parent="Structures/BanditA" index="2"]
-anims/idle_down = SubResource( 5 )
-anims/idle_left = SubResource( 6 )
-anims/idle_right = SubResource( 7 )
-anims/idle_up = SubResource( 8 )
-anims/walk_down = SubResource( 9 )
-anims/walk_left = SubResource( 10 )
-anims/walk_right = SubResource( 11 )
-anims/walk_up = SubResource( 12 )
+anims/idle_down = SubResource( 10 )
+anims/idle_left = SubResource( 11 )
+anims/idle_right = SubResource( 12 )
+anims/idle_up = SubResource( 13 )
+anims/walk_down = SubResource( 14 )
+anims/walk_left = SubResource( 15 )
+anims/walk_right = SubResource( 16 )
+anims/walk_up = SubResource( 17 )
 
 [node name="AnimationTree" parent="Structures/BanditA" index="3"]
-parameters/playback = SubResource( 13 )
+parameters/playback = SubResource( 18 )
 
 [node name="Stats" parent="Structures/BanditA" index="7"]
 current_exp = 30
@@ -425,23 +425,23 @@ is_stationary = true
 role = 3
 items = [ 9, 4 ]
 direction = Vector2( 0, -1 )
-dialogues = [ SubResource( 24 ), SubResource( 25 ) ]
+dialogues = [ SubResource( 19 ), SubResource( 20 ) ]
 
 [node name="Sprite" parent="Structures/BanditB" index="0"]
 texture = ExtResource( 11 )
 
 [node name="AnimationPlayer" parent="Structures/BanditB" index="2"]
-anims/idle_down = SubResource( 14 )
-anims/idle_left = SubResource( 15 )
-anims/idle_right = SubResource( 16 )
-anims/idle_up = SubResource( 17 )
-anims/walk_down = SubResource( 18 )
-anims/walk_left = SubResource( 19 )
-anims/walk_right = SubResource( 20 )
-anims/walk_up = SubResource( 21 )
+anims/idle_down = SubResource( 21 )
+anims/idle_left = SubResource( 22 )
+anims/idle_right = SubResource( 23 )
+anims/idle_up = SubResource( 24 )
+anims/walk_down = SubResource( 25 )
+anims/walk_left = SubResource( 26 )
+anims/walk_right = SubResource( 27 )
+anims/walk_up = SubResource( 28 )
 
 [node name="AnimationTree" parent="Structures/BanditB" index="3"]
-parameters/playback = SubResource( 22 )
+parameters/playback = SubResource( 29 )
 
 [node name="Stats" parent="Structures/BanditB" index="7"]
 health = 60

@@ -25,24 +25,24 @@ __meta__ = {
 [node name="HBoxContainer" type="HBoxContainer" parent="Talkbar"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 16.0
-margin_top = 8.0
-margin_right = -28.0
-margin_bottom = -8.0
+margin_left = 20.0
+margin_top = 10.0
+margin_right = -20.0
+margin_bottom = -10.0
 alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Talkbar/HBoxContainer"]
-margin_right = 98.0
-margin_bottom = 80.0
+margin_right = 99.0
+margin_bottom = 76.0
 size_flags_horizontal = 3
 
 [node name="TextureRect" type="TextureRect" parent="Talkbar/HBoxContainer/VBoxContainer"]
 margin_left = 33.0
 margin_right = 65.0
-margin_bottom = 57.0
+margin_bottom = 53.0
 rect_min_size = Vector2( 32, 32 )
 size_flags_horizontal = 4
 size_flags_vertical = 3
@@ -50,18 +50,18 @@ expand = true
 stretch_mode = 6
 
 [node name="NameLabel" type="Label" parent="Talkbar/HBoxContainer/VBoxContainer"]
-margin_top = 61.0
-margin_right = 98.0
-margin_bottom = 80.0
+margin_top = 57.0
+margin_right = 99.0
+margin_bottom = 76.0
 custom_colors/font_color = Color( 1, 1, 0, 1 )
 text = "密儿"
 align = 1
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Talkbar/HBoxContainer"]
-margin_left = 102.0
-margin_top = 5.0
-margin_right = 596.0
-margin_bottom = 75.0
+margin_left = 103.0
+margin_top = 3.0
+margin_right = 600.0
+margin_bottom = 73.0
 rect_min_size = Vector2( 100, 70 )
 size_flags_horizontal = 3
 size_flags_vertical = 4

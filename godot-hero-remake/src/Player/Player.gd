@@ -12,7 +12,7 @@ var talker_texture := AtlasTexture.new()
 
 onready var stats := PlayerStats
 onready var animation_tree := $AnimationTree
-onready var animation_state:AnimationNodeStateMachine = $AnimationTree.get("parameters/playback")
+onready var animation_state = $AnimationTree.get("parameters/playback")
 onready var camera := $Camera2D
 
 

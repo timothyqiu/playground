@@ -34,6 +34,7 @@ func _item_id_to_icon(id: int) -> int:
 
 
 func _set_atlas_icon(offset: int) -> void:
+# warning-ignore:integer_division
 	var row = offset / ATLAS_WIDTH
 	var col = offset % ATLAS_WIDTH
 	var rect = Rect2(ATLAS_GRID * Vector2(col, row), ATLAS_GRID)

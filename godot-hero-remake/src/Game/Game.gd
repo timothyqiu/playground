@@ -40,6 +40,8 @@ func _ready() -> void:
 	
 	# hook existing scene
 	_hook_children(get_tree().root)
+	
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 
 
 func _hook_children(parent: Node) -> void:
@@ -86,12 +88,12 @@ func reset() -> void:
 	persist = {}
 	
 	if OS.is_debug_build():
+#		put_item(ItemDB.ItemId.ACIENT_ARMOR)
 		put_item(ItemDB.ItemId.ACIENT_ARMOR)
-		put_item(ItemDB.ItemId.ACIENT_ARMOR)
 		put_item(ItemDB.ItemId.MANUAL)
-		put_item(ItemDB.ItemId.MANUAL)
-		put_item(ItemDB.ItemId.MANUAL)
-		put_item(ItemDB.ItemId.ICE_SWORD)
+#		put_item(ItemDB.ItemId.MANUAL)
+#		put_item(ItemDB.ItemId.MANUAL)
+#		put_item(ItemDB.ItemId.ICE_SWORD)
 
 
 func new_game() -> void:

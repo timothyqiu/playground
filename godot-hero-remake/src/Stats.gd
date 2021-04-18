@@ -23,12 +23,14 @@ func set_health(value: int) -> void:
 func set_exp(value: int) -> void:
 	current_exp = value
 	
+# warning-ignore:integer_division
 	var upgrade_levels = current_exp / UPGRADE_EXP
 	if upgrade_levels:
 		level += upgrade_levels
 		attack += upgrade_levels * ATTACK_INCR_PER_LEVEL
 		defend += upgrade_levels * DEFEND_INCR_PER_LEVEL
 		max_health += upgrade_levels * HEALTH_INCR_PER_LEVEL
+# warning-ignore:integer_division
 		health += (max_health - health) / 2
 		current_exp %= UPGRADE_EXP
 

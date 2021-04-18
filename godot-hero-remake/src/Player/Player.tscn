@@ -300,6 +300,7 @@ start_node = "idle"
 [sub_resource type="RectangleShape2D" id=24]
 
 [node name="Player" type="KinematicBody2D"]
+position = Vector2( -1, 0 )
 collision_layer = 2
 script = ExtResource( 2 )
 

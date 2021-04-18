@@ -122,12 +122,12 @@ const ITEMS = [
 	},
 	{
 		"name": "古文明盔甲",
-		"description": "迷的古代文明的遗迹挖掘出的盔甲，在胸前刻有「中华人民共合国制造」的字样。",
+		"description": "迷的古代文明的遗迹挖掘出的盔甲，在胸前刻有「中华人民共和国制造」的字样。",
 		"money": 360,
 		"exp": 0,
 		"health": 0,
-		"attack": 4,
-		"defend": 0,
+		"attack": 7,
+		"defend": 2,
 	},
 	{
 		"name": "凝霜剑",
