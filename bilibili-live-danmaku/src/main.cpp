@@ -23,6 +23,7 @@ using api::danmaku::Packet;
 using api::danmaku::Operation;
 
 std::map<std::string, std::function<void(nlohmann::json const& body)>> g_command_handlers;
+std::function<void(unsigned int popularity)> g_popularity_handler;
 
 static bool interrupted;
 
@@ -48,7 +49,10 @@ try {
         case Operation::HeartbeatResp:
             {
                 auto const popularity = ReadBuffer{packet.payload, packet.payload_size}.peek_u32();
-                spdlog::info("Room popularity: {}", popularity);
+                spdlog::debug("Room popularity: {}", popularity);
+                if (g_popularity_handler) {
+                    g_popularity_handler(popularity);
+                }
             }
             break;
 
@@ -95,6 +99,18 @@ try {
                  room_info.uname, room_info.title);
 
     // ----------------
+    // 人气处理函数
+    // ----------------
+    unsigned popularity = 0;
+    g_popularity_handler = [&](unsigned int value) {
+        if (popularity == value) {
+            return;
+        }
+        popularity = value;
+        spdlog::info("直播间人气更新为 {}", value);
+    };
+
+    // ----------------
     // 弹幕命令处理函数
     // ----------------
     auto const ignore = [](nlohmann::json const&) {};
@@ -103,6 +119,14 @@ try {
         // 普通观众进入直播间
         auto const uname = body["data"]["uname"];
         spdlog::info("{} 进入直播间", uname);
+    };
+    g_command_handlers["NOTICE_MSG"] = [&](nlohmann::json const& body) {
+        // 通知
+        if (!options.show_broadcast) {
+            return;
+        }
+        auto const real_room_id = body["real_roomid"].get<int>();
+        spdlog::info("通知 {}", (room_info.room_id == real_room_id) ? body["msg_self"] : body["msg_common"]);
     };
     g_command_handlers["LIVE"] = [&](nlohmann::json const& body) {
         // 直播开始
@@ -142,11 +166,6 @@ try {
     g_command_handlers["ROOM_REAL_TIME_MESSAGE_UPDATE"] = [&](nlohmann::json const& body) {
         // 粉丝数量等
         spdlog::info("粉丝数量更新为 {}", body["data"]["fans"].get<int>());
-    };
-    g_command_handlers["NOTICE_MSG"] = [&](nlohmann::json const& body) {
-        // 通知
-        auto const real_room_id = body["real_roomid"].get<int>();
-        spdlog::info("通知 {}", (room_info.room_id == real_room_id) ? body["msg_self"] : body["msg_common"]);
     };
     g_command_handlers["SEND_GIFT"] = [](nlohmann::json const& body) {
         // 礼物

@@ -6,6 +6,7 @@ struct Options
 public:
     int room_id;
     bool show_entering;
+    bool show_broadcast;
     bool reconnect;
     bool verbose;
 
