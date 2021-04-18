@@ -2,7 +2,7 @@
 fmt/6.1.2
 spdlog/1.5.0
 freetype/2.10.1
-CLI11/1.9.0@cliutils/stable
+cli11/1.9.1
 
 [generators]
 cmake_find_package
