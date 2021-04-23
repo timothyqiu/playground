@@ -14,6 +14,7 @@ struct Config
     size_t line_gap;
     bool enable_kerning;
     bool enable_annotation;
+    bool verbose;
 
     Config(int argc, char *argv[]);
 };

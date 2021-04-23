@@ -15,6 +15,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
+#include FT_SFNT_NAMES_H
 
 #include "canvas.hpp"
 #include "config.hpp"
@@ -71,6 +72,24 @@ static void dump_metrics(FT_Size_Metrics const& metrics)
     fmt::print("    Max Advance: {}\n", metrics.max_advance);
 }
 
+static void dump_sfnt_names(FT_Face face)
+{
+    auto const n = FT_Get_Sfnt_Name_Count(face);
+    fmt::print("SFNT Names: {}\n", n);
+
+    FT_SfntName info;
+    for (FT_UInt i = 0; i < n; i++) {
+        if (auto const error = FT_Get_Sfnt_Name(face, i, &info); error) {
+            spdlog::error("FT_Get_Sfnt_Name error: 0x{:02X}", error);
+            continue;
+        }
+
+        fmt::print("{:2d} {} {} {:04x} {} {}\n",
+                   i, info.platform_id, info.encoding_id, info.language_id, info.name_id,
+                   std::string_view{reinterpret_cast<char const *>(info.string), info.string_len});
+    }
+}
+
 static void draw_text(Canvas& canvas, Config const& config, Measurements const& measurements,
                       int offset_x, int offset_y, std::u32string_view text,
                       Color color)
@@ -115,7 +134,7 @@ int main(int argc, char *argv[])
 try {
     Config const config{argc, argv};
 
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(config.verbose ? spdlog::level::debug : spdlog::level::info);
 
     LibraryPtr library;
     {
@@ -138,6 +157,7 @@ try {
     }
 
     dump_face_info(face.get());
+    dump_sfnt_names(face.get());
 
     // FreeType only supports kerning through the 'kern' table
     bool const has_kerning = FT_HAS_KERNING(face.get());

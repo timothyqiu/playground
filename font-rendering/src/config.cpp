@@ -5,6 +5,7 @@
 #include <CLI/CLI.hpp>
 
 Config::Config(int argc, char *argv[])
+    : verbose{false}
 {
     CLI::App app{"Font Rendering Demo"};
 
@@ -37,6 +38,8 @@ Config::Config(int argc, char *argv[])
 
     app.add_flag("--annotation,!--no-annotation", enable_annotation, "Annotation switch")
         ->default_val(true);
+
+    app.add_flag("-v,--verbose", verbose, "Verbose output");
 
     try {
         app.parse(argc, argv);
