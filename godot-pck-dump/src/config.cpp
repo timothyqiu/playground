@@ -14,6 +14,7 @@ Config::Config(int argc, char *argv[])
     app.add_flag("-v,--verbose", is_verbose, "Verbose output");
 
     app.add_option("path", path, "PCK file path")->required();
+    app.add_option("file-path", file_path, "file path inside PCK");
 
     try {
         app.parse(argc, argv);

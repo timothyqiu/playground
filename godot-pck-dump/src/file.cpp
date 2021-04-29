@@ -107,6 +107,15 @@ auto BufferReader::skip(std::size_t size) -> void
 }
 
 
+auto Reader::pull_u16() -> std::uint16_t
+{
+    auto const size = sizeof(std::uint16_t);
+    auto const v = boost::endian::load_little_u16(this->prepare_read(size));
+    this->commit_read(size);
+    return v;
+}
+
+
 auto Reader::pull_u32() -> std::uint32_t
 {
     auto const size = sizeof(std::uint32_t);
@@ -135,7 +144,13 @@ auto Reader::pull_buffer(std::size_t size) -> std::vector<std::uint8_t>
 
 auto Reader::pull_string(std::size_t size) -> std::string
 {
+    std::vector<char> buffer(size + 1);
+
     auto const p = this->prepare_read(size);
     this->commit_read(size);
-    return {p, p + size};
+
+    std::memcpy(buffer.data(), p, size);
+    buffer[size] = '\0';
+
+    return buffer.data();
 }

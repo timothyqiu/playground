@@ -49,6 +49,7 @@ public:
 
         for (std::uint32_t i = 0; i < file_count; i++) {
             auto const file_path = reader_.pull_string(reader_.pull_u32());
+            spdlog::debug("Entry {} size {}", file_path, file_path.size());
             auto const offset = reader_.pull_u64();
             auto const size = reader_.pull_u64();
             file_entries_.emplace(std::make_pair(file_path, FileEntry{offset, size}));
@@ -58,7 +59,11 @@ public:
 
     auto get_file(std::string const& path) -> std::vector<std::uint8_t>
     {
-        auto const& entry = file_entries_.at(path);
+        auto const iter = file_entries_.find(path);
+        if (iter == std::end(file_entries_)) {
+            throw std::runtime_error{fmt::format("{} does not exist", path)};
+        }
+        auto const& entry = iter->second;
         reader_.seek(entry.offset);
         return reader_.pull_buffer(entry.size);
     }
@@ -74,13 +79,9 @@ private:
 };
 
 
-int main(int argc, char *argv[])
-try {
-    Config const config{argc, argv};
-
-    PCK pck{config.path};
-
-    auto const data = pck.get_file("res://project.binary");
+void dump_project_settings(PCK& pck, std::string const& path)
+{
+    auto const data = pck.get_file(path);
     BufferReader reader{data.data(), data.size()};
 
     if (reader.pull_u32() != 0x47464345) {  // ECFG
@@ -126,6 +127,38 @@ try {
         default:
             fmt::print("{}: (DATA type:{} size:{})\n", name, type, value.size());
             break;
+        }
+    }
+}
+
+
+int main(int argc, char *argv[])
+try {
+    Config const config{argc, argv};
+
+    PCK pck{config.path};
+
+    if (config.file_path.empty()) {
+        dump_project_settings(pck, "res://project.binary");
+    } else {
+        auto const data = pck.get_file(config.file_path);
+        BufferReader reader{data.data(), data.size()};
+
+        auto const& magic = reader.pull_string(4);
+        if (magic == "GDST") {
+            auto const w = reader.pull_u16();
+            auto const pw = reader.pull_u16();
+            auto const h = reader.pull_u16();
+            auto const ph = reader.pull_u16();
+            auto const flags = reader.pull_u32();
+            auto const format = reader.pull_u32();
+            if (pw == 0 && ph ==0) {
+                fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{}\n", flags, format, w, h);
+            } else {
+                fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{} -> {}x{}\n", flags, format, w, h, pw, ph);
+            }
+        } else {
+            fmt::print("{} bytes\n", data.size());
         }
     }
 }

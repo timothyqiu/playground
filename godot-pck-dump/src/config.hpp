@@ -8,6 +8,7 @@ struct Config
     bool is_verbose;
 
     std::string path;
+    std::string file_path;
 
     Config(int argc, char *argv[]);
 };

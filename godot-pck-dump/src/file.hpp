@@ -15,6 +15,7 @@ public:
 
     virtual auto skip(std::size_t size) -> void = 0;
 
+    [[nodiscard]] auto pull_u16() -> std::uint16_t;
     [[nodiscard]] auto pull_u32() -> std::uint32_t;
     [[nodiscard]] auto pull_u64() -> std::uint64_t;
     [[nodiscard]] auto pull_buffer(std::size_t size) -> std::vector<std::uint8_t>;
