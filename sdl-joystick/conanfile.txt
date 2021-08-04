@@ -1,0 +1,8 @@
+[requires]
+fmt/8.0.1
+spdlog/1.9.1
+cli11/1.9.1
+sdl/2.0.14
+
+[generators]
+cmake_find_package
