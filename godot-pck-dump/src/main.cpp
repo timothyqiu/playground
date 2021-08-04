@@ -2,10 +2,26 @@
 #include <exception>
 #include <unordered_map>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <spdlog/spdlog.h>
 
 #include "config.hpp"
 #include "file.hpp"
+
+
+bool is_plain_text(std::string const& path)
+{
+    static char const *plain_text_extensions[] = {
+        ".tscn", ".tres", ".import", ".remap", ".shader",
+    };
+
+    for (auto const ext : plain_text_extensions) {
+        if (boost::algorithm::ends_with(path, ext)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 
 class PCK
@@ -49,7 +65,7 @@ public:
 
         for (std::uint32_t i = 0; i < file_count; i++) {
             auto const file_path = reader_.pull_string(reader_.pull_u32());
-            spdlog::debug("Entry {} size {}", file_path, file_path.size());
+            spdlog::debug("Entry {}", file_path);
             auto const offset = reader_.pull_u64();
             auto const size = reader_.pull_u64();
             file_entries_.emplace(std::make_pair(file_path, FileEntry{offset, size}));
@@ -144,21 +160,25 @@ try {
         auto const data = pck.get_file(config.file_path);
         BufferReader reader{data.data(), data.size()};
 
-        auto const& magic = reader.pull_string(4);
-        if (magic == "GDST") {
-            auto const w = reader.pull_u16();
-            auto const pw = reader.pull_u16();
-            auto const h = reader.pull_u16();
-            auto const ph = reader.pull_u16();
-            auto const flags = reader.pull_u32();
-            auto const format = reader.pull_u32();
-            if (pw == 0 && ph ==0) {
-                fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{}\n", flags, format, w, h);
-            } else {
-                fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{} -> {}x{}\n", flags, format, w, h, pw, ph);
-            }
+        spdlog::debug("file size: {} bytes", data.size());
+
+        if (is_plain_text(config.file_path)) {
+            fmt::print("{}", reader.pull_string(data.size()));
         } else {
-            fmt::print("{} bytes\n", data.size());
+            auto const& magic = reader.pull_string(4);
+            if (magic == "GDST") {
+                auto const w = reader.pull_u16();
+                auto const pw = reader.pull_u16();
+                auto const h = reader.pull_u16();
+                auto const ph = reader.pull_u16();
+                auto const flags = reader.pull_u32();
+                auto const format = reader.pull_u32();
+                if (pw == 0 && ph ==0) {
+                    fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{}\n", flags, format, w, h);
+                } else {
+                    fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{} -> {}x{}\n", flags, format, w, h, pw, ph);
+                }
+            }
         }
     }
 }
