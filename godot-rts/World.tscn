@@ -1,0 +1,105 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://assets/kenney.nl/sci-fi-rts/scifi_tilesheet.tres" type="TileSet" id=1]
+[ext_resource path="res://assets/kenney.nl/sci-fi-rts/buildings/base.tres" type="Texture" id=2]
+[ext_resource path="res://SimpleButton.gd" type="Script" id=3]
+[ext_resource path="res://World.gd" type="Script" id=4]
+[ext_resource path="res://assets/kenney.nl/sci-fi-rts/buildings/barrack.tres" type="Texture" id=5]
+[ext_resource path="res://Placing.gd" type="Script" id=6]
+[ext_resource path="res://Structures.gd" type="Script" id=7]
+[ext_resource path="res://BuildingPanel.tscn" type="PackedScene" id=8]
+[ext_resource path="res://assets/kenney.nl/ui-pack-space-expansion/uipackSpace_sheet.png" type="Texture" id=10]
+
+[sub_resource type="StyleBoxTexture" id=1]
+content_margin_top = 8.0
+texture = ExtResource( 10 )
+region_rect = Rect2( 200, 100, 100, 100 )
+margin_left = 12.0
+margin_right = 12.0
+margin_top = 32.0
+margin_bottom = 12.0
+
+[node name="World" type="Node2D"]
+script = ExtResource( 4 )
+
+[node name="Environment" type="TileMap" parent="."]
+tile_set = ExtResource( 1 )
+format = 1
+tile_data = PoolIntArray( 0, 0, 1, 1, 0, 1, 2, 0, 0, 3, 0, 1, 4, 0, 1, 5, 0, 0, 6, 0, 0, 7, 0, 0, 8, 0, 0, 9, 0, 1, 10, 0, 0, 11, 0, 0, 12, 0, 0, 13, 0, 0, 14, 0, 1, 15, 0, 0, 65536, 0, 0, 65537, 0, 0, 65538, 0, 1, 65539, 0, 0, 65540, 0, 1, 65541, 0, 0, 65542, 0, 1, 65543, 0, 1, 65544, 0, 1, 65545, 0, 1, 65546, 0, 0, 65547, 0, 0, 65548, 0, 1, 65549, 0, 1, 65550, 0, 0, 65551, 0, 1, 131072, 0, 1, 131073, 0, 1, 131074, 0, 1, 131075, 0, 1, 131076, 0, 1, 131077, 0, 0, 131078, 0, 0, 131079, 0, 0, 131080, 0, 0, 131081, 0, 0, 131082, 0, 1, 131083, 0, 0, 131084, 0, 1, 131085, 0, 0, 131086, 0, 1, 131087, 0, 0, 196608, 0, 1, 196609, 0, 0, 196610, 0, 1, 196611, 0, 1, 196612, 0, 0, 196613, 0, 1, 196614, 0, 1, 196615, 0, 1, 196616, 0, 0, 196617, 0, 1, 196618, 0, 0, 196619, 0, 0, 196620, 0, 1, 196621, 0, 1, 196622, 0, 0, 196623, 0, 1, 262144, 0, 1, 262145, 0, 1, 262146, 0, 1, 262147, 0, 1, 262148, 0, 0, 262149, 0, 0, 262150, 0, 1, 262151, 0, 0, 262152, 0, 0, 262153, 0, 1, 262154, 0, 1, 262155, 0, 0, 262156, 0, 1, 262157, 0, 0, 262158, 0, 0, 262159, 0, 1, 327680, 0, 0, 327681, 0, 1, 327682, 0, 1, 327683, 0, 0, 327684, 0, 1, 327685, 0, 1, 327686, 0, 1, 327687, 0, 0, 327688, 0, 0, 327689, 0, 0, 327690, 0, 0, 327691, 0, 1, 327692, 0, 0, 327693, 0, 1, 327694, 0, 1, 327695, 0, 0, 393216, 0, 0, 393217, 0, 1, 393218, 0, 1, 393219, 0, 1, 393220, 0, 0, 393221, 0, 0, 393222, 0, 0, 393223, 0, 1, 393224, 0, 0, 393225, 0, 0, 393226, 0, 1, 393227, 0, 1, 393228, 0, 1, 393229, 0, 0, 393230, 0, 1, 393231, 0, 0, 458752, 0, 0, 458753, 0, 0, 458754, 0, 1, 458755, 0, 0, 458756, 0, 1, 458757, 0, 0, 458758, 0, 0, 458759, 0, 0, 458760, 0, 1, 458761, 0, 1, 458762, 0, 0, 458763, 0, 0, 458764, 0, 1, 458765, 0, 1, 458766, 0, 0, 458767, 0, 0, 524288, 0, 0, 524289, 0, 1, 524290, 0, 0, 524291, 0, 0, 524292, 0, 1, 524293, 0, 1, 524294, 0, 0, 524295, 0, 0, 524296, 0, 0, 524297, 0, 0, 524298, 0, 1, 524299, 0, 0, 524300, 0, 0, 524301, 0, 0, 524302, 0, 0, 524303, 0, 1, 589824, 0, 1, 589825, 0, 0, 589826, 0, 1, 589827, 0, 1, 589828, 0, 0, 589829, 0, 0, 589830, 0, 1, 589831, 0, 1, 589832, 0, 0, 589833, 0, 0, 589834, 0, 1, 589835, 0, 0, 589836, 0, 0, 589837, 0, 1, 589838, 0, 0, 589839, 0, 1 )
+
+[node name="Structures" type="TileMap" parent="."]
+tile_set = ExtResource( 1 )
+format = 1
+script = ExtResource( 7 )
+
+[node name="Selection" type="TileMap" parent="Structures"]
+tile_set = ExtResource( 1 )
+format = 1
+
+[node name="Placing" type="TileMap" parent="."]
+visible = false
+tile_set = ExtResource( 1 )
+format = 1
+script = ExtResource( 6 )
+structures_path = NodePath("../Structures")
+good_tint = Color( 0.0337066, 0.64, 0.0128, 0.501961 )
+bad_tint = Color( 0.827451, 0.172549, 0.172549, 0.501961 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Construction" type="PanelContainer" parent="CanvasLayer"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = -8.0
+grow_horizontal = 0
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="V" type="VBoxContainer" parent="CanvasLayer/Construction"]
+margin_left = 12.0
+margin_top = 8.0
+margin_right = 148.0
+margin_bottom = 572.0
+custom_constants/separation = 16
+
+[node name="Title" type="Label" parent="CanvasLayer/Construction/V"]
+margin_right = 136.0
+margin_bottom = 14.0
+text = "Construction"
+align = 1
+
+[node name="Buttons" type="GridContainer" parent="CanvasLayer/Construction/V"]
+margin_top = 30.0
+margin_right = 136.0
+margin_bottom = 94.0
+custom_constants/vseparation = 8
+custom_constants/hseparation = 8
+columns = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Base" type="TextureButton" parent="CanvasLayer/Construction/V/Buttons"]
+margin_right = 64.0
+margin_bottom = 64.0
+texture_normal = ExtResource( 2 )
+script = ExtResource( 3 )
+
+[node name="Barrack" type="TextureButton" parent="CanvasLayer/Construction/V/Buttons"]
+margin_left = 72.0
+margin_right = 136.0
+margin_bottom = 64.0
+texture_normal = ExtResource( 5 )
+script = ExtResource( 3 )
+
+[node name="Building" parent="CanvasLayer" instance=ExtResource( 8 )]
+
+[connection signal="selection_changed" from="Structures" to="." method="_on_Structures_selection_changed"]
+[connection signal="placing_confirmed" from="Placing" to="." method="_on_Placing_placing_confirmed"]
+[connection signal="train_unit" from="CanvasLayer/Building" to="." method="_on_Building_train_unit"]

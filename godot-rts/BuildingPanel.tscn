@@ -1,0 +1,63 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://assets/kenney.nl/sci-fi-rts/units/solider.tres" type="Texture" id=1]
+[ext_resource path="res://assets/kenney.nl/sci-fi-rts/units/farmer.tres" type="Texture" id=2]
+[ext_resource path="res://BuildingPanel.gd" type="Script" id=3]
+[ext_resource path="res://assets/kenney.nl/ui-pack-space-expansion/uipackSpace_sheet.png" type="Texture" id=4]
+[ext_resource path="res://SimpleButton.gd" type="Script" id=5]
+
+[sub_resource type="StyleBoxTexture" id=2]
+texture = ExtResource( 4 )
+region_rect = Rect2( 200, 200, 100, 100 )
+margin_left = 14.0
+margin_right = 14.0
+margin_top = 14.0
+margin_bottom = 14.0
+
+[node name="BuildingPanel" type="PanelContainer"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_bottom = -8.0
+grow_vertical = 0
+custom_styles/panel = SubResource( 2 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="H" type="HBoxContainer" parent="."]
+margin_left = 14.0
+margin_top = 14.0
+margin_right = 250.0
+margin_bottom = 78.0
+
+[node name="Name" type="Label" parent="H"]
+margin_top = 25.0
+margin_right = 100.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 100, 0 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Base"
+align = 1
+
+[node name="Buttons" type="GridContainer" parent="H"]
+margin_left = 104.0
+margin_right = 236.0
+margin_bottom = 64.0
+columns = 2
+
+[node name="Farmer" type="TextureButton" parent="H/Buttons"]
+margin_right = 64.0
+margin_bottom = 64.0
+texture_normal = ExtResource( 2 )
+script = ExtResource( 5 )
+
+[node name="Solider" type="TextureButton" parent="H/Buttons"]
+margin_left = 68.0
+margin_right = 132.0
+margin_bottom = 64.0
+texture_normal = ExtResource( 1 )
+script = ExtResource( 5 )
+
+[node name="Tween" type="Tween" parent="."]
