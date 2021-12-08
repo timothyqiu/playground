@@ -228,6 +228,15 @@ void dump_resource(std::uint8_t const *data, std::size_t size)
         case 5:  // STRING
             fmt::print("{} = {}\n", name, reader.pull_string(reader.pull_u32()));
             break;
+        case 12:  // Vector3
+            {
+                // real = f32 since we errored out previously :)
+                auto const x = reader.pull_f32();
+                auto const y = reader.pull_f32();
+                auto const z = reader.pull_f32();
+                fmt::print("{} = Vector3({}, {}, {})\n", name, x, y, z);
+            }
+            break;
         case 20:  // COLOR
             {
                 // real = f32 since we errored out previously :)
