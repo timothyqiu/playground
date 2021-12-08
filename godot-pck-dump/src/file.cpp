@@ -12,7 +12,7 @@ BinaryFileReader::BinaryFileReader(std::string const& path)
     if (file_ == nullptr) {
         throw std::runtime_error{
 #if defined(_POSIX_C_SOURCE) and _POSIX_C_SOURCE >= 200809L
-            std::strerror(errno);
+            std::strerror(errno)
 #else
             "fopen"
 #endif
