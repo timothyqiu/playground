@@ -51,6 +51,8 @@ target_compile_options(
 find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(CLI11 REQUIRED)
+find_package(magic_enum REQUIRED)
+find_package(zstd REQUIRED)
 find_package(Boost COMPONENTS boost REQUIRED)
 
 add_subdirectory(src)

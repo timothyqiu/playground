@@ -74,6 +74,7 @@ auto BinaryFileReader::skip(std::size_t size) -> void
 
 auto BinaryFileReader::commit_read(std::size_t) -> void
 {
+    // FIXME: rollback not implemented
 }
 
 
@@ -95,6 +96,18 @@ auto BufferReader::prepare_read(std::size_t size) const -> std::uint8_t const *
 auto BufferReader::commit_read(std::size_t size) -> void
 {
     read_index_ += size;
+}
+
+
+auto BufferReader::seek(std::uint64_t pos) -> void
+{
+    read_index_ = pos;
+}
+
+
+auto BufferReader::get_position() const -> std::uint64_t
+{
+    return read_index_;
 }
 
 
@@ -131,6 +144,17 @@ auto Reader::pull_u64() -> std::uint64_t
     auto const v = boost::endian::load_little_u64(this->prepare_read(size));
     this->commit_read(size);
     return v;
+}
+
+
+auto Reader::pull_f32() -> float
+{
+    union Marshall {
+        std::uint32_t u32;
+        float f32;
+    } m;
+    m.u32 = this->pull_u32();
+    return m.f32;
 }
 
 

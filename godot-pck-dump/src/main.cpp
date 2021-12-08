@@ -4,6 +4,8 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <spdlog/spdlog.h>
+#include <magic_enum.hpp>
+#include <zstd.h>
 
 #include "config.hpp"
 #include "file.hpp"
@@ -23,6 +25,15 @@ bool is_plain_text(std::string const& path)
     return false;
 }
 
+enum class CompressionMode { FASTLZ, DEFLATE, ZSTD, GZIP };
+
+CompressionMode cast_to_compression_mode(std::uint32_t v)
+{
+    if (v > magic_enum::enum_count<CompressionMode>()) {
+        throw std::runtime_error{fmt::format("Unexpected CompressionMode: {}", v)};
+    }
+    return static_cast<CompressionMode>(v);
+}
 
 class PCK
 {
@@ -148,6 +159,111 @@ void dump_project_settings(PCK& pck, std::string const& path)
 }
 
 
+void dump_resource(std::uint8_t const *data, std::size_t size)
+{
+    BufferReader reader{data, size};
+    auto const big_endian = static_cast<bool>(reader.pull_u32());
+    auto const use_real64 = static_cast<bool>(reader.pull_u32());
+    if (big_endian || use_real64) {
+        throw std::runtime_error{fmt::format("Unsupported format: big_endian {}, use_real64 {}", big_endian, use_real64)};
+    }
+    auto const major = reader.pull_u32();
+    auto const minor = reader.pull_u32();
+    auto const version_format = reader.pull_u32();
+    if (version_format > 3 || major > 3) {
+        throw std::runtime_error{fmt::format("Version: {}.{}, Format: {}\n", major, minor, version_format)};
+    }
+    fmt::print("Type: {}\n", reader.pull_string(reader.pull_u32()));
+
+    auto const importmd_offset = reader.pull_u64();
+    reader.skip(4 * 14);
+
+    std::vector<std::string> string_table(reader.pull_u32());
+    for (auto& entry : string_table) {
+        entry = reader.pull_string(reader.pull_u32());
+    }
+    spdlog::debug("String table size: {}", string_table.size());
+
+    std::vector<std::pair<std::string, std::string>> ext_resources(reader.pull_u32());
+    for (auto& entry : ext_resources) {
+        entry.first = reader.pull_string(reader.pull_u32());
+        entry.second = reader.pull_string(reader.pull_u32());
+    }
+    spdlog::debug("Ext resource count: {}", ext_resources.size());
+
+    std::vector<std::pair<std::string, std::uint64_t>> int_resources(reader.pull_u32());
+    for (auto& entry : int_resources) {
+        entry.first = reader.pull_string(reader.pull_u32());
+        entry.second = reader.pull_u64();
+    }
+    spdlog::debug("Int resource count: {}", int_resources.size());
+
+    auto const main_resource = int_resources.front();
+    reader.seek(main_resource.second);
+    fmt::print("Main Resource Type: {}\n", reader.pull_string(reader.pull_u32()));
+
+    auto const properties_count = reader.pull_u32();
+    for (auto i = 0u; i < properties_count; i++) {
+        auto const string_id = reader.pull_u32();
+        if (string_id & 0x80000000) {
+            throw std::runtime_error{fmt::format("not implemented for string id: 0x{0:x}", string_id)};
+        }
+        auto const& name = string_table[string_id];
+        if (name.empty()) {
+            throw std::runtime_error{"Empty property name"};
+        }
+
+        auto const type = reader.pull_u32();
+        switch (type) {
+        case 2:  // BOOL
+            fmt::print("{} = {}\n", name, static_cast<bool>(reader.pull_u32()));
+            break;
+        case 3:  // INT
+            fmt::print("{} = {}\n", name, reader.pull_u32());
+            break;
+        case 4:  // REAL
+            // real = f32 since we errored out previously :)
+            fmt::print("{} = {}\n", name, reader.pull_f32());
+            break;
+        case 5:  // STRING
+            fmt::print("{} = {}\n", name, reader.pull_string(reader.pull_u32()));
+            break;
+        case 20:  // COLOR
+            {
+                // real = f32 since we errored out previously :)
+                auto const r = reader.pull_f32();
+                auto const g = reader.pull_f32();
+                auto const b = reader.pull_f32();
+                auto const a = reader.pull_f32();
+                fmt::print("{} = Color(RGBA: {}, {}, {}, {})\n", name, r, g, b, a);
+            }
+            break;
+        case 24:  // OBJECT
+            {
+                auto const object_type = reader.pull_u32();
+                switch (object_type) {
+                case 3:  // EXTERNAL RESOURCE INDEX
+                    {
+                        auto const index = reader.pull_u32();
+                        if (index >= ext_resources.size()) {
+                            throw std::runtime_error{fmt::format("external resource index out of bound for {}: {}", name, index)};
+                        }
+                        auto const& res = ext_resources[index];
+                        fmt::print("{} = ext_resource({}: \"{}\")\n", name, res.first, res.second);
+                    }
+                    break;
+                default:
+                    throw std::runtime_error{fmt::format("unhandled object type for {}: {}", name, object_type)};
+                }
+            }
+            break;
+        default:
+            throw std::runtime_error{fmt::format("unhandled variant type for {}: {}", name, type)};
+        }
+    }
+}
+
+
 int main(int argc, char *argv[])
 try {
     Config const config{argc, argv};
@@ -178,6 +294,41 @@ try {
                 } else {
                     fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{} -> {}x{}\n", flags, format, w, h, pw, ph);
                 }
+            } else if (magic == "RSCC") {
+                auto const compression_mode = cast_to_compression_mode(reader.pull_u32());
+                auto const block_size = reader.pull_u32();
+                if (block_size == 0) {
+                    throw std::runtime_error{fmt::format("Zero block size.")};
+                }
+                auto const read_total = reader.pull_u32();
+                auto const block_count = (read_total / block_size) + 1;
+                spdlog::debug("{} Compressed Resource: block size {}, read total {}, blocks {}\n",
+                              magic_enum::enum_name(compression_mode), block_size, read_total, block_count);
+
+                std::vector<uint8_t> decompressed;
+                size_t decompressed_total = 0;
+
+                auto base_offset = reader.get_position() + block_count * 4;
+                for (auto i = 0u; i < block_count; i++) {
+                    decompressed.resize(decompressed_total + block_size);
+
+                    auto const compressed_size = reader.pull_u32();
+                    auto const decompressed_size = ZSTD_decompress(decompressed.data() + decompressed_total, block_size,
+                                                                   data.data() + base_offset, compressed_size);
+                    if (ZSTD_isError(decompressed_size)) {
+                        auto const error = decompressed_size;
+                        throw std::runtime_error{fmt::format("ZSTD decompress error {}: {}", error, ZSTD_getErrorName(error))};
+                    }
+                    spdlog::debug("Block #{}: {} => {}\n", i, compressed_size, decompressed_size);
+
+                    decompressed_total += decompressed_size;
+                    base_offset += compressed_size;
+                }
+
+                dump_resource(decompressed.data(), decompressed_total);
+            } else if (magic == "RSRC") {
+                fmt::print("Resource\n");
+                dump_resource(data.data() + reader.get_position(), data.size() - reader.get_position());
             }
         }
     }

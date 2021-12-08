@@ -18,6 +18,7 @@ public:
     [[nodiscard]] auto pull_u16() -> std::uint16_t;
     [[nodiscard]] auto pull_u32() -> std::uint32_t;
     [[nodiscard]] auto pull_u64() -> std::uint64_t;
+    [[nodiscard]] auto pull_f32() -> float;
     [[nodiscard]] auto pull_buffer(std::size_t size) -> std::vector<std::uint8_t>;
     [[nodiscard]] auto pull_string(std::size_t size) -> std::string;
 
@@ -55,6 +56,9 @@ class BufferReader: public Reader
 {
 public:
     explicit BufferReader(void const *data, std::size_t size);
+
+    auto seek(std::uint64_t pos) -> void;
+    auto get_position() const -> std::uint64_t;
 
     auto skip(std::size_t size) -> void override;
 
