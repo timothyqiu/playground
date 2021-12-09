@@ -106,14 +106,8 @@ private:
 };
 
 
-void dump_project_settings(PCK& pck, std::string const& path)
+void dump_project_settings(Reader& reader)
 {
-    auto const data = pck.get_file(path);
-    BufferReader reader{data.data(), data.size()};
-
-    if (reader.pull_u32() != 0x47464345) {  // ECFG
-        throw std::runtime_error{"Invalid ProjectSettings"};
-    }
     auto const count = reader.pull_u32();
     for (std::uint32_t i = 0; i < count; i++) {
         auto const name = reader.pull_string(reader.pull_u32());
@@ -159,9 +153,25 @@ void dump_project_settings(PCK& pck, std::string const& path)
 }
 
 
-void dump_resource(std::uint8_t const *data, std::size_t size)
+void dump_stream_texture(Reader& reader)
 {
-    BufferReader reader{data, size};
+    auto const w = reader.pull_u16();
+    auto const pw = reader.pull_u16();
+    auto const h = reader.pull_u16();
+    auto const ph = reader.pull_u16();
+    auto const flags = reader.pull_u32();
+    auto const format = reader.pull_u32();
+    if (pw == 0 && ph ==0) {
+        fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{}\n", flags, format, w, h);
+    } else {
+        fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{} -> {}x{}\n", flags, format, w, h, pw, ph);
+    }
+    // TODO: extract?
+}
+
+
+void dump_resource(Reader& reader)
+{
     auto const big_endian = static_cast<bool>(reader.pull_u32());
     auto const use_real64 = static_cast<bool>(reader.pull_u32());
     if (big_endian || use_real64) {
@@ -175,8 +185,7 @@ void dump_resource(std::uint8_t const *data, std::size_t size)
     }
     fmt::print("Type: {}\n", reader.pull_string(reader.pull_u32()));
 
-    auto const importmd_offset = reader.pull_u64();
-    reader.skip(4 * 14);
+    reader.skip(4 * 16);
 
     std::vector<std::string> string_table(reader.pull_u32());
     for (auto& entry : string_table) {
@@ -273,74 +282,77 @@ void dump_resource(std::uint8_t const *data, std::size_t size)
 }
 
 
+void dump_compressed_resource(Reader& reader)
+{
+    auto const compression_mode = cast_to_compression_mode(reader.pull_u32());
+    auto const block_size = reader.pull_u32();
+    if (block_size == 0) {
+        throw std::runtime_error{fmt::format("Zero block size.")};
+    }
+    auto const read_total = reader.pull_u32();
+    auto const block_count = (read_total / block_size) + 1;
+    spdlog::debug("{} Compressed Resource: block size {}, read total {}, blocks {}\n",
+                  magic_enum::enum_name(compression_mode), block_size, read_total, block_count);
+
+    std::vector<std::uint64_t> compressed_sizes(block_count);
+    for (auto i = 0u; i < block_count; i++) {
+        compressed_sizes[i] = reader.pull_u32();
+    }
+
+    std::vector<uint8_t> decompressed;
+    size_t decompressed_total = 0;
+    for (auto i = 0u; i < block_count; i++) {
+        decompressed.resize(decompressed_total + block_size);
+
+        auto const& compressed = reader.pull_buffer(compressed_sizes[i]);
+        auto const decompressed_size = ZSTD_decompress(decompressed.data() + decompressed_total, block_size,
+                                                       compressed.data(), compressed.size());
+        if (ZSTD_isError(decompressed_size)) {
+            auto const error = decompressed_size;
+            throw std::runtime_error{fmt::format("ZSTD decompress error {}: {}", error, ZSTD_getErrorName(error))};
+        }
+        spdlog::debug("Block #{}: {} => {}\n", i, compressed.size(), decompressed_size);
+        decompressed_total += decompressed_size;
+    }
+
+    BufferReader decompressed_reader{decompressed.data(), decompressed_total};
+    dump_resource(decompressed_reader);
+}
+
+
+void inspect(std::string const& binary_path, std::string const& path)
+{
+    PCK pck{binary_path};
+
+    auto const data = pck.get_file(path);
+    spdlog::debug("file size: {} bytes", data.size());
+
+    BufferReader reader{data.data(), data.size()};
+
+    if (is_plain_text(path)) {
+        fmt::print("{}", reader.pull_string(data.size()));
+    } else {
+        std::unordered_map<std::string, std::function<void(Reader&)>> const format_readers = {
+            { "ECFG", dump_project_settings },
+            { "GDST", dump_stream_texture },
+            { "RSCC", dump_compressed_resource },
+            { "RSRC", dump_resource },
+        };
+        auto const& magic = reader.pull_string(4);
+        auto const iter = format_readers.find(magic);
+        if (iter == format_readers.end()) {
+            throw std::runtime_error{fmt::format("unknown file magic: {}", magic)};
+        }
+        iter->second(reader);
+    }
+}
+
+
 int main(int argc, char *argv[])
 try {
     Config const config{argc, argv};
 
-    PCK pck{config.path};
-
-    if (config.file_path.empty()) {
-        dump_project_settings(pck, "res://project.binary");
-    } else {
-        auto const data = pck.get_file(config.file_path);
-        BufferReader reader{data.data(), data.size()};
-
-        spdlog::debug("file size: {} bytes", data.size());
-
-        if (is_plain_text(config.file_path)) {
-            fmt::print("{}", reader.pull_string(data.size()));
-        } else {
-            auto const& magic = reader.pull_string(4);
-            if (magic == "GDST") {
-                auto const w = reader.pull_u16();
-                auto const pw = reader.pull_u16();
-                auto const h = reader.pull_u16();
-                auto const ph = reader.pull_u16();
-                auto const flags = reader.pull_u32();
-                auto const format = reader.pull_u32();
-                if (pw == 0 && ph ==0) {
-                    fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{}\n", flags, format, w, h);
-                } else {
-                    fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{} -> {}x{}\n", flags, format, w, h, pw, ph);
-                }
-            } else if (magic == "RSCC") {
-                auto const compression_mode = cast_to_compression_mode(reader.pull_u32());
-                auto const block_size = reader.pull_u32();
-                if (block_size == 0) {
-                    throw std::runtime_error{fmt::format("Zero block size.")};
-                }
-                auto const read_total = reader.pull_u32();
-                auto const block_count = (read_total / block_size) + 1;
-                spdlog::debug("{} Compressed Resource: block size {}, read total {}, blocks {}\n",
-                              magic_enum::enum_name(compression_mode), block_size, read_total, block_count);
-
-                std::vector<uint8_t> decompressed;
-                size_t decompressed_total = 0;
-
-                auto base_offset = reader.get_position() + block_count * 4;
-                for (auto i = 0u; i < block_count; i++) {
-                    decompressed.resize(decompressed_total + block_size);
-
-                    auto const compressed_size = reader.pull_u32();
-                    auto const decompressed_size = ZSTD_decompress(decompressed.data() + decompressed_total, block_size,
-                                                                   data.data() + base_offset, compressed_size);
-                    if (ZSTD_isError(decompressed_size)) {
-                        auto const error = decompressed_size;
-                        throw std::runtime_error{fmt::format("ZSTD decompress error {}: {}", error, ZSTD_getErrorName(error))};
-                    }
-                    spdlog::debug("Block #{}: {} => {}\n", i, compressed_size, decompressed_size);
-
-                    decompressed_total += decompressed_size;
-                    base_offset += compressed_size;
-                }
-
-                dump_resource(decompressed.data(), decompressed_total);
-            } else if (magic == "RSRC") {
-                fmt::print("Resource\n");
-                dump_resource(data.data() + reader.get_position(), data.size() - reader.get_position());
-            }
-        }
-    }
+    inspect(config.path, config.file_path);
 }
 catch (std::exception const& e) {
     spdlog::error("Uncaught exception: {}", e.what());

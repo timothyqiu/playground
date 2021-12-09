@@ -8,6 +8,7 @@
 
 Config::Config(int argc, char *argv[])
     : is_verbose{false}
+    , file_path{"res://project.binary"}
 {
     CLI::App app{"Godot PCK Dump"};
 

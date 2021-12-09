@@ -14,6 +14,7 @@ public:
     virtual ~Reader() = default;
 
     virtual auto skip(std::size_t size) -> void = 0;
+    virtual auto seek(std::uint64_t pos) -> void = 0;
 
     [[nodiscard]] auto pull_u16() -> std::uint16_t;
     [[nodiscard]] auto pull_u32() -> std::uint32_t;
@@ -21,6 +22,8 @@ public:
     [[nodiscard]] auto pull_f32() -> float;
     [[nodiscard]] auto pull_buffer(std::size_t size) -> std::vector<std::uint8_t>;
     [[nodiscard]] auto pull_string(std::size_t size) -> std::string;
+
+    [[nodiscard]] virtual auto get_position() const -> std::uint64_t = 0;
 
 protected:
     virtual auto prepare_read(std::size_t size) const -> std::uint8_t const * = 0;
@@ -38,8 +41,8 @@ public:
     BinaryFileReader& operator=(BinaryFileReader const&) = delete;
 
     auto seek_end() -> void;
-    auto seek(std::uint64_t pos) -> void;
-    auto get_position() const -> std::uint64_t;
+    auto seek(std::uint64_t pos) -> void override;
+    auto get_position() const -> std::uint64_t override;
 
     auto skip(std::size_t size) -> void override;
 
@@ -57,8 +60,8 @@ class BufferReader: public Reader
 public:
     explicit BufferReader(void const *data, std::size_t size);
 
-    auto seek(std::uint64_t pos) -> void;
-    auto get_position() const -> std::uint64_t;
+    auto seek(std::uint64_t pos) -> void override;
+    auto get_position() const -> std::uint64_t override;
 
     auto skip(std::size_t size) -> void override;
 
