@@ -20,6 +20,7 @@ public:
     [[nodiscard]] auto pull_u32() -> std::uint32_t;
     [[nodiscard]] auto pull_u64() -> std::uint64_t;
     [[nodiscard]] auto pull_f32() -> float;
+    [[nodiscard]] auto pull_f64() -> double;
     [[nodiscard]] auto pull_buffer(std::size_t size) -> std::vector<std::uint8_t>;
     [[nodiscard]] auto pull_string(std::size_t size) -> std::string;
 
@@ -72,6 +73,30 @@ private:
 
     auto prepare_read(std::size_t size) const -> std::uint8_t const * override;
     auto commit_read(std::size_t size) -> void override;
+};
+
+
+class BinaryFileWriter
+{
+public:
+    explicit BinaryFileWriter(std::string const& path);
+    ~BinaryFileWriter();
+
+    BinaryFileWriter(BinaryFileWriter const&);
+    BinaryFileWriter& operator=(BinaryFileWriter const&);
+
+    auto get_position() const -> std::uint64_t;
+
+    void push_u32(std::uint32_t v);
+    void push_u64(std::uint64_t v);
+    void push_buffer(std::vector<std::uint8_t> const& buffer);
+
+    void skip(std::size_t size);
+
+private:
+    FILE *file_;
+
+    void commit_write(void const *data, std::size_t size);
 };
 
 #endif  // FILE_HPP_

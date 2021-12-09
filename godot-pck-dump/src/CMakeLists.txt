@@ -1,6 +1,5 @@
 add_executable(pckdump
   main.cpp
-  config.hpp config.cpp
   file.hpp file.cpp)
 
 target_compile_features(pckdump PRIVATE cxx_std_17)

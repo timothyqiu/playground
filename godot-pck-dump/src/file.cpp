@@ -158,6 +158,17 @@ auto Reader::pull_f32() -> float
 }
 
 
+auto Reader::pull_f64() -> double
+{
+    union Marshall {
+        std::uint64_t u64;
+        double f64;
+    } m;
+    m.u64 = this->pull_u64();
+    return m.f64;
+}
+
+
 auto Reader::pull_buffer(std::size_t size) -> std::vector<std::uint8_t>
 {
     auto const p = this->prepare_read(size);
@@ -177,4 +188,67 @@ auto Reader::pull_string(std::size_t size) -> std::string
     buffer[size] = '\0';
 
     return buffer.data();
+}
+
+
+BinaryFileWriter::BinaryFileWriter(std::string const& path)
+    : file_{fopen(path.c_str(), "wb")}
+{
+    if (file_ == nullptr) {
+        throw std::runtime_error{
+#if defined(_POSIX_C_SOURCE) and _POSIX_C_SOURCE >= 200809L
+            std::strerror(errno)
+#else
+            "fopen"
+#endif
+        };
+    }
+}
+
+BinaryFileWriter::~BinaryFileWriter()
+{
+    fclose(file_);
+}
+
+auto BinaryFileWriter::get_position() const -> std::uint64_t
+{
+    auto const pos = std::ftell(file_);
+    if (pos < 0) {
+        throw std::runtime_error{fmt::format("ftell: {}", std::strerror(errno))};
+    }
+    return static_cast<std::uint64_t>(pos);
+}
+
+void BinaryFileWriter::commit_write(void const *data, std::size_t size)
+{
+    if (std::fwrite(data, size, 1, file_) < 1) {
+        throw std::runtime_error{"fwrite"};
+    }
+}
+
+void BinaryFileWriter::push_buffer(std::vector<std::uint8_t> const& buffer)
+{
+    this->commit_write(buffer.data(), buffer.size());
+}
+
+void BinaryFileWriter::push_u32(std::uint32_t v)
+{
+    constexpr auto const size = sizeof(std::uint32_t);
+    std::uint8_t buffer[size];
+    boost::endian::store_little_u32(buffer, v);
+    this->commit_write(buffer, size);
+}
+
+void BinaryFileWriter::push_u64(std::uint64_t v)
+{
+    constexpr auto const size = sizeof(std::uint64_t);
+    std::uint8_t buffer[size];
+    boost::endian::store_little_u64(buffer, v);
+    this->commit_write(buffer, size);
+}
+
+void BinaryFileWriter::skip(std::size_t size)
+{
+    std::vector<std::uint8_t> buffer(size);
+    this->push_buffer(buffer);
 }
