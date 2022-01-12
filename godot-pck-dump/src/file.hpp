@@ -16,6 +16,7 @@ public:
     virtual auto skip(std::size_t size) -> void = 0;
     virtual auto seek(std::uint64_t pos) -> void = 0;
 
+    [[nodiscard]] auto pull_u8() -> std::uint8_t;
     [[nodiscard]] auto pull_u16() -> std::uint16_t;
     [[nodiscard]] auto pull_u32() -> std::uint32_t;
     [[nodiscard]] auto pull_u64() -> std::uint64_t;
@@ -65,6 +66,8 @@ public:
     auto get_position() const -> std::uint64_t override;
 
     auto skip(std::size_t size) -> void override;
+
+    auto peek_u8() -> std::uint8_t;
 
 private:
     std::uint8_t const *data_;

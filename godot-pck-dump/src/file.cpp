@@ -120,6 +120,21 @@ auto BufferReader::skip(std::size_t size) -> void
 }
 
 
+auto BufferReader::peek_u8() -> std::uint8_t
+{
+    return *this->prepare_read(1);
+}
+
+
+auto Reader::pull_u8() -> std::uint8_t
+{
+    auto const size = sizeof(std::uint8_t);
+    auto const v = *this->prepare_read(size);
+    this->commit_read(size);
+    return v;
+}
+
+
 auto Reader::pull_u16() -> std::uint16_t
 {
     auto const size = sizeof(std::uint16_t);

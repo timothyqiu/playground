@@ -454,6 +454,194 @@ void dump_compressed_resource(Reader& reader)
 }
 
 
+void dump_gdscript(Reader& reader)
+{
+    auto const version = reader.pull_u32();
+    if (version > 13) {
+        throw std::runtime_error{fmt::format("Unsupported Bytecode Version: {}", version)};
+    }
+
+    std::vector<std::string> identifiers;
+    std::vector<std::string> constants;
+
+    identifiers.resize(reader.pull_u32());
+    constants.resize(reader.pull_u32());
+    auto const line_count = reader.pull_u32();
+    auto const token_count = reader.pull_u32();
+
+    spdlog::debug("Identifiers: {}", identifiers.size());
+    for (auto &identifier : identifiers) {
+        identifier = reader.pull_string(reader.pull_u32());
+        for (auto &c : identifier) {
+            c ^= 0xb6;
+        }
+    }
+
+    spdlog::debug("Constants: {}", constants.size());
+    for (auto &constant : constants) {
+        constant = format_project_settings_variant(reader);
+    }
+
+    spdlog::debug("Lines: {}", line_count);
+    reader.skip(4 * 2 * line_count);
+
+    std::string newline;
+    auto &br = dynamic_cast<BufferReader &>(reader);
+    for (auto i = 0u; i < token_count; i++) {
+        unsigned int raw_token;
+        if (br.peek_u8() & 0x80) {
+            raw_token = br.pull_u32() & ~0x80u;
+        } else {
+            raw_token = br.pull_u8();
+        }
+
+        auto const token = raw_token & ((1 << 8) - 1);
+        switch (token) {
+        case 1:     fmt::print(identifiers[raw_token >> 8]);    break;
+        case 2:     fmt::print(constants[raw_token >> 8]);      break;
+        case 3:     fmt::print("self"); break;
+        case 4: {
+            auto const type = raw_token >> 8;
+            static char const *const names[] = {
+                "null",
+                "bool", "int", "float", "String",
+                "Vector2", "Rect2", "Transform2D",
+                "Vector3", "AABB", "Plane", "Quat", "Basis", "Transform",
+                "Color", "RID", "Object", "NodePath",
+                "Dictionary", "Array",
+                "PoolByteArray",
+                "PoolIntArray",
+                "PoolRealArray",
+                "PoolStringArray",
+                "PoolVector2Array",
+                "PoolVector3Array",
+                "PoolColorArray",
+            };
+            if (type >= sizeof(names) / sizeof(names[0])) {
+                fmt::print("[TYPE {}]", type);
+            } else {
+                fmt::print(names[type]);
+            }
+        } break;
+        case 5: {
+            auto const func = raw_token >> 8;
+            switch (func) {
+            case 38:    fmt::print("randi");    break;
+            case 41:    fmt::print("seed");    break;
+            case 63:    fmt::print("print");    break;
+            case 76:    fmt::print("load");     break;
+            case 88:    fmt::print("len");     break;
+            default:    fmt::print("[func {}]", func);
+            }
+        } break;
+        case 6:     fmt::print(" in "); break;
+        case 7:     fmt::print(" == "); break;
+        case 8:     fmt::print(" != "); break;
+        case 9:     fmt::print(" < "); break;
+        case 10:    fmt::print(" <= "); break;
+        case 11:    fmt::print(" > "); break;
+        case 12:    fmt::print(" >= "); break;
+        case 13:    fmt::print(" and "); break;
+        case 14:    fmt::print(" or "); break;
+        case 15:    fmt::print(" not "); break;
+        case 16:    fmt::print(" + "); break;
+        case 17:    fmt::print(" - "); break;
+        case 18:    fmt::print(" * "); break;
+        case 19:    fmt::print(" / "); break;
+        case 20:    fmt::print(" % "); break;
+        case 21:    fmt::print(" << "); break;
+        case 22:    fmt::print(" >> "); break;
+        case 23:    fmt::print(" = "); break;
+        case 24:    fmt::print(" += "); break;
+        case 25:    fmt::print(" -= "); break;
+        case 26:    fmt::print(" *= "); break;
+        case 27:    fmt::print(" /= "); break;
+        case 28:    fmt::print(" %= "); break;
+        case 29:    fmt::print(" <<= "); break;
+        case 30:    fmt::print(" >>= "); break;
+        case 31:    fmt::print(" &= "); break;
+        case 32:    fmt::print(" |= "); break;
+        case 33:    fmt::print(" ^= "); break;
+        case 34:    fmt::print(" & "); break;
+        case 35:    fmt::print(" | "); break;
+        case 36:    fmt::print(" ^ "); break;
+        case 37:    fmt::print(" ~ "); break;
+        case 38:    fmt::print("if "); break;
+        case 39:    fmt::print("elif "); break;
+        case 40:    fmt::print("else "); break;
+        case 41:    fmt::print("for "); break;
+        case 42:    fmt::print("while "); break;
+        case 43:    fmt::print("break"); break;
+        case 44:    fmt::print("continue"); break;
+        case 45:    fmt::print("pass"); break;
+        case 46:    fmt::print("return "); break;
+        case 47:    fmt::print("match "); break;
+        case 48:    fmt::print("func "); break;
+        case 49:    fmt::print("class "); break;
+        case 50:    fmt::print("class_name "); break;
+        case 51:    fmt::print("extends "); break;
+        case 52:    fmt::print(" is "); break;
+        case 53:    fmt::print("onready "); break;
+        case 54:    fmt::print("tool "); break;
+        case 55:    fmt::print("static "); break;
+        case 56:    fmt::print("export "); break;
+        case 57:    fmt::print(" setget "); break;
+        case 58:    fmt::print("const "); break;
+        case 59:    fmt::print("var "); break;
+        case 60:    fmt::print(" as "); break;
+        case 61:    fmt::print(" void "); break;
+        case 62:    fmt::print("enum "); break;
+        case 63:    fmt::print("preload"); break;
+        case 64:    fmt::print("assert"); break;
+        case 65:    fmt::print("yield"); break;
+        case 66:    fmt::print("signal "); break;
+
+        case 76:    fmt::print("["); break;
+        case 77:    fmt::print("]"); break;
+        case 78:    fmt::print("{{"); break;
+        case 79:    fmt::print("}}"); break;
+        case 80:    fmt::print("("); break;
+        case 81:    fmt::print(")"); break;
+        case 82:    fmt::print(", "); break;
+        case 83:    fmt::print(";"); break;
+        case 84:    fmt::print("."); break;
+        case 85:    fmt::print("?"); break;
+        case 86:    fmt::print(":"); break;
+        case 87:    fmt::print("$"); break;
+        case 88:    fmt::print("->"); break;
+        case 89:
+            {
+                std::string current_newline = "\n";
+                auto const indent = raw_token >> 8;
+                for (auto j = 0u; j < indent; j++) {
+                    current_newline += "    ";
+                }
+                if (current_newline != newline) {
+                    newline = current_newline;
+                    fmt::print(newline);
+                }
+            }
+            break;
+
+        default:
+            fmt::print("[TK {}]", token);
+            break;
+        }
+
+        if (token != 89 && !newline.empty()) {
+            newline = "";
+        }
+    }
+}
+
+
+void save_file(std::string const& binary_path, std::string const& file_path, std::string const& output_path)
+{
+    auto const data = PCK{binary_path}.get_file(file_path);
+    BinaryFileWriter{output_path}.push_buffer(data);
+}
+
+
 void inspect_file(std::string const& binary_path, std::string const& path)
 {
     PCK pck{binary_path};
@@ -471,6 +659,7 @@ void inspect_file(std::string const& binary_path, std::string const& path)
             { "GDST", dump_stream_texture },
             { "RSCC", dump_compressed_resource },
             { "RSRC", dump_resource },
+            { "GDSC", dump_gdscript },
         };
         auto const& magic = reader.pull_string(4);
         auto const iter = format_readers.find(magic);
@@ -497,10 +686,14 @@ try {
     std::string file_path = "res://project.binary";
     inspect->add_option("file-path", file_path, "File path inside PCK");
 
+    auto save = app.add_subcommand("save", "Save file from PCK");
+    std::string output_path;
+    save->add_option("file-path", file_path, "File path inside PCK")->required();
+    save->add_option("output-path", output_path, "File output path")->required();
+
     auto list = app.add_subcommand("list", "List files inside PCK");
 
     auto peel = app.add_subcommand("peel", "Peel embeded PCK");
-    std::string output_path;
     peel->add_option("output-path", output_path, "PCK output path")->required();
 
     CLI11_PARSE(app, argc, argv);
@@ -515,6 +708,8 @@ try {
         }
     } else if (app.got_subcommand(peel)) {
         PCK::peel_embeded(binary_path, output_path);
+    } else if (app.got_subcommand(save)) {
+        save_file(binary_path, file_path, output_path);
     }
 }
 catch (std::exception const& e) {
