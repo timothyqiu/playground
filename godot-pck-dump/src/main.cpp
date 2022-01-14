@@ -300,7 +300,10 @@ void dump_stream_texture(Reader& reader)
     } else {
         fmt::print("StreamTexture FLAG[{:x}] FMT[{:x}] {}x{} -> {}x{}\n", flags, format, w, h, pw, ph);
     }
-    // TODO: extract?
+
+    if (format & (1 << 20)) {
+        fmt::print("PNG image");
+    }
 }
 
 
@@ -635,9 +638,42 @@ void dump_gdscript(Reader& reader)
 }
 
 
-void save_file(std::string const& binary_path, std::string const& file_path, std::string const& output_path)
+void save_file(std::string const& binary_path, std::string const& file_path, std::string const& output_path, bool use_png)
 {
     auto const data = PCK{binary_path}.get_file(file_path);
+
+    auto const n = file_path.rfind(".stex");
+    if (use_png && (n != file_path.npos) && (n == file_path.size() - 5)) {
+        try {
+            spdlog::info("Extracting PNG from .stex");
+
+            BufferReader reader{data.data(), data.size()};
+            if (reader.pull_string(4) != "GDST") {
+                throw std::runtime_error{"Not PNG"};
+            }
+
+            reader.skip(2 * 4 + 4);
+            auto const format = reader.pull_u32();
+            if ((format & (1 << 20)) == 0) {
+                throw std::runtime_error{"Not PNG"};
+            }
+            reader.skip(4);  // mipmap count
+
+            auto const size = reader.pull_u32();
+            if (reader.pull_string(4) != "PNG ") {
+                throw std::runtime_error{"Corrupted Data: invalid PNG magic"};
+            }
+            auto const buffer = reader.pull_buffer(size - 4);
+            BinaryFileWriter{output_path + ".png"}.push_buffer(buffer);
+            return;
+        }
+        catch (std::exception const& e) {
+            if (e.what() != std::string{"Not PNG"}) {
+                spdlog::warn("Failed to extract PNG from .stex: {}", e.what());
+            }
+        }
+    }
+
     BinaryFileWriter{output_path}.push_buffer(data);
 }
 
@@ -688,6 +724,8 @@ try {
 
     auto save = app.add_subcommand("save", "Save file from PCK");
     std::string output_path;
+    bool use_png = true;
+    save->add_flag("--png,!--no-png", use_png, "Save as PNG when possible");
     save->add_option("file-path", file_path, "File path inside PCK")->required();
     save->add_option("output-path", output_path, "File output path")->required();
 
@@ -709,7 +747,7 @@ try {
     } else if (app.got_subcommand(peel)) {
         PCK::peel_embeded(binary_path, output_path);
     } else if (app.got_subcommand(save)) {
-        save_file(binary_path, file_path, output_path);
+        save_file(binary_path, file_path, output_path, use_png);
     }
 }
 catch (std::exception const& e) {

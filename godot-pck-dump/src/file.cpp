@@ -246,6 +246,11 @@ void BinaryFileWriter::push_buffer(std::vector<std::uint8_t> const& buffer)
     this->commit_write(buffer.data(), buffer.size());
 }
 
+void BinaryFileWriter::push_buffer(std::uint8_t const *data, std::size_t size)
+{
+    this->commit_write(data, size);
+}
+
 void BinaryFileWriter::push_u32(std::uint32_t v)
 {
     constexpr auto const size = sizeof(std::uint32_t);

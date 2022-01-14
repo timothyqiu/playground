@@ -93,6 +93,7 @@ public:
     void push_u32(std::uint32_t v);
     void push_u64(std::uint64_t v);
     void push_buffer(std::vector<std::uint8_t> const& buffer);
+    void push_buffer(std::uint8_t const *data, std::size_t size);
 
     void skip(std::size_t size);
 
