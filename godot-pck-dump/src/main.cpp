@@ -506,8 +506,8 @@ void dump_gdscript(Reader& reader)
 
         auto const token = raw_token & ((1 << 8) - 1);
         switch (token) {
-        case 1:     fmt::print(identifiers[raw_token >> 8]);    break;
-        case 2:     fmt::print(constants[raw_token >> 8]);      break;
+        case 1:     fmt::print("{}", identifiers[raw_token >> 8]);    break;
+        case 2:     fmt::print("{}", constants[raw_token >> 8]);      break;
         case 3:     fmt::print("self"); break;
         case 4: {
             auto const type = raw_token >> 8;
@@ -529,7 +529,7 @@ void dump_gdscript(Reader& reader)
             if (type >= sizeof(names) / sizeof(names[0])) {
                 fmt::print("[TYPE {}]", type);
             } else {
-                fmt::print(names[type]);
+                fmt::print("{}", names[type]);
             }
         } break;
         case 5: {
@@ -627,7 +627,7 @@ void dump_gdscript(Reader& reader)
                 }
                 if (current_newline != newline) {
                     newline = current_newline;
-                    fmt::print(newline);
+                    fmt::print("{}", newline);
                 }
             }
             break;
