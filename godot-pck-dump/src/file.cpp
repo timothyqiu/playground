@@ -272,3 +272,64 @@ void BinaryFileWriter::skip(std::size_t size)
     std::vector<std::uint8_t> buffer(size);
     this->push_buffer(buffer);
 }
+
+std::string get_ini_value(char const *data, size_t size,
+                          std::string const& section, std::string const& key)
+{
+    bool is_current_section = false;
+    bool is_current_value = false;
+
+    bool is_start_of_line = true;
+    bool is_inside_braces = false;
+
+    size_t start_of_value = 0;
+
+    for (auto i = 0u; i < size; i++) {
+        switch (data[i]) {
+        case '[':
+            if (is_start_of_line) {
+                for (auto j = i; i < size; j++) {
+                    if (data[j] == ']') {
+                        std::string current_section{data + i + 1, j - i - 1};
+                        is_current_section = current_section == section;
+                        i = j;
+                        break;
+                    }
+                }
+            }
+            break;
+        case '\n':
+            if (!is_inside_braces) {
+                if (is_current_value) {
+                    return std::string{data + start_of_value, i - start_of_value};
+                }
+                is_start_of_line = true;
+            }
+            break;
+        case '{':
+            is_inside_braces = true;
+            break;
+        case '}':
+            is_inside_braces = false;
+            break;
+        default:
+            if (is_start_of_line) {
+                if (is_current_section) {
+                    for (auto j = i; j < size; j++) {
+                        if (data[j] == '=') {
+                            std::string current_key{data + i, j - i};
+                            is_current_value = current_key == key;
+                            start_of_value = j + 1;
+                            i = j;
+                            break;
+                        }
+                    }
+                }
+                is_start_of_line = false;
+            }
+            break;
+        }
+    }
+
+    throw std::runtime_error{fmt::format("INI key {} not found", key)};
+}

@@ -13,6 +13,12 @@
 #include "file.hpp"
 
 
+class FileNotFound: public std::runtime_error {
+public:
+    explicit FileNotFound(std::string const& path) : std::runtime_error{path} {}
+};
+
+
 bool is_plain_text(std::string const& path)
 {
     static char const *plain_text_extensions[] = {
@@ -89,7 +95,7 @@ public:
     {
         auto const iter = file_entries_.find(path);
         if (iter == std::end(file_entries_)) {
-            throw std::runtime_error{fmt::format("{} does not exist", path)};
+            throw FileNotFound{path};
         }
         auto const& entry = iter->second;
         reader_.seek(entry.offset);
@@ -302,7 +308,7 @@ void dump_stream_texture(Reader& reader)
     }
 
     if (format & (1 << 20)) {
-        fmt::print("PNG image");
+        fmt::print("PNG image\n");
     }
 }
 
@@ -640,7 +646,18 @@ void dump_gdscript(Reader& reader)
 
 void save_file(std::string const& binary_path, std::string const& file_path, std::string const& output_path, bool use_png)
 {
-    auto const data = PCK{binary_path}.get_file(file_path);
+    PCK pck{binary_path};
+
+    std::vector<uint8_t> data;
+    try {
+        data = pck.get_file(file_path);
+    }
+    catch (FileNotFound const&) {
+        data = pck.get_file(file_path + ".import");
+        auto const value = get_ini_value(reinterpret_cast<char const *>(data.data()), data.size(), "remap", "path");
+        auto const remap_path = value.substr(1, value.size() - 2);  // quotes
+        data = pck.get_file(remap_path);
+    }
 
     auto const n = file_path.rfind(".stex");
     if (use_png && (n != file_path.npos) && (n == file_path.size() - 5)) {
@@ -682,7 +699,16 @@ void inspect_file(std::string const& binary_path, std::string const& path)
 {
     PCK pck{binary_path};
 
-    auto const data = pck.get_file(path);
+    std::vector<uint8_t> data;
+    try {
+        data = pck.get_file(path);
+    }
+    catch (FileNotFound const&) {
+        data = pck.get_file(path + ".import");
+        auto const value = get_ini_value(reinterpret_cast<char const *>(data.data()), data.size(), "remap", "path");
+        auto const remap_path = value.substr(1, value.size() - 2);  // quotes
+        data = pck.get_file(remap_path);
+    }
     spdlog::debug("file size: {} bytes", data.size());
 
     BufferReader reader{data.data(), data.size()};

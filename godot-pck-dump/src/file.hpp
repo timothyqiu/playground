@@ -103,4 +103,7 @@ private:
     void commit_write(void const *data, std::size_t size);
 };
 
+std::string get_ini_value(char const *data, size_t size,
+                          std::string const& section, std::string const& key);
+
 #endif  // FILE_HPP_
