@@ -648,19 +648,21 @@ void save_file(std::string const& binary_path, std::string const& file_path, std
 {
     PCK pck{binary_path};
 
+    std::string path = file_path;
     std::vector<uint8_t> data;
     try {
-        data = pck.get_file(file_path);
+        data = pck.get_file(path);
     }
     catch (FileNotFound const&) {
-        data = pck.get_file(file_path + ".import");
+        data = pck.get_file(path + ".import");
         auto const value = get_ini_value(reinterpret_cast<char const *>(data.data()), data.size(), "remap", "path");
         auto const remap_path = value.substr(1, value.size() - 2);  // quotes
         data = pck.get_file(remap_path);
+        path = remap_path;
     }
 
-    auto const n = file_path.rfind(".stex");
-    if (use_png && (n != file_path.npos) && (n == file_path.size() - 5)) {
+    auto const n = path.rfind(".stex");
+    if (use_png && (n != path.npos) && (n == path.size() - 5)) {
         try {
             spdlog::info("Extracting PNG from .stex");
 
