@@ -1,0 +1,14 @@
+[requires]
+fmt/8.0.1
+spdlog/1.9.2
+cli11/2.1.1
+boost/1.77.0
+magic_enum/0.7.3
+
+[generators]
+cmake_find_package
+
+[options]
+boost:header_only=True
+fmt:header_only=True
+spdlog:header_only=True
