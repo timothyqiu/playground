@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://assets/ui/talk_panel.tres" type="StyleBox" id=1]
-[ext_resource path="res://assets/ui/main_theme.tres" type="Theme" id=2]
+[ext_resource path="res://resources/ui/talk_panel.tres" type="StyleBox" id=1]
+[ext_resource path="res://resources/ui/main_theme.tres" type="Theme" id=2]
 [ext_resource path="res://src/UI/DialogueBox.gd" type="Script" id=3]
 
 [node name="DialogueBox" type="CanvasLayer"]
@@ -18,9 +18,6 @@ rect_min_size = Vector2( 640, 96 )
 theme = ExtResource( 2 )
 custom_styles/panel = ExtResource( 1 )
 popup_exclusive = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Talkbar"]
 anchor_right = 1.0
@@ -42,7 +39,7 @@ size_flags_horizontal = 3
 [node name="TextureRect" type="TextureRect" parent="Talkbar/HBoxContainer/VBoxContainer"]
 margin_left = 33.0
 margin_right = 65.0
-margin_bottom = 53.0
+margin_bottom = 56.0
 rect_min_size = Vector2( 32, 32 )
 size_flags_horizontal = 4
 size_flags_vertical = 3
@@ -50,7 +47,7 @@ expand = true
 stretch_mode = 6
 
 [node name="NameLabel" type="Label" parent="Talkbar/HBoxContainer/VBoxContainer"]
-margin_top = 57.0
+margin_top = 60.0
 margin_right = 99.0
 margin_bottom = 76.0
 custom_colors/font_color = Color( 1, 1, 0, 1 )
@@ -75,5 +72,6 @@ __meta__ = {
 }
 
 [node name="Tween" type="Tween" parent="."]
+
 [connection signal="about_to_show" from="Talkbar" to="." method="_on_Talkbar_about_to_show"]
 [connection signal="popup_hide" from="Talkbar" to="." method="_on_Talkbar_popup_hide"]

@@ -6,6 +6,7 @@ onready var items_dialog := $ItemsDialog
 onready var stats_dialog := $StatsDialog
 onready var load_panel := $LoadPanel
 onready var save_panel := $SavePanel
+onready var about_dialog := $AboutDialog
 
 
 func show_menu() -> void:
@@ -64,3 +65,6 @@ func _on_LoadPanel_save_file_selected(path) -> void:
 	Game.load_game(path)
 	menu_panel.hide()
 
+
+func _on_About_pressed():
+	about_dialog.popup()

@@ -8,7 +8,6 @@ func _on_Boss_dead() -> void:
 	boss.talk(player)
 	yield(Events, "dialogue_finished")
 	
-	var princess = $Structures/Pricess
 	$Structures/Pricess.talk(player)
 	yield(Events, "dialogue_finished")
 	

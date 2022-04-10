@@ -98,7 +98,7 @@ func reset() -> void:
 
 func new_game() -> void:
 	reset()
-	Transition.replace_scene("res://src/Maps/Home.tscn")
+	Transition.replace_scene("res://src/UI/Prologue.tscn")
 
 
 func use_item(index: int) -> void:

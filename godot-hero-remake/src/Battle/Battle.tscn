@@ -1,13 +1,13 @@
 [gd_scene load_steps=18 format=2]
 
-[ext_resource path="res://assets/ui/battle_theme.tres" type="Theme" id=1]
-[ext_resource path="res://assets/tilesets/background_tileset.tres" type="TileSet" id=2]
+[ext_resource path="res://resources/ui/battle_theme.tres" type="Theme" id=1]
+[ext_resource path="res://resources/background_tileset.tres" type="TileSet" id=2]
 [ext_resource path="res://assets/battle/fightbar.png" type="Texture" id=3]
 [ext_resource path="res://src/Battle/BattleStats.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Battle/Battle.gd" type="Script" id=5]
 [ext_resource path="res://src/UI/StatsDialog.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/UI/ItemsDialog.tscn" type="PackedScene" id=7]
-[ext_resource path="res://assets/ui/main_theme.tres" type="Theme" id=8]
+[ext_resource path="res://resources/ui/main_theme.tres" type="Theme" id=8]
 [ext_resource path="res://assets/player.png" type="Texture" id=9]
 [ext_resource path="res://assets/npc/npc11.png" type="Texture" id=10]
 [ext_resource path="res://assets/audio/ack_00.wav" type="AudioStream" id=11]
@@ -112,9 +112,6 @@ script = ExtResource( 5 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Background" type="TileMap" parent="Root"]
 tile_set = ExtResource( 2 )
@@ -156,13 +153,13 @@ custom_constants/separation = 6
 alignment = 1
 
 [node name="Attack" type="Button" parent="Root/Bar/Sections/Actions"]
-margin_top = 9.0
+margin_top = 15.0
 margin_right = 61.0
-margin_bottom = 28.0
+margin_bottom = 31.0
 text = "攻击"
 
 [node name="Stats" type="Button" parent="Root/Bar/Sections/Actions"]
-margin_top = 34.0
+margin_top = 37.0
 margin_right = 61.0
 margin_bottom = 53.0
 text = "状态"
@@ -170,13 +167,13 @@ text = "状态"
 [node name="Items" type="Button" parent="Root/Bar/Sections/Actions"]
 margin_top = 59.0
 margin_right = 61.0
-margin_bottom = 78.0
+margin_bottom = 75.0
 text = "物品"
 
 [node name="Retreat" type="Button" parent="Root/Bar/Sections/Actions"]
-margin_top = 84.0
+margin_top = 81.0
 margin_right = 61.0
-margin_bottom = 103.0
+margin_bottom = 97.0
 text = "逃走"
 
 [node name="EnemyStats" parent="Root/Bar/Sections" instance=ExtResource( 4 )]
@@ -213,15 +210,15 @@ __meta__ = {
 [node name="PlayerSprite" type="Sprite" parent="Root"]
 position = Vector2( 196, 192 )
 texture = ExtResource( 9 )
-vframes = 4
 hframes = 3
+vframes = 4
 frame = 6
 
 [node name="EnemySprite" type="Sprite" parent="Root"]
 position = Vector2( 468, 192 )
 texture = ExtResource( 10 )
-vframes = 4
 hframes = 2
+vframes = 4
 frame = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -247,6 +244,7 @@ bus = "SoundFX"
 [node name="EnemyHurtSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 14 )
 bus = "SoundFX"
+
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Attack" to="." method="_on_Attack_pressed"]
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Stats" to="." method="_on_Stats_pressed"]
 [connection signal="pressed" from="Root/Bar/Sections/Actions/Items" to="." method="_on_Items_pressed"]

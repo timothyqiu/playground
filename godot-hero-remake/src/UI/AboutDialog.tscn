@@ -1,0 +1,125 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://resources/ui/main_theme.tres" type="Theme" id=1]
+[ext_resource path="res://src/UI/AboutDialog.gd" type="Script" id=2]
+
+[node name="AboutDialog" type="Popup"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -210.0
+margin_top = -160.0
+margin_right = 210.0
+margin_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+rect_min_size = Vector2( 420, 320 )
+focus_mode = 2
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
+
+[node name="Content" type="PanelContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Message" type="Label" parent="Content"]
+visible = false
+margin_left = 20.0
+margin_top = 35.0
+margin_right = 400.0
+margin_bottom = 284.0
+text = "　　　　　圣剑英雄传--英雄救美（测试版）
+
+　　这是我们的第一个RPG 游戏，本来只是想练一练手而已，不过做到一半时才发现自己错了：既然做了就应该把它做好！
+
+　　现今，国内游戏界还普遍存在着急功近利、粗制滥造的现象，希望制作者们用实际行动来改变它吧！我们的宗旨是“不求极品，但求精品！”
+
+成都金点工作组 E-mail: wj77@163.net
+网站 http://goldpoint.126.com"
+autowrap = true
+
+[node name="Credits" type="Control" parent="Content"]
+margin_left = 20.0
+margin_top = 20.0
+margin_right = 400.0
+margin_bottom = 300.0
+rect_clip_content = true
+
+[node name="Content" type="Label" parent="Content/Credits"]
+margin_right = 380.0
+margin_bottom = 1362.0
+rect_min_size = Vector2( 380, 0 )
+text = "　　　　《圣剑英雄传》Godot 复刻版
+
+　　《英雄救美》的 Godot 复刻版是 timothyqiu 学习 Godot 的作品，同时也是为了致敬国内独立游戏开发的先驱——金点工作组。
+　　以下是原版游戏的制作群。
+
+
+　　　　《圣剑英雄传》制作群　　　 
+　　　　　　　　　　　　　　　　　 
+　　《英雄救美》是一款微型的中文RPG 游戏，由成都金点工作组成员 softboy和 EVA编写，游戏中出现的图片主要由网友 qinyong、 Daimy和cuigod提供。这是一个自由游戏软件，你可以任意复制并传播。如果愿意还可以自由更改，我们提供源程序。　　　　　　　　　　　　　　 
+　　　　　　　　　　　　　　　　　 
+　　　　====游戏运行要求====：　　 
+　　　　　　　　　　　　　　　　　 
+主机：INTEL兼容芯片，奔腾100以上CPU
+内存：8 兆以上　　　　　　　　　　 
+显卡：SVGA 640*480*256　　　　　　 
+声卡：WINDOWS 95兼容卡（可选）　　 
+控制：键盘　　　　　　　　　　　　 
+平台：WIN 95／98 + DirectX 5.0　　 
+　　　　　　　　　　　　　　　　　 
+　　　　======键盘定义======：　　 
+　　　　　　　　　　　　　　　　　 
+上、下、左、右 ---------- 行走     
+　　　　　Ctrl ---------- 对话     
+　　　　Enter  ---------- 确认     
+　　　　Escape ---------- 调主菜单 
+                                   
+        ======文件清单======：     
+                                   
+  rpg.exe--------主程序            
+  readme.txt-----说明/帮助         
+  log.txt--------游戏制作日志      
+  maps\\*.*-------地图数据/NPC数据  
+  pic\\*.*--------游戏中使用的图片  
+  text\\*.*-------对白/物品数据     
+  voc\\*.*--------声音              
+                                   
+   最后，祝大家快乐！              
+                                   
+        敬礼！                     
+                                   
+    =========制作成员=========：   
+                                   
+softboy -- 程序     wj77@163.net   
+李为EVA -- 美工     eva@188.net    
+qinyong -- 图片提供 qinyong@163.net
+  daimy -- 图片提供 daimy@163.net  
+ cuigod -- 图片提供 cuiin@263.net  
+   孔雀 -- 剧情支持 kclamp@21cn.com
+                                   
+    =========联系方法=========     
+                                   
+汪疆(softboy)                      
+Mail:wj77@163.net                  
+主页:http://goldpoint.126.com      
+ Tel:(028-4318564)                 
+成都电子科技大学 95080-5 [610054]  
+　　　　　　　　　　　　　　　　　 
+　　　　　　　　　　　　　　　　　 
+　　　　　　　　　　　　　　　　　 
+　　　　　　　　　　　　　　　　　 
+　　　　　　　　　　　　　　　　　 
+　　　　　　　　　　　　　　　　　 
+　　　　　　　　　　　　　　　　　 
+　　　　　　　　　　　　　　　　　 
+          成都金点工作组           
+          一九九九年六月           "
+autowrap = true
+
+[node name="Tween" type="Tween" parent="Content/Credits"]
+
+[connection signal="about_to_show" from="." to="." method="_on_AboutDialog_about_to_show"]
+[connection signal="popup_hide" from="." to="." method="_on_AboutDialog_popup_hide"]
+[connection signal="tween_all_completed" from="Content/Credits/Tween" to="." method="_on_Tween_tween_all_completed"]

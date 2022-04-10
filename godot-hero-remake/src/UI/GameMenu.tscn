@@ -1,11 +1,12 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://assets/ui/menu_panel.tres" type="StyleBox" id=1]
-[ext_resource path="res://assets/ui/main_theme.tres" type="Theme" id=2]
+[ext_resource path="res://resources/ui/menu_panel.tres" type="StyleBox" id=1]
+[ext_resource path="res://resources/ui/main_theme.tres" type="Theme" id=2]
 [ext_resource path="res://src/UI/GameMenu.gd" type="Script" id=3]
 [ext_resource path="res://src/UI/ItemsDialog.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/UI/StatsDialog.tscn" type="PackedScene" id=5]
 [ext_resource path="res://src/UI/SaveSlotPanel.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/UI/AboutDialog.tscn" type="PackedScene" id=7]
 
 [node name="GameMenu" type="CanvasLayer"]
 pause_mode = 2
@@ -37,26 +38,26 @@ __meta__ = {
 }
 
 [node name="Stats" type="Button" parent="MenuPanel/VBoxContainer"]
-margin_top = 4.0
+margin_top = 8.0
 margin_right = 130.0
-margin_bottom = 25.0
+margin_bottom = 28.0
 focus_neighbour_top = NodePath("../Back")
 text = "状态"
 
 [node name="Items" type="Button" parent="MenuPanel/VBoxContainer"]
-margin_top = 29.0
+margin_top = 32.0
 margin_right = 130.0
-margin_bottom = 50.0
+margin_bottom = 52.0
 text = "道具"
 
 [node name="Load" type="Button" parent="MenuPanel/VBoxContainer"]
-margin_top = 54.0
+margin_top = 56.0
 margin_right = 130.0
-margin_bottom = 75.0
+margin_bottom = 76.0
 text = "读取进度"
 
 [node name="Save" type="Button" parent="MenuPanel/VBoxContainer"]
-margin_top = 79.0
+margin_top = 80.0
 margin_right = 130.0
 margin_bottom = 100.0
 text = "存储进度"
@@ -64,19 +65,19 @@ text = "存储进度"
 [node name="About" type="Button" parent="MenuPanel/VBoxContainer"]
 margin_top = 104.0
 margin_right = 130.0
-margin_bottom = 125.0
+margin_bottom = 124.0
 text = "关于游戏"
 
 [node name="Exit" type="Button" parent="MenuPanel/VBoxContainer"]
-margin_top = 129.0
+margin_top = 128.0
 margin_right = 130.0
-margin_bottom = 150.0
+margin_bottom = 148.0
 text = "退出"
 
 [node name="Back" type="Button" parent="MenuPanel/VBoxContainer"]
-margin_top = 154.0
+margin_top = 152.0
 margin_right = 130.0
-margin_bottom = 175.0
+margin_bottom = 172.0
 focus_neighbour_bottom = NodePath("../Stats")
 text = "返回游戏"
 
@@ -88,12 +89,16 @@ text = "返回游戏"
 
 [node name="LoadPanel" parent="." instance=ExtResource( 6 )]
 only_existing = true
+
+[node name="AboutDialog" parent="." instance=ExtResource( 7 )]
+
 [connection signal="about_to_show" from="MenuPanel" to="." method="_on_MenuPanel_about_to_show"]
 [connection signal="popup_hide" from="MenuPanel" to="." method="_on_MenuPanel_popup_hide"]
 [connection signal="pressed" from="MenuPanel/VBoxContainer/Stats" to="." method="_on_Stats_pressed"]
 [connection signal="pressed" from="MenuPanel/VBoxContainer/Items" to="." method="_on_Items_pressed"]
 [connection signal="pressed" from="MenuPanel/VBoxContainer/Load" to="." method="_on_Load_pressed"]
 [connection signal="pressed" from="MenuPanel/VBoxContainer/Save" to="." method="_on_Save_pressed"]
+[connection signal="pressed" from="MenuPanel/VBoxContainer/About" to="." method="_on_About_pressed"]
 [connection signal="pressed" from="MenuPanel/VBoxContainer/Exit" to="." method="_on_Exit_pressed"]
 [connection signal="pressed" from="MenuPanel/VBoxContainer/Back" to="." method="_on_Back_pressed"]
 [connection signal="item_selected" from="ItemsDialog" to="." method="_on_ItemsDialog_item_selected"]

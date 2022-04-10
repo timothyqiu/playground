@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://resources/ui/main_theme.tres" type="Theme" id=1]
+[ext_resource path="res://src/UI/Prologue.gd" type="Script" id=2]
+
+[node name="Prologue" type="ColorRect"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+color = Color( 0, 0, 0, 1 )
+script = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+rect_min_size = Vector2( 500, 0 )
+text = "在很久很久以前，白云城的居民过着富足而安定的生活。
+
+不过一场巨大的灾难即将降临到这里……
+
+一天，我们故事的主人翁「小飞刀」一觉醒来，故事就从这里开始……"
+autowrap = true
+
+[node name="Tween" type="Tween" parent="."]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://assets/ui/main_theme.tres" type="Theme" id=1]
+[ext_resource path="res://resources/ui/main_theme.tres" type="Theme" id=1]
 [ext_resource path="res://src/UI/ItemsDialog.gd" type="Script" id=2]
 [ext_resource path="res://src/UI/ItemSlot.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/UI/StatsDisplay.tscn" type="PackedScene" id=4]

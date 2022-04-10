@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-const TWEEN_DURATION := 0.5
+const TEXT_SPEED := 0.05
 
 var contents := []
 var current_index := 0
@@ -18,7 +18,8 @@ func _input(event: InputEvent) -> void:
 	
 	if event.is_action_pressed("ui_select"):
 		if tween.is_active():
-			tween.seek(TWEEN_DURATION)
+			tween.remove_all()
+			text_label.percent_visible = 1
 		else:
 			var next_index = (current_index + 1) % contents.size()
 			if next_index == 0:
@@ -46,7 +47,7 @@ func _show_dialogue(index: int) -> void:
 	else:
 		talker_portrait.texture = null
 	
-	tween.interpolate_property(text_label, "percent_visible", 0, 1, TWEEN_DURATION)
+	tween.interpolate_property(text_label, "percent_visible", 0, 1, data.text.length() * TEXT_SPEED)
 	tween.start()
 	
 	current_index = index
