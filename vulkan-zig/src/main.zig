@@ -1,8 +1,9 @@
 const std = @import("std");
 const builtin = @import("builtin");
-const c = @cImport(
-    @cInclude("vulkan/vulkan.h"),
-);
+const c = @cImport({
+    @cDefine("VK_NO_PROTOTYPES", {});
+    @cInclude("vulkan/vulkan.h");
+});
 
 fn ApiFuncType(comptime name: [:0]const u8) type {
     return std.meta.Child(@field(c, "PFN_" ++ name));
@@ -67,12 +68,14 @@ const Instance = struct {
     const Self = @This();
 
     handle: c.VkInstance,
+    allocation_callbacks: ?*c.VkAllocationCallbacks,
+
     destroy_instance: std.meta.Child(c.PFN_vkDestroyInstance),
     enumerate_physical_devices: std.meta.Child(c.PFN_vkEnumeratePhysicalDevices),
     get_physical_device_queue_family_properties: std.meta.Child(c.PFN_vkGetPhysicalDeviceQueueFamilyProperties),
     create_device: std.meta.Child(c.PFN_vkCreateDevice),
     get_device_proc_addr: std.meta.Child(c.PFN_vkGetDeviceProcAddr),
-    allocation_callbacks: ?*c.VkAllocationCallbacks,
+    get_physical_device_properties: std.meta.Child(c.PFN_vkGetPhysicalDeviceProperties),
 
     fn init(entry: Entry, allocation_callbacks: ?*c.VkAllocationCallbacks) !Self {
         const info = std.mem.zeroInit(c.VkInstanceCreateInfo, .{
@@ -89,6 +92,7 @@ const Instance = struct {
                 .get_physical_device_queue_family_properties = getVulkanCoreFunc("vkGetPhysicalDeviceQueueFamilyProperties", entry.get_instance_proc_addr, instance),
                 .create_device = getVulkanCoreFunc("vkCreateDevice", entry.get_instance_proc_addr, instance),
                 .get_device_proc_addr = getVulkanCoreFunc("vkGetDeviceProcAddr", entry.get_instance_proc_addr, instance),
+                .get_physical_device_properties = getVulkanCoreFunc("vkGetPhysicalDeviceProperties", entry.get_instance_proc_addr, instance),
             },
             c.VK_ERROR_OUT_OF_HOST_MEMORY => error.VulkanOutOfHostMemory,
             c.VK_ERROR_OUT_OF_DEVICE_MEMORY => error.VulkanOutOfDeviceMemory,
@@ -150,6 +154,59 @@ const Instance = struct {
         }
 
         return null;
+    }
+};
+
+const PhysicalDeviceType = enum(c.VkPhysicalDeviceType) {
+    other = c.VK_PHYSICAL_DEVICE_TYPE_OTHER,
+    integrated_gpu = c.VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU,
+    discrete_gpu = c.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU,
+    virtual_gpu = c.VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU,
+    cpu = c.VK_PHYSICAL_DEVICE_TYPE_CPU,
+};
+
+const PhysicalDevicePropertiesIterator = struct {
+    const Self = @This();
+
+    index: usize = 0,
+    instance: Instance,
+    physical_devices: []const c.VkPhysicalDevice,
+
+    fn init(instance: Instance, physical_devices: []const c.VkPhysicalDevice) Self {
+        return .{
+            .instance = instance,
+            .physical_devices = physical_devices,
+        };
+    }
+
+    fn next(self: *Self) ?c.VkPhysicalDeviceProperties {
+        if (self.index >= self.physical_devices.len) {
+            return null;
+        }
+        defer self.index += 1;
+
+        var properties: c.VkPhysicalDeviceProperties = undefined;
+        self.instance.get_physical_device_properties(self.physical_devices[self.index], &properties);
+        return properties;
+    }
+
+    fn dump(self: *Self, writer: anytype) !void {
+        while (self.next()) |property| {
+            const device_type: PhysicalDeviceType = @enumFromInt(property.deviceType);
+
+            const api_version: struct { u32, u32, u32 } = .{
+                c.VK_VERSION_MAJOR(property.apiVersion),
+                c.VK_VERSION_MINOR(property.apiVersion),
+                c.VK_VERSION_PATCH(property.apiVersion),
+            };
+
+            try writer.print("----- Device {} -----\n", .{self.index});
+            try writer.print("Name:           {s}\n", .{property.deviceName});
+            try writer.print("Type:           {s}\n", .{@tagName(device_type)});
+            try writer.print("API Version:    {}\n", .{api_version});
+            try writer.print("Vender ID:      0x{x}\n", .{property.vendorID});
+            try writer.print("Driver Version: {}\n", .{property.driverVersion});
+        }
     }
 };
 
@@ -248,5 +305,9 @@ pub fn main() !void {
     var context = try Context.init(allocator);
     defer context.deinit();
 
-    std.debug.print("Context: {}\n", .{context});
+    const physical_devices = try context.instance.enumeratePhysicalDevices(allocator);
+    defer allocator.free(physical_devices);
+
+    var properties = PhysicalDevicePropertiesIterator.init(context.instance, physical_devices);
+    try properties.dump(std.io.getStdOut().writer());
 }
