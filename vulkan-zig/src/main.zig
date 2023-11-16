@@ -165,7 +165,7 @@ const Device = struct {
     destroy_device: std.meta.Child(c.PFN_vkDestroyDevice),
     allocation_callbacks: ?*c.VkAllocationCallbacks,
 
-    fn init(instance: Instance, queue_family: QueueFamily, allocation_callbacks: ?*c.VkAllocationCallbacks) !Device {
+    fn init(instance: Instance, queue_family: QueueFamily, allocation_callbacks: ?*c.VkAllocationCallbacks) !Self {
         const queue_create_infos = [_]c.VkDeviceQueueCreateInfo{
             std.mem.zeroInit(c.VkDeviceQueueCreateInfo, .{
                 .sType = c.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
@@ -203,26 +203,50 @@ const Device = struct {
     }
 };
 
+const Context = struct {
+    const Self = @This();
+
+    entry: Entry,
+    instance: Instance,
+    device: Device,
+
+    fn init(allocator: std.mem.Allocator) !Self {
+        var entry = try Entry.init();
+        errdefer entry.deinit();
+
+        var instance = try Instance.init(entry, null);
+        errdefer instance.deinit();
+
+        const physical_devices = try instance.enumeratePhysicalDevices(allocator);
+        defer allocator.free(physical_devices);
+        const queue_family = try instance.selectQueueFamily(physical_devices, c.VK_QUEUE_COMPUTE_BIT, allocator) orelse return error.NoSuitablePhysicalDevice;
+
+        const device = try Device.init(instance, queue_family, null);
+        errdefer device.deinit();
+
+        return .{
+            .entry = entry,
+            .instance = instance,
+            .device = device,
+        };
+    }
+
+    fn deinit(self: *Self) void {
+        self.device.deinit();
+        self.instance.deinit();
+        self.entry.deinit();
+    }
+};
+
 pub fn main() !void {
-    var entry = try Entry.init();
-    defer entry.deinit();
-
-    var instance = try Instance.init(entry, null);
-    defer instance.deinit();
-
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer if (gpa.deinit() == .leak) {
         @panic("Leaked memory");
     };
-
     const allocator = gpa.allocator();
 
-    const physical_devices = try instance.enumeratePhysicalDevices(allocator);
-    defer allocator.free(physical_devices);
-    const queue_family = try instance.selectQueueFamily(physical_devices, c.VK_QUEUE_COMPUTE_BIT, allocator) orelse return error.NoSuitablePhysicalDevice;
+    var context = try Context.init(allocator);
+    defer context.deinit();
 
-    const device = try Device.init(instance, queue_family, null);
-    defer device.deinit();
-
-    std.debug.print("Logical device: {}\n", .{device});
+    std.debug.print("Context: {}\n", .{context});
 }
