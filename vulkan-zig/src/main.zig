@@ -69,12 +69,14 @@ const Instance = struct {
 
     handle: c.VkInstance,
     destroy_instance: std.meta.Child(c.PFN_vkDestroyInstance),
+    enumerate_physical_devices: std.meta.Child(c.PFN_vkEnumeratePhysicalDevices),
+    get_physical_device_queue_family_properties: std.meta.Child(c.PFN_vkGetPhysicalDeviceQueueFamilyProperties),
     allocation_callbacks: ?*c.VkAllocationCallbacks,
 
     fn init(entry: Entry, allocation_callbacks: ?*c.VkAllocationCallbacks) !Self {
-        const info = c.VkInstanceCreateInfo{
+        const info = std.mem.zeroInit(c.VkInstanceCreateInfo, .{
             .sType = c.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        };
+        });
 
         var instance: c.VkInstance = undefined;
         return switch (entry.create_instance(&info, allocation_callbacks, &instance)) {
@@ -82,6 +84,8 @@ const Instance = struct {
                 .handle = instance,
                 .destroy_instance = try getVulkanFunc("vkDestroyInstance", entry.get_instance_proc_addr, instance),
                 .allocation_callbacks = allocation_callbacks,
+                .enumerate_physical_devices = try getVulkanFunc("vkEnumeratePhysicalDevices", entry.get_instance_proc_addr, instance),
+                .get_physical_device_queue_family_properties = try getVulkanFunc("vkGetPhysicalDeviceQueueFamilyProperties", entry.get_instance_proc_addr, instance),
             },
             c.VK_ERROR_OUT_OF_HOST_MEMORY => error.VulkanOutOfHostMemory,
             c.VK_ERROR_OUT_OF_DEVICE_MEMORY => error.VulkanOutOfDeviceMemory,
@@ -93,9 +97,64 @@ const Instance = struct {
         };
     }
 
-    fn deinit(self: *Self) void {
+    fn deinit(self: Self) void {
         self.destroy_instance(self.handle, self.allocation_callbacks);
     }
+
+    fn enumeratePhysicalDevices(self: Self, allocator: std.mem.Allocator) ![]c.VkPhysicalDevice {
+        var count: u32 = undefined;
+
+        switch (self.enumerate_physical_devices(self.handle, &count, null)) {
+            c.VK_SUCCESS => {},
+            c.VK_INCOMPLETE => unreachable,
+            c.VK_ERROR_OUT_OF_HOST_MEMORY => return error.VulkanOutOfHostMemory,
+            c.VK_ERROR_OUT_OF_DEVICE_MEMORY => return error.VulkanOutOfDeviceMemory,
+            c.VK_ERROR_INITIALIZATION_FAILED => return error.VulkanInitializationFailed,
+            else => unreachable,
+        }
+
+        var physical_devices = try allocator.alloc(c.VkPhysicalDevice, count);
+        errdefer allocator.free(physical_devices);
+
+        switch (self.enumerate_physical_devices(self.handle, &count, physical_devices.ptr)) {
+            c.VK_SUCCESS, c.VK_INCOMPLETE => {},
+            c.VK_ERROR_OUT_OF_HOST_MEMORY => return error.VulkanOutOfHostMemory,
+            c.VK_ERROR_OUT_OF_DEVICE_MEMORY => return error.VulkanOutOfDeviceMemory,
+            c.VK_ERROR_INITIALIZATION_FAILED => return error.VulkanInitializationFailed,
+            else => unreachable,
+        }
+
+        return physical_devices;
+    }
+
+    fn selectQueueFamily(self: Self, physical_devices: []c.VkPhysicalDevice, mask: c.VkQueueFlags, allocator: std.mem.Allocator) !?QueueFamily {
+        var count: u32 = undefined;
+
+        for (physical_devices) |device| {
+            self.get_physical_device_queue_family_properties(device, &count, null);
+
+            var queue_family_properties = try allocator.alloc(c.VkQueueFamilyProperties, count);
+            defer allocator.free(queue_family_properties);
+
+            self.get_physical_device_queue_family_properties(device, &count, queue_family_properties.ptr);
+
+            for (queue_family_properties, 0..) |queue_family_property, queue_family_index| {
+                if (queue_family_property.queueFlags & mask != 0) {
+                    return .{
+                        .physical_device = device,
+                        .queue_family_index = queue_family_index,
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+};
+
+const QueueFamily = struct {
+    physical_device: c.VkPhysicalDevice,
+    queue_family_index: usize,
 };
 
 pub fn main() !void {
@@ -104,4 +163,18 @@ pub fn main() !void {
 
     var instance = try Instance.init(entry, null);
     defer instance.deinit();
+
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer if (gpa.deinit() == .leak) {
+        @panic("Leaked memory");
+    };
+
+    const allocator = gpa.allocator();
+
+    const physical_devices = try instance.enumeratePhysicalDevices(allocator);
+    defer allocator.free(physical_devices);
+
+    const queue_family = try instance.selectQueueFamily(physical_devices, c.VK_QUEUE_COMPUTE_BIT, allocator) orelse return error.NoSuitablePhysicalDevice;
+
+    std.debug.print("Physical device: {}\n", .{queue_family});
 }
