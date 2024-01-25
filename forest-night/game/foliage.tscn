@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://dtmw6ftksm032"]
+
+[ext_resource type="PackedScene" uid="uid://cp1sa5cd1ctnr" path="res://assets/foliage.glb" id="1_bulho"]
+[ext_resource type="Material" uid="uid://cxe3fhia043pb" path="res://assets/foliage_material.tres" id="2_si8qi"]
+
+[node name="Foliage" instance=ExtResource("1_bulho")]
+
+[node name="foliage" parent="." index="0"]
+surface_material_override/0 = ExtResource("2_si8qi")

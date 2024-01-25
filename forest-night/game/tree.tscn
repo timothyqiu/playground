@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://dbeb3edn0srf4"]
+
+[ext_resource type="PackedScene" uid="uid://ctjnyl2s8cnsp" path="res://assets/tree.glb" id="1_66fd2"]
+[ext_resource type="Material" uid="uid://dk8wbdmfart5n" path="res://assets/tree_material.tres" id="2_fr8oc"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_66nx1"]
+
+[node name="Tree" instance=ExtResource("1_66fd2")]
+
+[node name="tree" parent="." index="0"]
+surface_material_override/1 = ExtResource("2_fr8oc")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="tree" index="0"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="tree/StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape3D_66nx1")

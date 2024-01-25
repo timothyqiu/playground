@@ -1,0 +1,48 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://dk8wbdmfart5n"]
+
+[ext_resource type="Texture2D" uid="uid://2qu7q6stqhf5" path="res://assets/tree_pine_needles.png" id="2_0qbvk"]
+
+[sub_resource type="Shader" id="Shader_6t8gp"]
+code = "shader_type spatial;
+render_mode cull_disabled;
+
+group_uniforms basics;
+uniform sampler2D albedo: source_color, filter_nearest_mipmap;
+uniform float alpha_cutoff = 0.5;
+
+group_uniforms wind;
+uniform sampler2D noise_tex;
+uniform float wind_speed = .1;
+uniform float wind_strength = .01;
+
+void vertex() {
+	vec3 GLOBAL_VERTEX = (MODEL_MATRIX * vec4(VERTEX, 1.)).xyz;
+ 
+	float offset = TIME * wind_speed;
+	float noise = texture(noise_tex, vec2(GLOBAL_VERTEX.x-offset)).r;
+	noise -= .5;
+	noise *= wind_strength;
+	VERTEX.xy += noise * length(VERTEX.y) * length(VERTEX.xz);
+}
+
+void fragment() {
+	vec4 color = texture(albedo, UV);
+	if (color.a < alpha_cutoff) {
+		discard;
+	}
+	ALBEDO = color.rgb;
+}"
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hmjgi"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_otmtl"]
+noise = SubResource("FastNoiseLite_hmjgi")
+
+[resource]
+render_priority = 0
+shader = SubResource("Shader_6t8gp")
+shader_parameter/alpha_cutoff = 0.5
+shader_parameter/albedo = ExtResource("2_0qbvk")
+shader_parameter/wind_speed = 0.1
+shader_parameter/wind_strength = 0.01
+shader_parameter/noise_tex = SubResource("NoiseTexture2D_otmtl")
