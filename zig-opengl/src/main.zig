@@ -56,9 +56,6 @@ pub fn main() !void {
     }
     c.glfwSwapInterval(0); // Turn off V-Sync.
 
-    var texture = makeTexture();
-    defer c.glDeleteTextures(1, &texture);
-
     const shader_program = try createShaderProgram(
         \\#version 330 core
         \\layout (location = 0) in vec3 aPos;
@@ -73,20 +70,31 @@ pub fn main() !void {
         \\#version 330 core
         \\out vec4 FragColor;
         \\in vec2 TexCoord;
-        \\uniform sampler2D ourTexture;
+        \\uniform sampler2D luma;
+        \\uniform sampler2D cb;
+        \\uniform sampler2D cr;
         \\void main()
         \\{
-        \\    float luma = texture(ourTexture, vec2(TexCoord.x, 1.0 - TexCoord.y)).r;
-        \\    FragColor = vec4(luma, luma, luma, 1.0);
+        \\    vec2 coord = vec2(TexCoord.x, 1.0 - TexCoord.y);
+        \\
+        \\    float y = texture(luma, coord).r;
+        \\    float u = texture(cb, coord).r - 0.5;
+        \\    float v = texture(cr, coord).r - 0.5;
+        \\
+        \\    float r = y + 1.28033 * v;
+        \\    float g = y - 0.21482 * u - 0.38059 * v;
+        \\    float b = y + 2.12789 * u;
+        \\
+        \\    FragColor = vec4(r, g, b, 1.0);
         \\}
     );
     defer c.glDeleteProgram(shader_program);
 
     const vertices = [_]f32{
-        0.5,  0.5,  0.0, 1.0, 1.0,
-        0.5,  -0.5, 0.0, 1.0, 0.0,
-        -0.5, -0.5, 0.0, 0.0, 0.0,
-        -0.5, 0.5,  0.0, 0.0, 1.0,
+        1.0,  1.0,  0.0, 1.0, 1.0,
+        1.0,  -1.0, 0.0, 1.0, 0.0,
+        -1.0, -1.0, 0.0, 0.0, 0.0,
+        -1.0, 1.0,  0.0, 0.0, 1.0,
     };
     const indices = [_]c.GLuint{
         0, 1, 3,
@@ -117,14 +125,59 @@ pub fn main() !void {
 
     c.glClearColor(0.2, 0.3, 0.3, 1.0);
 
-    var maybe_image = try decoder.next();
+    var tex_y = makeTexture();
+    defer c.glDeleteTextures(1, &tex_y);
+    var tex_u = makeTexture();
+    defer c.glDeleteTextures(1, &tex_u);
+    var tex_v = makeTexture();
+    defer c.glDeleteTextures(1, &tex_v);
+
+    var maybe_frame_image = try decoder.next();
     var timer = try std.time.Timer.start();
 
     while (c.glfwWindowShouldClose(window) != c.GLFW_TRUE) {
-        if (maybe_image) |image| {
+        if (maybe_frame_image) |image| {
             if (image.pts * 1e9 <= @as(f64, @floatFromInt(timer.read()))) {
-                updateTexture(texture, image);
-                maybe_image = try decoder.next();
+                c.glBindTexture(c.GL_TEXTURE_2D, tex_y);
+                c.glTexImage2D(
+                    c.GL_TEXTURE_2D,
+                    0,
+                    c.GL_RED,
+                    @intCast(image.stride),
+                    @intCast(image.height),
+                    0,
+                    c.GL_RED,
+                    c.GL_UNSIGNED_BYTE,
+                    image.y.ptr,
+                );
+
+                c.glBindTexture(c.GL_TEXTURE_2D, tex_u);
+                c.glTexImage2D(
+                    c.GL_TEXTURE_2D,
+                    0,
+                    c.GL_RED,
+                    @intCast(image.stride / 2),
+                    @intCast(image.height / 2),
+                    0,
+                    c.GL_RED,
+                    c.GL_UNSIGNED_BYTE,
+                    image.u.ptr,
+                );
+
+                c.glBindTexture(c.GL_TEXTURE_2D, tex_v);
+                c.glTexImage2D(
+                    c.GL_TEXTURE_2D,
+                    0,
+                    c.GL_RED,
+                    @intCast(image.stride / 2),
+                    @intCast(image.height / 2),
+                    0,
+                    c.GL_RED,
+                    c.GL_UNSIGNED_BYTE,
+                    image.v.ptr,
+                );
+
+                maybe_frame_image = try decoder.next();
                 continue;
             }
         }
@@ -136,7 +189,17 @@ pub fn main() !void {
         c.glClear(c.GL_COLOR_BUFFER_BIT);
 
         c.glUseProgram(shader_program);
-        c.glBindTexture(c.GL_TEXTURE_2D, texture);
+        c.glUniform1i(c.glGetUniformLocation(shader_program, "luma"), 0);
+        c.glUniform1i(c.glGetUniformLocation(shader_program, "cb"), 1);
+        c.glUniform1i(c.glGetUniformLocation(shader_program, "cr"), 2);
+
+        c.glActiveTexture(c.GL_TEXTURE0);
+        c.glBindTexture(c.GL_TEXTURE_2D, tex_y);
+        c.glActiveTexture(c.GL_TEXTURE1);
+        c.glBindTexture(c.GL_TEXTURE_2D, tex_u);
+        c.glActiveTexture(c.GL_TEXTURE2);
+        c.glBindTexture(c.GL_TEXTURE_2D, tex_v);
+
         c.glBindVertexArray(vao);
         c.glDrawElements(c.GL_TRIANGLES, 6, c.GL_UNSIGNED_INT, @ptrFromInt(0));
 
@@ -210,27 +273,14 @@ fn makeTexture() c.GLuint {
     return texture;
 }
 
-fn updateTexture(texture: c.GLuint, image: VideoFrame) void {
-    c.glBindTexture(c.GL_TEXTURE_2D, texture);
-    c.glTexImage2D(
-        c.GL_TEXTURE_2D,
-        0,
-        c.GL_RGBA,
-        @intCast(image.stride),
-        @intCast(image.height),
-        0,
-        c.GL_RED,
-        c.GL_UNSIGNED_BYTE,
-        image.data.ptr,
-    );
-}
-
 const VideoFrame = struct {
     stride: usize,
     width: usize,
     height: usize,
     pts: f64,
-    data: []u8,
+    y: []const u8,
+    u: []const u8,
+    v: []const u8,
 };
 
 const VideoDecoder = struct {
@@ -315,12 +365,25 @@ const VideoDecoder = struct {
             break;
         }
 
-        const width: usize = @intCast(self.frame.*.width);
-        const height: usize = @intCast(self.frame.*.height);
-        const stride: usize = @intCast(self.frame.*.linesize[0]);
-        const data = self.frame.*.data[0][0 .. stride * height];
+        const frame = self.frame.*;
+        const width: usize = @intCast(frame.width);
+        const height: usize = @intCast(frame.height);
+        const stride: usize = @intCast(frame.linesize[0]);
 
-        var pts: f64 = @floatFromInt(self.frame.pts);
+        if (frame.linesize[1] != @divExact(frame.linesize[0], 2) or frame.linesize[2] != @divExact(frame.linesize[0], 2)) {
+            return error.UnexpectedYUVStride;
+        }
+
+        // if (resolveColorSpaceYUV(self.frame) != c.AVCOL_SPC_BT709) {
+        //     return error.UnexpectedColorSpace;
+        // }
+
+        const size = stride * height;
+        const y = frame.data[0][0..size];
+        const u = frame.data[1][0 .. size / 4];
+        const v = frame.data[2][0 .. size / 4];
+
+        var pts: f64 = @floatFromInt(frame.pts);
         pts *= c.av_q2d(self.fmt_ctx.streams[self.stream_index].*.time_base);
 
         return .{
@@ -328,7 +391,9 @@ const VideoDecoder = struct {
             .width = width,
             .height = height,
             .pts = pts,
-            .data = data,
+            .y = y,
+            .u = u,
+            .v = v,
         };
     }
 
@@ -368,5 +433,16 @@ const VideoDecoder = struct {
             return error.OpenCodecFailed;
         }
         return dec_ctx;
+    }
+
+    fn resolveColorSpaceYUV(frame: *c.AVFrame) c.AVColorSpace {
+        const YUV_SD_THRESHOLD = 576;
+        if (frame.colorspace != c.AVCOL_SPC_UNSPECIFIED) {
+            return frame.colorspace;
+        }
+        if (frame.height <= YUV_SD_THRESHOLD) {
+            return c.AVCOL_SPC_BT470BG;
+        }
+        return c.AVCOL_SPC_BT709;
     }
 };
