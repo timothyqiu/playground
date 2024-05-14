@@ -23,8 +23,11 @@ pub fn main() !void {
         return error.InvalidArgs;
     }
 
-    const image = try getVideoFrame(alloc, args[1]);
     // const image = try Image.init(alloc, args[1]);
+
+    var decoder = try VideoDecoder.init(args[1]);
+    defer decoder.deinit();
+    const image = try decoder.next(alloc) orelse return error.NoVideoFrame;
     defer image.deinit();
 
     if (c.glfwInit() == c.GLFW_FALSE) {
@@ -242,89 +245,135 @@ const Image = struct {
     }
 };
 
-fn getVideoFrame(alloc: Allocator, path: []const u8) !Image {
-    var fmt_ctx: [*c]c.AVFormatContext = null;
-    if (c.avformat_open_input(&fmt_ctx, path.ptr, null, null) < 0) {
-        std.log.err("Could not open source file: {s}", .{path});
-        return error.OpenInputFileFailed;
+const VideoDecoder = struct {
+    fmt_ctx: *c.AVFormatContext,
+    dec_ctx: *c.AVCodecContext,
+    packet: *c.AVPacket,
+    frame: *c.AVFrame,
+    stream_index: usize,
+
+    pub fn init(path: [:0]const u8) !VideoDecoder {
+        var fmt_ctx = try makeFormatContext(path);
+        errdefer c.avformat_close_input(@ptrCast(&fmt_ctx));
+
+        const stream_index = try findVideoStream(fmt_ctx) orelse {
+            return error.NoVideoStream;
+        };
+        const stream = fmt_ctx.streams[stream_index];
+
+        var dec_ctx = try makeDecoderContext(stream);
+        errdefer c.avformat_free_context(@ptrCast(&dec_ctx));
+
+        var packet = c.av_packet_alloc() orelse {
+            return error.PacketAllocationFailed;
+        };
+        errdefer c.av_packet_free(&packet);
+
+        var frame = c.av_frame_alloc() orelse {
+            return error.FrameAllocationFailed;
+        };
+        errdefer c.av_frame_free(&frame);
+
+        return .{
+            .fmt_ctx = fmt_ctx,
+            .dec_ctx = dec_ctx,
+            .packet = packet,
+            .frame = frame,
+            .stream_index = stream_index,
+        };
     }
-    defer c.avformat_close_input(&fmt_ctx);
 
-    if (c.avformat_find_stream_info(fmt_ctx, null) < 0) {
-        return error.FindStreamInfoFailed;
+    pub fn deinit(self: *VideoDecoder) void {
+        c.av_frame_free(@ptrCast(&self.frame));
+        c.av_packet_free(@ptrCast(&self.packet));
+        c.avcodec_free_context(@ptrCast(&self.dec_ctx));
+        c.avformat_close_input(@ptrCast(&self.fmt_ctx));
     }
 
-    const index = c.av_find_best_stream(fmt_ctx, c.AVMEDIA_TYPE_VIDEO, -1, -1, null, 0);
-    if (index < 0) {
-        return error.FindBestStreamFailed;
-    }
-    std.debug.print("stream index: {d}\n", .{index});
+    pub fn next(self: *VideoDecoder, allocator: Allocator) !?Image {
+        while (true) {
+            switch (c.av_read_frame(self.fmt_ctx, self.packet)) {
+                c.AVERROR_EOF => return null,
+                else => |ret| if (ret < 0) {
+                    return error.ReadFrameError;
+                },
+            }
+            defer c.av_packet_unref(self.packet);
 
-    const stream = fmt_ctx.*.streams[@intCast(index)];
-    const decoder = c.avcodec_find_decoder(stream.*.codecpar.*.codec_id) orelse {
-        return error.DecoderNotFound;
-    };
-    std.debug.print("Got a decoder: {s}\n", .{decoder.*.name});
+            if (self.packet.stream_index != self.stream_index) {
+                continue;
+            }
 
-    var dec_ctx = c.avcodec_alloc_context3(decoder) orelse {
-        return error.CodecContextAllocationFailed;
-    };
-    defer c.avcodec_free_context(&dec_ctx);
+            switch (c.avcodec_send_packet(self.dec_ctx, self.packet)) {
+                c.AVERROR_EOF => return null,
+                c.AVERROR(c.EAGAIN) => continue,
+                else => |ret| if (ret < 0) {
+                    return error.SendPacketFailed;
+                },
+            }
 
-    if (c.avcodec_parameters_to_context(dec_ctx, stream.*.codecpar) < 0) {
-        return error.CopyCodecParametersFailed;
-    }
-    if (c.avcodec_open2(dec_ctx, decoder, null) < 0) {
-        return error.OpenCodecFailed;
-    }
+            switch (c.avcodec_receive_frame(self.dec_ctx, self.frame)) {
+                c.AVERROR_EOF => return null,
+                c.AVERROR(c.EAGAIN) => continue,
+                else => |ret| if (ret < 0) {
+                    return error.ReceiveFrameFailed;
+                },
+            }
 
-    c.av_dump_format(fmt_ctx, 0, path.ptr, 0);
-
-    var frame = c.av_frame_alloc();
-    defer c.av_frame_free(&frame);
-
-    var pkt = c.av_packet_alloc();
-    defer c.av_packet_free(&pkt);
-
-    var frame_count: usize = 0;
-    while (c.av_read_frame(fmt_ctx, pkt) >= 0) {
-        defer c.av_packet_unref(pkt);
-        if (pkt.*.stream_index != index) {
-            continue;
-        }
-        if (c.avcodec_send_packet(dec_ctx, pkt) < 0) {
-            return error.SendPacketFailed;
-        }
-        const ret = c.avcodec_receive_frame(dec_ctx, frame);
-        if (ret < 0) {
-            std.debug.print("receive frame: {d} eof?{} again?{}\n", .{
-                ret,
-                ret == c.AVERROR_EOF,
-                ret == c.AVERROR(c.EAGAIN),
-            });
-            continue;
-        }
-        frame_count += 1;
-        if (frame_count == 1) {
-            std.debug.print("received frame with format: {s}\n", .{c.av_get_pix_fmt_name(frame.*.format)});
-            std.debug.print("received frame with size: {d}x{d}\n", .{ frame.*.width, frame.*.height });
-            std.debug.print("received frame with line sizes: {d}\n", .{frame.*.linesize});
             break;
         }
+
+        const width: usize = @intCast(self.frame.*.width);
+        const height: usize = @intCast(self.frame.*.height);
+        const stride: usize = @intCast(self.frame.*.linesize[0]);
+
+        const data = try allocator.alloc(u8, stride * height);
+        @memcpy(data, self.frame.*.data[0][0 .. stride * height]);
+
+        return .{
+            .allocator = allocator,
+            .stride = stride,
+            .width = width,
+            .height = height,
+            .data = data,
+        };
     }
 
-    const width: usize = @intCast(frame.*.width);
-    const height: usize = @intCast(frame.*.height);
-    const stride: usize = @intCast(frame.*.linesize[0]);
+    fn makeFormatContext(path: [:0]const u8) !*c.AVFormatContext {
+        var fmt_ctx: [*c]c.AVFormatContext = null;
+        if (c.avformat_open_input(&fmt_ctx, path.ptr, null, null) < 0) {
+            return error.OpenInputFileFailed;
+        }
+        return fmt_ctx;
+    }
 
-    const data = try alloc.alloc(u8, stride * height);
-    @memcpy(data, frame.*.data[0][0 .. stride * height]);
+    fn findVideoStream(fmt_ctx: *c.AVFormatContext) !?usize {
+        if (c.avformat_find_stream_info(fmt_ctx, null) < 0) {
+            return error.FindStreamInfoFailed;
+        }
+        const index = c.av_find_best_stream(fmt_ctx, c.AVMEDIA_TYPE_VIDEO, -1, -1, null, 0);
+        if (index < 0) {
+            return null;
+        }
+        return @intCast(index);
+    }
 
-    return .{
-        .allocator = alloc,
-        .stride = stride,
-        .width = width,
-        .height = height,
-        .data = data,
-    };
-}
+    fn makeDecoderContext(stream: *c.AVStream) !*c.AVCodecContext {
+        const decoder = c.avcodec_find_decoder(stream.codecpar.*.codec_id) orelse {
+            return error.DecoderNotFound;
+        };
+
+        var dec_ctx = c.avcodec_alloc_context3(decoder) orelse {
+            return error.ContextAllocationFailed;
+        };
+        errdefer c.avcodec_free_context(&dec_ctx);
+
+        if (c.avcodec_parameters_to_context(dec_ctx, stream.codecpar) < 0) {
+            return error.CopyCodecParametersFailed;
+        }
+        if (c.avcodec_open2(dec_ctx, decoder, null) < 0) {
+            return error.OpenCodecFailed;
+        }
+        return dec_ctx;
+    }
+};
