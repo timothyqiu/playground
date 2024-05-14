@@ -12,7 +12,9 @@ const c = @cImport({
 const Allocator = std.mem.Allocator;
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){
+        .backing_allocator = std.heap.c_allocator,
+    };
     defer _ = gpa.deinit();
     const alloc = gpa.allocator();
 
@@ -23,12 +25,10 @@ pub fn main() !void {
         return error.InvalidArgs;
     }
 
-    // const image = try Image.init(alloc, args[1]);
-
     var decoder = try VideoDecoder.init(args[1]);
     defer decoder.deinit();
-    const image = try decoder.next(alloc) orelse return error.NoVideoFrame;
-    defer image.deinit();
+    std.log.info("video resolution is {d}x{d}", .{ decoder.dec_ctx.width, decoder.dec_ctx.height });
+    std.log.info("video pixel format is {s}", .{c.av_get_pix_fmt_name(decoder.dec_ctx.pix_fmt)});
 
     if (c.glfwInit() == c.GLFW_FALSE) {
         std.log.err("Failed to initialize GLFW: {d}", .{c.glfwGetError(null)});
@@ -54,8 +54,9 @@ pub fn main() !void {
         std.log.err("Failed to load OpenGL dec_ctx", .{});
         return error.LoadOpenGLContext;
     }
+    c.glfwSwapInterval(0); // Turn off V-Sync.
 
-    var texture = makeTexture(image);
+    var texture = makeTexture();
     defer c.glDeleteTextures(1, &texture);
 
     const shader_program = try createShaderProgram(
@@ -75,7 +76,8 @@ pub fn main() !void {
         \\uniform sampler2D ourTexture;
         \\void main()
         \\{
-        \\    FragColor = texture(ourTexture, vec2(TexCoord.x, 1.0 - TexCoord.y));
+        \\    float luma = texture(ourTexture, vec2(TexCoord.x, 1.0 - TexCoord.y)).r;
+        \\    FragColor = vec4(luma, luma, luma, 1.0);
         \\}
     );
     defer c.glDeleteProgram(shader_program);
@@ -114,7 +116,19 @@ pub fn main() !void {
     c.glEnableVertexAttribArray(1);
 
     c.glClearColor(0.2, 0.3, 0.3, 1.0);
+
+    var maybe_image = try decoder.next();
+    var timer = try std.time.Timer.start();
+
     while (c.glfwWindowShouldClose(window) != c.GLFW_TRUE) {
+        if (maybe_image) |image| {
+            if (image.pts * 1e9 <= @as(f64, @floatFromInt(timer.read()))) {
+                updateTexture(texture, image);
+                maybe_image = try decoder.next();
+                continue;
+            }
+        }
+
         var width: c_int = undefined;
         var height: c_int = undefined;
         c.glfwGetFramebufferSize(window, &width, &height);
@@ -187,15 +201,21 @@ fn createShaderProgram(vertex: []const u8, fragment: []const u8) !c.GLuint {
     return shader_program;
 }
 
-fn makeTexture(image: Image) c.GLuint {
+fn makeTexture() c.GLuint {
     var texture: c.GLuint = undefined;
     c.glGenTextures(1, &texture);
     errdefer c.glDeleteTextures(1, &texture);
     c.glBindTexture(c.GL_TEXTURE_2D, texture);
+    c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MIN_FILTER, c.GL_LINEAR);
+    return texture;
+}
+
+fn updateTexture(texture: c.GLuint, image: VideoFrame) void {
+    c.glBindTexture(c.GL_TEXTURE_2D, texture);
     c.glTexImage2D(
         c.GL_TEXTURE_2D,
         0,
-        c.GL_RED,
+        c.GL_RGBA,
         @intCast(image.stride),
         @intCast(image.height),
         0,
@@ -203,46 +223,14 @@ fn makeTexture(image: Image) c.GLuint {
         c.GL_UNSIGNED_BYTE,
         image.data.ptr,
     );
-    c.glGenerateMipmap(c.GL_TEXTURE_2D);
-    return texture;
 }
 
-const Image = struct {
-    allocator: Allocator,
+const VideoFrame = struct {
     stride: usize,
     width: usize,
     height: usize,
+    pts: f64,
     data: []u8,
-
-    pub fn init(alloc: Allocator, path: []const u8) !Image {
-        var width: c_int = undefined;
-        var height: c_int = undefined;
-        const image = c.stbi_load(path.ptr, &width, &height, null, 1);
-        if (image == null) {
-            std.log.err(
-                "Failed to load image {s}: {s}",
-                .{ path, c.stbi_failure_reason() },
-            );
-            return error.ImageLoadingFailed;
-        }
-        defer c.stbi_image_free(image);
-
-        const size: usize = @intCast(width * height);
-        const data = try alloc.alloc(u8, size);
-        @memcpy(data, image[0..size]);
-
-        return .{
-            .allocator = alloc,
-            .stride = @intCast(width),
-            .width = @intCast(width),
-            .height = @intCast(height),
-            .data = data,
-        };
-    }
-
-    pub fn deinit(self: Image) void {
-        self.allocator.free(self.data);
-    }
 };
 
 const VideoDecoder = struct {
@@ -262,7 +250,11 @@ const VideoDecoder = struct {
         const stream = fmt_ctx.streams[stream_index];
 
         var dec_ctx = try makeDecoderContext(stream);
-        errdefer c.avformat_free_context(@ptrCast(&dec_ctx));
+        errdefer c.avcodec_free_context(@ptrCast(&dec_ctx));
+
+        if (dec_ctx.pix_fmt != c.AV_PIX_FMT_YUV420P) {
+            return error.PixelFormatNotYUV420P;
+        }
 
         var packet = c.av_packet_alloc() orelse {
             return error.PacketAllocationFailed;
@@ -290,7 +282,7 @@ const VideoDecoder = struct {
         c.avformat_close_input(@ptrCast(&self.fmt_ctx));
     }
 
-    pub fn next(self: *VideoDecoder, allocator: Allocator) !?Image {
+    pub fn next(self: *VideoDecoder) !?VideoFrame {
         while (true) {
             switch (c.av_read_frame(self.fmt_ctx, self.packet)) {
                 c.AVERROR_EOF => return null,
@@ -326,15 +318,16 @@ const VideoDecoder = struct {
         const width: usize = @intCast(self.frame.*.width);
         const height: usize = @intCast(self.frame.*.height);
         const stride: usize = @intCast(self.frame.*.linesize[0]);
+        const data = self.frame.*.data[0][0 .. stride * height];
 
-        const data = try allocator.alloc(u8, stride * height);
-        @memcpy(data, self.frame.*.data[0][0 .. stride * height]);
+        var pts: f64 = @floatFromInt(self.frame.pts);
+        pts *= c.av_q2d(self.fmt_ctx.streams[self.stream_index].*.time_base);
 
         return .{
-            .allocator = allocator,
             .stride = stride,
             .width = width,
             .height = height,
+            .pts = pts,
             .data = data,
         };
     }
