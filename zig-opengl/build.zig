@@ -16,6 +16,9 @@ pub fn build(b: *std.Build) void {
     exe.addIncludePath(b.path("thirdparty/stb"));
     exe.addCSourceFile(.{ .file = b.path("src/stb_image_impl.c") });
     exe.linkSystemLibrary("glfw");
+    exe.linkSystemLibrary("libavcodec");
+    exe.linkSystemLibrary("libavformat");
+    exe.linkSystemLibrary("libavutil");
 
     b.installArtifact(exe);
 
