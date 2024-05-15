@@ -13,6 +13,7 @@ vao: c.GLuint,
 vbo: c.GLuint,
 ebo: c.GLuint,
 width_ratio: f32 = 1.0,
+image_aspect_ratio: f32 = 1.0,
 
 pub fn init() !Self {
     // GLFW.
@@ -89,6 +90,8 @@ pub fn init() !Self {
     c.glVertexAttribPointer(1, 2, c.GL_FLOAT, c.GL_FALSE, @sizeOf(f32) * 5, @ptrFromInt(@sizeOf(f32) * 3));
     c.glEnableVertexAttribArray(1);
 
+    c.glClearColor(0.0, 0.0, 0.0, 1.0);
+
     return .{
         .window = window,
         .y_texture = textures[0],
@@ -127,6 +130,10 @@ pub fn swapFrame(self: *Self, frame: VideoFrame) void {
     var ratio: f32 = @floatFromInt(frame.width);
     ratio /= @floatFromInt(frame.stride);
     self.width_ratio = ratio;
+
+    var aspect_ratio: f32 = @floatFromInt(frame.width);
+    aspect_ratio /= @floatFromInt(frame.height);
+    self.image_aspect_ratio = aspect_ratio;
 
     c.glBindTexture(c.GL_TEXTURE_2D, self.y_texture);
     c.glTexImage2D(
@@ -175,11 +182,16 @@ pub fn render(self: Self) void {
     c.glViewport(0, 0, width, height);
     c.glClear(c.GL_COLOR_BUFFER_BIT);
 
+    var window_aspect_ratio: f32 = @floatFromInt(width);
+    window_aspect_ratio /= @floatFromInt(height);
+    const aspect_ratio_ratio = window_aspect_ratio / self.image_aspect_ratio;
+
     c.glUseProgram(self.program);
     c.glUniform1i(c.glGetUniformLocation(self.program, "luma"), 0);
     c.glUniform1i(c.glGetUniformLocation(self.program, "cb"), 1);
     c.glUniform1i(c.glGetUniformLocation(self.program, "cr"), 2);
     c.glUniform1f(c.glGetUniformLocation(self.program, "width_ratio"), self.width_ratio);
+    c.glUniform1f(c.glGetUniformLocation(self.program, "aspect_ratio_ratio"), aspect_ratio_ratio);
 
     c.glActiveTexture(c.GL_TEXTURE0);
     c.glBindTexture(c.GL_TEXTURE_2D, self.y_texture);
