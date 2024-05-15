@@ -11,28 +11,32 @@ pub const VideoFrame = struct {
     v: []const u8,
 };
 
+pub const AudioFrame = struct {};
+
+pub const Frame = union(enum) {
+    video: VideoFrame,
+    audio: AudioFrame,
+};
+
 pub const VideoDecoder = struct {
+    const Codec = struct {
+        stream_index: usize,
+        context: *c.AVCodecContext,
+    };
+
+    const CodecArray = std.BoundedArray(Codec, 2);
+
     fmt_ctx: *c.AVFormatContext,
-    dec_ctx: *c.AVCodecContext,
+    codecs: CodecArray,
     packet: *c.AVPacket,
     frame: *c.AVFrame,
-    stream_index: usize,
 
     pub fn init(path: [:0]const u8) !VideoDecoder {
         var fmt_ctx = try makeFormatContext(path);
         errdefer c.avformat_close_input(@ptrCast(&fmt_ctx));
 
-        const stream_index = try findVideoStream(fmt_ctx) orelse {
-            return error.NoVideoStream;
-        };
-        const stream = fmt_ctx.streams[stream_index];
-
-        var dec_ctx = try makeDecoderContext(stream);
-        errdefer c.avcodec_free_context(@ptrCast(&dec_ctx));
-
-        if (dec_ctx.pix_fmt != c.AV_PIX_FMT_YUV420P) {
-            return error.PixelFormatNotYUV420P;
-        }
+        var codecs = try makeCodecs(fmt_ctx);
+        errdefer freeCodecs(&codecs);
 
         var packet = c.av_packet_alloc() orelse {
             return error.PacketAllocationFailed;
@@ -46,21 +50,20 @@ pub const VideoDecoder = struct {
 
         return .{
             .fmt_ctx = fmt_ctx,
-            .dec_ctx = dec_ctx,
+            .codecs = codecs,
             .packet = packet,
             .frame = frame,
-            .stream_index = stream_index,
         };
     }
 
     pub fn deinit(self: *VideoDecoder) void {
         c.av_frame_free(@ptrCast(&self.frame));
         c.av_packet_free(@ptrCast(&self.packet));
-        c.avcodec_free_context(@ptrCast(&self.dec_ctx));
+        freeCodecs(&self.codecs);
         c.avformat_close_input(@ptrCast(&self.fmt_ctx));
     }
 
-    pub fn next(self: *VideoDecoder) !?VideoFrame {
+    pub fn next(self: *VideoDecoder) !?Frame {
         while (true) {
             switch (c.av_read_frame(self.fmt_ctx, self.packet)) {
                 c.AVERROR_EOF => return null,
@@ -70,11 +73,12 @@ pub const VideoDecoder = struct {
             }
             defer c.av_packet_unref(self.packet);
 
-            if (self.packet.stream_index != self.stream_index) {
+            const stream_index: usize = @intCast(self.packet.stream_index);
+            const dec_ctx = self.getCodecContext(stream_index) orelse {
                 continue;
-            }
+            };
 
-            switch (c.avcodec_send_packet(self.dec_ctx, self.packet)) {
+            switch (c.avcodec_send_packet(dec_ctx, self.packet)) {
                 c.AVERROR_EOF => return null,
                 c.AVERROR(c.EAGAIN) => continue,
                 else => |ret| if (ret < 0) {
@@ -82,7 +86,7 @@ pub const VideoDecoder = struct {
                 },
             }
 
-            switch (c.avcodec_receive_frame(self.dec_ctx, self.frame)) {
+            switch (c.avcodec_receive_frame(dec_ctx, self.frame)) {
                 c.AVERROR_EOF => return null,
                 c.AVERROR(c.EAGAIN) => continue,
                 else => |ret| if (ret < 0) {
@@ -90,18 +94,28 @@ pub const VideoDecoder = struct {
                 },
             }
 
-            break;
+            switch (dec_ctx.codec.*.type) {
+                c.AVMEDIA_TYPE_AUDIO => return try self.handleAudioFrame(),
+                c.AVMEDIA_TYPE_VIDEO => return try self.handleVideoFrame(),
+                else => unreachable,
+            }
         }
+    }
 
+    fn handleVideoFrame(self: *VideoDecoder) !Frame {
         const frame = self.frame.*;
         const width: usize = @intCast(frame.width);
         const height: usize = @intCast(frame.height);
         const stride: usize = @intCast(frame.linesize[0]);
 
+        if (frame.format != c.AV_PIX_FMT_YUV420P) {
+            std.log.debug("Unexpected pixel format: {s}", .{c.av_get_pix_fmt_name(frame.format)});
+            return error.UnexpectedPixelFormat;
+        }
         if (frame.linesize[1] != @divExact(frame.linesize[0], 2) or frame.linesize[2] != @divExact(frame.linesize[0], 2)) {
+            std.log.debug("Unexpected YUV stride: {any}", .{frame.linesize});
             return error.UnexpectedYUVStride;
         }
-
         // if (resolveColorSpaceYUV(self.frame) != c.AVCOL_SPC_BT709) {
         //     return error.UnexpectedColorSpace;
         // }
@@ -112,9 +126,9 @@ pub const VideoDecoder = struct {
         const v = frame.data[2][0 .. size / 4];
 
         var pts: f64 = @floatFromInt(frame.pts);
-        pts *= c.av_q2d(self.fmt_ctx.streams[self.stream_index].*.time_base);
+        pts *= c.av_q2d(self.fmt_ctx.streams[@intCast(self.packet.stream_index)].*.time_base);
 
-        return .{
+        return .{ .video = .{
             .stride = stride,
             .width = width,
             .height = height,
@@ -122,7 +136,12 @@ pub const VideoDecoder = struct {
             .y = y,
             .u = u,
             .v = v,
-        };
+        } };
+    }
+
+    fn handleAudioFrame(self: *VideoDecoder) !Frame {
+        _ = self;
+        return .{ .audio = .{} };
     }
 
     fn makeFormatContext(path: [:0]const u8) !*c.AVFormatContext {
@@ -133,15 +152,35 @@ pub const VideoDecoder = struct {
         return fmt_ctx;
     }
 
-    fn findVideoStream(fmt_ctx: *c.AVFormatContext) !?usize {
+    fn makeCodecs(fmt_ctx: *c.AVFormatContext) !CodecArray {
         if (c.avformat_find_stream_info(fmt_ctx, null) < 0) {
             return error.FindStreamInfoFailed;
         }
-        const index = c.av_find_best_stream(fmt_ctx, c.AVMEDIA_TYPE_VIDEO, -1, -1, null, 0);
-        if (index < 0) {
-            return null;
+
+        var codecs = CodecArray.init(0) catch unreachable;
+
+        for ([_]c.AVMediaType{ c.AVMEDIA_TYPE_VIDEO, c.AVMEDIA_TYPE_AUDIO }) |media_type| {
+            const index = c.av_find_best_stream(fmt_ctx, media_type, -1, -1, null, 0);
+            if (index < 0) {
+                std.log.warn("No stream for media type {}", .{media_type});
+                continue;
+            }
+            const stream_index: usize = @intCast(index);
+            const stream = fmt_ctx.streams[stream_index];
+            const dec_ctx = makeDecoderContext(stream) catch |err| {
+                std.log.warn("Failed to creat decoder for stream #{}: {}", .{ index, err });
+                continue;
+            };
+            codecs.append(.{
+                .stream_index = stream_index,
+                .context = dec_ctx,
+            }) catch unreachable;
         }
-        return @intCast(index);
+
+        if (codecs.len == 0) {
+            return error.NoSuitableStreams;
+        }
+        return codecs;
     }
 
     fn makeDecoderContext(stream: *c.AVStream) !*c.AVCodecContext {
@@ -161,6 +200,21 @@ pub const VideoDecoder = struct {
             return error.OpenCodecFailed;
         }
         return dec_ctx;
+    }
+
+    fn freeCodecs(codecs: *CodecArray) void {
+        for (codecs.slice()) |*codec| {
+            c.avcodec_free_context(@ptrCast(&codec.context));
+        }
+    }
+
+    fn getCodecContext(self: VideoDecoder, stream_index: usize) ?*c.AVCodecContext {
+        for (self.codecs.slice()) |codec| {
+            if (codec.stream_index == stream_index) {
+                return codec.context;
+            }
+        }
+        return null;
     }
 
     fn resolveColorSpaceYUV(frame: *c.AVFrame) c.AVColorSpace {

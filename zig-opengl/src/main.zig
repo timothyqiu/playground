@@ -1,7 +1,7 @@
 const std = @import("std");
 const c = @import("c.zig");
 const Gui = @import("Gui.zig");
-const VideoDecoder = @import("decoder.zig").VideoDecoder;
+const decoder = @import("decoder.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){
@@ -20,12 +20,19 @@ pub fn main() !void {
     var gui = try Gui.init(alloc);
     defer gui.deinit();
 
-    var decoder = try VideoDecoder.init(args[1]);
-    defer decoder.deinit();
-    std.log.info("video resolution is {d}x{d}", .{ decoder.dec_ctx.width, decoder.dec_ctx.height });
-    std.log.info("video pixel format is {s}", .{c.av_get_pix_fmt_name(decoder.dec_ctx.pix_fmt)});
+    var video_decoder = try decoder.VideoDecoder.init(args[1]);
+    defer video_decoder.deinit();
 
-    var maybe_frame = try decoder.next();
+    for (video_decoder.codecs.slice(), 0..) |codec, i| {
+        const dec_ctx: *c.AVCodecContext = codec.context;
+        if (dec_ctx.codec.*.type == c.AVMEDIA_TYPE_VIDEO) {
+            std.log.info("Stream #{d} video {d}x{d}; {s}", .{ i, dec_ctx.width, dec_ctx.height, c.av_get_pix_fmt_name(dec_ctx.pix_fmt) });
+        } else {
+            std.log.info("Stream #{d} audio {d}Hz; {d} channels; {s}", .{ i, dec_ctx.sample_rate, dec_ctx.ch_layout.nb_channels, c.av_get_sample_fmt_name(dec_ctx.sample_fmt) });
+        }
+    }
+
+    var maybe_frame = try getNextVideoFrame(&video_decoder);
     var timer = try std.time.Timer.start();
     var start_pts: f64 = 0;
     var paused = false;
@@ -46,7 +53,7 @@ pub fn main() !void {
                     paused = true;
                     if (maybe_frame) |frame| {
                         gui.swapFrame(frame);
-                        maybe_frame = try decoder.next();
+                        maybe_frame = try getNextVideoFrame(&video_decoder);
                     }
                 },
 
@@ -70,12 +77,26 @@ pub fn main() !void {
             const frame = maybe_frame.?;
             if ((frame.pts - start_pts) * 1e9 <= now) {
                 gui.swapFrame(frame);
-                maybe_frame = try decoder.next();
+                maybe_frame = try getNextVideoFrame(&video_decoder);
                 continue;
             }
             break;
         }
 
         gui.step();
+    }
+}
+
+fn getNextVideoFrame(video_decoder: *decoder.VideoDecoder) !?decoder.VideoFrame {
+    while (true) {
+        const frame = try video_decoder.next();
+        if (frame == null) {
+            return null;
+        }
+
+        switch (frame.?) {
+            .audio => {},
+            .video => |vf| return vf,
+        }
     }
 }
