@@ -12,6 +12,7 @@ program: c.GLuint,
 vao: c.GLuint,
 vbo: c.GLuint,
 ebo: c.GLuint,
+width_ratio: f32 = 1.0,
 
 pub fn init() !Self {
     // GLFW.
@@ -122,7 +123,11 @@ pub fn shouldClose(self: Self) bool {
     return c.glfwWindowShouldClose(self.window) == c.GLFW_TRUE;
 }
 
-pub fn swapFrame(self: Self, frame: VideoFrame) void {
+pub fn swapFrame(self: *Self, frame: VideoFrame) void {
+    var ratio: f32 = @floatFromInt(frame.width);
+    ratio /= @floatFromInt(frame.stride);
+    self.width_ratio = ratio;
+
     c.glBindTexture(c.GL_TEXTURE_2D, self.y_texture);
     c.glTexImage2D(
         c.GL_TEXTURE_2D,
@@ -174,6 +179,7 @@ pub fn render(self: Self) void {
     c.glUniform1i(c.glGetUniformLocation(self.program, "luma"), 0);
     c.glUniform1i(c.glGetUniformLocation(self.program, "cb"), 1);
     c.glUniform1i(c.glGetUniformLocation(self.program, "cr"), 2);
+    c.glUniform1f(c.glGetUniformLocation(self.program, "width_ratio"), self.width_ratio);
 
     c.glActiveTexture(c.GL_TEXTURE0);
     c.glBindTexture(c.GL_TEXTURE_2D, self.y_texture);
