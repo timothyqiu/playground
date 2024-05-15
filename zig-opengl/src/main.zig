@@ -17,7 +17,7 @@ pub fn main() !void {
         return error.InvalidArgs;
     }
 
-    var gui = try Gui.init();
+    var gui = try Gui.init(alloc);
     defer gui.deinit();
 
     var decoder = try VideoDecoder.init(args[1]);
@@ -27,14 +27,55 @@ pub fn main() !void {
 
     var maybe_frame = try decoder.next();
     var timer = try std.time.Timer.start();
+    var start_pts: f64 = 0;
+    var paused = false;
+    var fast_forward = false;
+
     while (!gui.shouldClose()) {
-        if (maybe_frame) |frame| {
-            if (frame.pts * 1e9 <= @as(f64, @floatFromInt(timer.read()))) {
+        while (gui.getNextAction()) |action| {
+            switch (action) {
+                .toggle_pause => {
+                    paused = !paused;
+                    if (!paused and maybe_frame != null) {
+                        start_pts = maybe_frame.?.pts;
+                        timer.reset();
+                    }
+                },
+
+                .step => {
+                    paused = true;
+                    if (maybe_frame) |frame| {
+                        gui.swapFrame(frame);
+                        maybe_frame = try decoder.next();
+                    }
+                },
+
+                .toggle_fast_forward => {
+                    fast_forward = !fast_forward;
+                    paused = false;
+                    if (maybe_frame) |frame| {
+                        start_pts = frame.pts;
+                        timer.reset();
+                    }
+                },
+            }
+        }
+
+        while (!paused and maybe_frame != null) {
+            var now: f64 = @floatFromInt(timer.read());
+            if (fast_forward) {
+                now *= 16;
+            }
+
+            const frame = maybe_frame.?;
+            if ((frame.pts - start_pts) * 1e9 <= now) {
                 gui.swapFrame(frame);
                 maybe_frame = try decoder.next();
                 continue;
             }
+            break;
         }
-        gui.render();
+
+        gui.step();
     }
 }

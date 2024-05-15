@@ -1,9 +1,18 @@
 const std = @import("std");
 const c = @import("c.zig");
+const Allocator = std.mem.Allocator;
 const VideoFrame = @import("decoder.zig").VideoFrame;
 
 const Self = @This();
 
+const Action = enum(u8) {
+    toggle_pause,
+    step,
+    toggle_fast_forward,
+};
+const ActionQueue = std.fifo.LinearFifo(Action, .Dynamic);
+
+allocator: Allocator,
 window: *c.GLFWwindow,
 y_texture: c.GLuint,
 u_texture: c.GLuint,
@@ -14,8 +23,12 @@ vbo: c.GLuint,
 ebo: c.GLuint,
 width_ratio: f32 = 1.0,
 image_aspect_ratio: f32 = 1.0,
+actions: ActionQueue,
 
-pub fn init() !Self {
+pub fn init(allocator: Allocator) !*Self {
+    const self = try allocator.create(Self);
+    errdefer allocator.destroy(self);
+
     // GLFW.
     if (c.glfwInit() == c.GLFW_FALSE) {
         std.log.err("Failed to initialize GLFW: {d}", .{c.glfwGetError(null)});
@@ -34,14 +47,15 @@ pub fn init() !Self {
     };
     errdefer c.glfwDestroyWindow(window);
 
-    _ = c.glfwSetKeyCallback(window, keyCallback);
-
     c.glfwMakeContextCurrent(window);
     if (c.gladLoadGLLoader(@ptrCast(&c.glfwGetProcAddress)) == 0) {
         std.log.err("Failed to load OpenGL dec_ctx", .{});
         return error.LoadOpenGLContext;
     }
+
     c.glfwSwapInterval(0); // Turn off V-Sync.
+    c.glfwSetWindowUserPointer(window, self);
+    _ = c.glfwSetKeyCallback(window, keyCallback);
 
     // OpenGL stuff.
     var textures: [3]c.GLuint = undefined;
@@ -92,19 +106,22 @@ pub fn init() !Self {
 
     c.glClearColor(0.0, 0.0, 0.0, 1.0);
 
-    return .{
-        .window = window,
-        .y_texture = textures[0],
-        .u_texture = textures[1],
-        .v_texture = textures[2],
-        .program = program,
-        .vbo = vbo,
-        .ebo = ebo,
-        .vao = vao,
-    };
+    self.allocator = allocator;
+    self.window = window;
+    self.y_texture = textures[0];
+    self.u_texture = textures[1];
+    self.v_texture = textures[2];
+    self.program = program;
+    self.vbo = vbo;
+    self.ebo = ebo;
+    self.vao = vao;
+    self.actions = ActionQueue.init(allocator);
+    errdefer self.action.deinit();
+
+    return self;
 }
 
-pub fn deinit(self: Self) void {
+pub fn deinit(self: *Self) void {
     var buffers = [_]c.GLuint{
         self.vbo,
         self.ebo,
@@ -120,9 +137,11 @@ pub fn deinit(self: Self) void {
     c.glDeleteProgram(self.program);
     c.glfwDestroyWindow(self.window);
     c.glfwTerminate();
+    self.actions.deinit();
+    self.allocator.destroy(self);
 }
 
-pub fn shouldClose(self: Self) bool {
+pub fn shouldClose(self: *Self) bool {
     return c.glfwWindowShouldClose(self.window) == c.GLFW_TRUE;
 }
 
@@ -175,7 +194,13 @@ pub fn swapFrame(self: *Self, frame: VideoFrame) void {
     );
 }
 
-pub fn render(self: Self) void {
+pub fn getNextAction(self: *Self) ?Action {
+    return self.actions.readItem();
+}
+
+pub fn step(self: *Self) void {
+    c.glfwPollEvents();
+
     var width: c_int = undefined;
     var height: c_int = undefined;
     c.glfwGetFramebufferSize(self.window, &width, &height);
@@ -204,7 +229,6 @@ pub fn render(self: Self) void {
     c.glDrawElements(c.GL_TRIANGLES, 6, c.GL_UNSIGNED_INT, @ptrFromInt(0));
 
     c.glfwSwapBuffers(self.window);
-    c.glfwPollEvents();
 }
 
 fn createShaderProgram(vertex: [:0]const u8, fragment: [:0]const u8) !c.GLuint {
@@ -258,7 +282,25 @@ fn errorCallback(err: c_int, description: [*c]const u8) callconv(.C) void {
 fn keyCallback(window: ?*c.GLFWwindow, key: c_int, scancode: c_int, action: c_int, mods: c_int) callconv(.C) void {
     _ = scancode;
     _ = mods;
-    if (key == c.GLFW_KEY_ESCAPE and action == c.GLFW_PRESS) {
-        c.glfwSetWindowShouldClose(window, c.GLFW_TRUE);
+
+    if (action != c.GLFW_PRESS) {
+        return;
+    }
+
+    const self: *Self = @ptrCast(@alignCast(c.glfwGetWindowUserPointer(window).?));
+    switch (key) {
+        c.GLFW_KEY_ESCAPE => c.glfwSetWindowShouldClose(window, c.GLFW_TRUE),
+
+        c.GLFW_KEY_SPACE => self.actions.writeItem(.toggle_pause) catch |err| {
+            std.log.err("Failed to write action: {}", .{err});
+        },
+        c.GLFW_KEY_N => self.actions.writeItem(.step) catch |err| {
+            std.log.err("Failed to write action: {}", .{err});
+        },
+        c.GLFW_KEY_F => self.actions.writeItem(.toggle_fast_forward) catch |err| {
+            std.log.err("Failed to write action: {}", .{err});
+        },
+
+        else => {},
     }
 }
