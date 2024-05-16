@@ -8,7 +8,6 @@ const Self = @This();
 const Action = enum(u8) {
     toggle_pause,
     step,
-    toggle_fast_forward,
 };
 const ActionQueue = std.fifo.LinearFifo(Action, .Dynamic);
 
@@ -295,9 +294,6 @@ fn keyCallback(window: ?*c.GLFWwindow, key: c_int, scancode: c_int, action: c_in
             std.log.err("Failed to write action: {}", .{err});
         },
         c.GLFW_KEY_N => self.actions.writeItem(.step) catch |err| {
-            std.log.err("Failed to write action: {}", .{err});
-        },
-        c.GLFW_KEY_F => self.actions.writeItem(.toggle_fast_forward) catch |err| {
             std.log.err("Failed to write action: {}", .{err});
         },
 

@@ -11,7 +11,10 @@ pub const VideoFrame = struct {
     v: []const u8,
 };
 
-pub const AudioFrame = struct {};
+pub const AudioFrame = struct {
+    const ChannelDataArray = std.BoundedArray([]const u8, 2);
+    channel_data: ChannelDataArray,
+};
 
 pub const Frame = union(enum) {
     video: VideoFrame,
@@ -140,8 +143,24 @@ pub const VideoDecoder = struct {
     }
 
     fn handleAudioFrame(self: *VideoDecoder) !Frame {
-        _ = self;
-        return .{ .audio = .{} };
+        const frame = self.frame.*;
+        const channel_count: usize = @intCast(frame.ch_layout.nb_channels);
+        const sample_count: usize = @intCast(frame.nb_samples);
+        const bytes: usize = sample_count * @sizeOf(f32); // @intCast(frame.linesize[0]);
+
+        if (channel_count > 2) {
+            std.log.warn("Unexpected audio channel count: {}", .{channel_count});
+            return error.UnexpectedAudioChannelCount;
+        }
+
+        var channel_data = AudioFrame.ChannelDataArray.init(0) catch unreachable;
+        for (0..channel_count) |i| {
+            channel_data.append(frame.data[i][0..bytes]) catch unreachable;
+        }
+
+        return .{ .audio = .{
+            .channel_data = channel_data,
+        } };
     }
 
     fn makeFormatContext(path: [:0]const u8) !*c.AVFormatContext {
