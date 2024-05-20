@@ -6,6 +6,7 @@ pub const VideoFrame = struct {
     width: usize,
     height: usize,
     pts: f64,
+    duration: f64,
     y: []const u8,
     u: []const u8,
     v: []const u8,
@@ -128,14 +129,20 @@ pub const VideoDecoder = struct {
         const u = frame.data[1][0 .. size / 4];
         const v = frame.data[2][0 .. size / 4];
 
+        const stream: *c.AVStream = self.fmt_ctx.streams[@intCast(self.packet.stream_index)];
+
         var pts: f64 = @floatFromInt(frame.pts);
-        pts *= c.av_q2d(self.fmt_ctx.streams[@intCast(self.packet.stream_index)].*.time_base);
+        pts *= c.av_q2d(stream.time_base);
+
+        var duration: f64 = @floatFromInt(stream.duration);
+        duration *= c.av_q2d(stream.time_base);
 
         return .{ .video = .{
             .stride = stride,
             .width = width,
             .height = height,
             .pts = pts,
+            .duration = duration,
             .y = y,
             .u = u,
             .v = v,

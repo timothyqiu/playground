@@ -5,6 +5,7 @@ in vec2 TexCoord;
 
 uniform float width_ratio = 1.0;
 uniform float aspect_ratio_ratio = 1.0;
+uniform float progress = 0.0;
 uniform sampler2D luma;
 uniform sampler2D cb;
 uniform sampler2D cr;
@@ -33,5 +34,11 @@ void main()
     float g = y - 0.21482 * u - 0.38059 * v;
     float b = y + 2.12789 * u;
 
-    FragColor = vec4(r, g, b, 1.0);
+    vec4 video_pixel = vec4(r, g, b, 1.0);
+
+    if (coord.y > 0.99) {
+        FragColor = mix(video_pixel, vec4(1.0), (1 - step(progress, coord.x)) * 0.5);
+    } else {
+        FragColor = video_pixel;
+    }
 }

@@ -22,6 +22,7 @@ vbo: c.GLuint,
 ebo: c.GLuint,
 width_ratio: f32 = 1.0,
 image_aspect_ratio: f32 = 1.0,
+progress: f32 = 0.0,
 actions: ActionQueue,
 
 pub fn init(allocator: Allocator) !*Self {
@@ -153,6 +154,8 @@ pub fn swapFrame(self: *Self, frame: VideoFrame) void {
     aspect_ratio /= @floatFromInt(frame.height);
     self.image_aspect_ratio = aspect_ratio;
 
+    self.progress = @floatCast(frame.pts / frame.duration);
+
     c.glBindTexture(c.GL_TEXTURE_2D, self.y_texture);
     c.glTexImage2D(
         c.GL_TEXTURE_2D,
@@ -216,6 +219,7 @@ pub fn step(self: *Self) void {
     c.glUniform1i(c.glGetUniformLocation(self.program, "cr"), 2);
     c.glUniform1f(c.glGetUniformLocation(self.program, "width_ratio"), self.width_ratio);
     c.glUniform1f(c.glGetUniformLocation(self.program, "aspect_ratio_ratio"), aspect_ratio_ratio);
+    c.glUniform1f(c.glGetUniformLocation(self.program, "progress"), self.progress);
 
     c.glActiveTexture(c.GL_TEXTURE0);
     c.glBindTexture(c.GL_TEXTURE_2D, self.y_texture);
