@@ -16,10 +16,10 @@ window: *c.GLFWwindow,
 y_texture: c.GLuint,
 u_texture: c.GLuint,
 v_texture: c.GLuint,
-program: c.GLuint,
-vao: c.GLuint,
-vbo: c.GLuint,
-ebo: c.GLuint,
+video_shader_program: c.GLuint,
+video_quad: Quad,
+progress_shader_program: c.GLuint,
+progress_quad: Quad,
 width_ratio: f32 = 1.0,
 image_aspect_ratio: f32 = 1.0,
 progress: f32 = 0.0,
@@ -67,42 +67,15 @@ pub fn init(allocator: Allocator) !*Self {
         c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MIN_FILTER, c.GL_LINEAR);
     }
 
-    const program = try createShaderProgram(@embedFile("Gui/vertex.glsl"), @embedFile("Gui/fragment.glsl"));
-    errdefer c.glDeleteProgram(program);
+    const video_shader_program = try createShaderProgram(@embedFile("Gui/video_vertex.glsl"), @embedFile("Gui/video_fragment.glsl"));
+    errdefer c.glDeleteProgram(video_shader_program);
+    const video_quad = Quad.init();
+    errdefer video_quad.deinit();
 
-    const vertices = [_]f32{
-        1.0,  1.0,  0.0, 1.0, 1.0,
-        1.0,  -1.0, 0.0, 1.0, 0.0,
-        -1.0, -1.0, 0.0, 0.0, 0.0,
-        -1.0, 1.0,  0.0, 0.0, 1.0,
-    };
-    const indices = [_]c.GLuint{
-        0, 1, 3,
-        1, 2, 3,
-    };
-
-    var buffers: [2]c.GLuint = undefined;
-    c.glGenBuffers(buffers.len, &buffers);
-    errdefer c.glDeleteBuffers(buffers.len, &buffers);
-    const vbo = buffers[0];
-    const ebo = buffers[1];
-
-    var vao: c.GLuint = undefined;
-    c.glGenVertexArrays(1, &vao);
-    errdefer c.glDeleteVertexArrays(1, &vao);
-
-    c.glBindVertexArray(vao);
-
-    c.glBindBuffer(c.GL_ARRAY_BUFFER, vbo);
-    c.glBufferData(c.GL_ARRAY_BUFFER, @sizeOf(@TypeOf(vertices)), &vertices, c.GL_STATIC_DRAW);
-
-    c.glBindBuffer(c.GL_ELEMENT_ARRAY_BUFFER, ebo);
-    c.glBufferData(c.GL_ELEMENT_ARRAY_BUFFER, @sizeOf(@TypeOf(indices)), &indices, c.GL_STATIC_DRAW);
-
-    c.glVertexAttribPointer(0, 3, c.GL_FLOAT, c.GL_FALSE, @sizeOf(f32) * 5, @ptrFromInt(0));
-    c.glEnableVertexAttribArray(0);
-    c.glVertexAttribPointer(1, 2, c.GL_FLOAT, c.GL_FALSE, @sizeOf(f32) * 5, @ptrFromInt(@sizeOf(f32) * 3));
-    c.glEnableVertexAttribArray(1);
+    const progress_shader_program = try createShaderProgram(@embedFile("Gui/progress_vertex.glsl"), @embedFile("Gui/progress_fragment.glsl"));
+    errdefer c.glDeleteProgram(progress_shader_program);
+    const progress_quad = Quad.init();
+    errdefer progress_quad.deinit();
 
     c.glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -111,10 +84,10 @@ pub fn init(allocator: Allocator) !*Self {
     self.y_texture = textures[0];
     self.u_texture = textures[1];
     self.v_texture = textures[2];
-    self.program = program;
-    self.vbo = vbo;
-    self.ebo = ebo;
-    self.vao = vao;
+    self.video_shader_program = video_shader_program;
+    self.progress_shader_program = progress_shader_program;
+    self.video_quad = video_quad;
+    self.progress_quad = progress_quad;
     self.actions = ActionQueue.init(allocator);
     errdefer self.action.deinit();
 
@@ -122,19 +95,16 @@ pub fn init(allocator: Allocator) !*Self {
 }
 
 pub fn deinit(self: *Self) void {
-    var buffers = [_]c.GLuint{
-        self.vbo,
-        self.ebo,
-    };
-    c.glDeleteBuffers(buffers.len, &buffers);
-    c.glDeleteVertexArrays(1, &self.vao);
+    self.video_quad.deinit();
+    self.progress_quad.deinit();
     var textures = [_]c.GLuint{
         self.y_texture,
         self.u_texture,
         self.v_texture,
     };
     c.glDeleteTextures(textures.len, &textures);
-    c.glDeleteProgram(self.program);
+    c.glDeleteProgram(self.video_shader_program);
+    c.glDeleteProgram(self.progress_shader_program);
     c.glfwDestroyWindow(self.window);
     c.glfwTerminate();
     self.actions.deinit();
@@ -213,13 +183,12 @@ pub fn step(self: *Self) void {
     window_aspect_ratio /= @floatFromInt(height);
     const aspect_ratio_ratio = window_aspect_ratio / self.image_aspect_ratio;
 
-    c.glUseProgram(self.program);
-    c.glUniform1i(c.glGetUniformLocation(self.program, "luma"), 0);
-    c.glUniform1i(c.glGetUniformLocation(self.program, "cb"), 1);
-    c.glUniform1i(c.glGetUniformLocation(self.program, "cr"), 2);
-    c.glUniform1f(c.glGetUniformLocation(self.program, "width_ratio"), self.width_ratio);
-    c.glUniform1f(c.glGetUniformLocation(self.program, "aspect_ratio_ratio"), aspect_ratio_ratio);
-    c.glUniform1f(c.glGetUniformLocation(self.program, "progress"), self.progress);
+    c.glUseProgram(self.video_shader_program);
+    c.glUniform1i(c.glGetUniformLocation(self.video_shader_program, "luma"), 0);
+    c.glUniform1i(c.glGetUniformLocation(self.video_shader_program, "cb"), 1);
+    c.glUniform1i(c.glGetUniformLocation(self.video_shader_program, "cr"), 2);
+    c.glUniform1f(c.glGetUniformLocation(self.video_shader_program, "width_ratio"), self.width_ratio);
+    c.glUniform1f(c.glGetUniformLocation(self.video_shader_program, "aspect_ratio_ratio"), aspect_ratio_ratio);
 
     c.glActiveTexture(c.GL_TEXTURE0);
     c.glBindTexture(c.GL_TEXTURE_2D, self.y_texture);
@@ -228,8 +197,12 @@ pub fn step(self: *Self) void {
     c.glActiveTexture(c.GL_TEXTURE2);
     c.glBindTexture(c.GL_TEXTURE_2D, self.v_texture);
 
-    // c.glBindVertexArray(vao);
-    c.glDrawElements(c.GL_TRIANGLES, 6, c.GL_UNSIGNED_INT, @ptrFromInt(0));
+    self.video_quad.render();
+
+    c.glUseProgram(self.progress_shader_program);
+    c.glUniform1f(c.glGetUniformLocation(self.progress_shader_program, "progress"), self.progress);
+
+    self.progress_quad.render();
 
     c.glfwSwapBuffers(self.window);
 }
@@ -304,3 +277,46 @@ fn keyCallback(window: ?*c.GLFWwindow, key: c_int, scancode: c_int, action: c_in
         else => {},
     }
 }
+
+const Quad = struct {
+    vao: c.GLuint,
+    vbo: c.GLuint,
+
+    pub fn init() Quad {
+        const vertices = [_]f32{
+            -1.0, 1.0,
+            -1.0, -1.0,
+            1.0,  1.0,
+            1.0,  -1.0,
+        };
+
+        var vbo: c.GLuint = undefined;
+        c.glGenBuffers(1, &vbo);
+
+        var vao: c.GLuint = undefined;
+        c.glGenVertexArrays(1, &vao);
+
+        c.glBindVertexArray(vao);
+
+        c.glBindBuffer(c.GL_ARRAY_BUFFER, vbo);
+        c.glBufferData(c.GL_ARRAY_BUFFER, @sizeOf(@TypeOf(vertices)), &vertices, c.GL_STATIC_DRAW);
+
+        c.glVertexAttribPointer(0, 2, c.GL_FLOAT, c.GL_FALSE, @sizeOf(f32) * 2, @ptrFromInt(0));
+        c.glEnableVertexAttribArray(0);
+
+        return .{
+            .vao = vao,
+            .vbo = vbo,
+        };
+    }
+
+    pub fn deinit(self: Quad) void {
+        c.glDeleteVertexArrays(1, &self.vao);
+        c.glDeleteBuffers(1, &self.vbo);
+    }
+
+    pub fn render(self: Quad) void {
+        c.glBindVertexArray(self.vao);
+        c.glDrawArrays(c.GL_TRIANGLE_STRIP, 0, 4);
+    }
+};
