@@ -1,0 +1,16 @@
+.{
+    .name = "zlib-demo",
+    .version = "0.0.0",
+    .dependencies = .{
+        .zlib = .{
+            .url = "https://github.com/madler/zlib/archive/refs/tags/v1.3.1.tar.gz",
+            .hash = "1220fed0c74e1019b3ee29edae2051788b080cd96e90d56836eea857b0b966742efb",
+            .lazy = true,
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
