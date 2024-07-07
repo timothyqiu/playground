@@ -337,87 +337,89 @@ function load(): Player | null {
     return null;
 }
 
-const game = document.getElementById("game") as (HTMLCanvasElement | null);
-if (game === null) {
-    throw new Error("No canvas with id `game` is found");
-}
-game.width = 800;
-game.height = 600;
-
-const ctx = game.getContext("2d", {});
-if (ctx === null) {
-    throw new Error("2D context is not supported");
-}
-ctx.imageSmoothingEnabled = false;
-
-const exit = await loadImageData("exit.png").catch(() => Color.magenta());
-const wall = await loadImageData("wall.png").catch(() => Color.magenta());
-const tech_wall = await loadImageData("tech-wall.png").catch(() => Color.magenta());
-
-const scene: Scene = [
-    [null, null, tech_wall, tech_wall, null, null, null, null, wall],
-    [null, null, null, tech_wall, null, null, null, null, null],
-    [null, tech_wall, exit, tech_wall, null, null, null, wall, wall],
-    [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
-    [wall, null, null, null, null, null, null, null, null],
-    [wall, null, null, null, null, null, null, null, null],
-];
-const player = load() ?? new Player(sceneSize(scene).mul(new Vector2(0.63, 0.63)), -2.2);
-
-let movingForward = false;
-let movingBackward = false;
-let turningLeft = false;
-let turningRight = false;
-
-window.addEventListener("keydown", (event) => {
-    if (event.repeat) return;
-    switch (event.code) {
-        case "KeyW": movingForward = true; break;
-        case "KeyS": movingBackward = true; break;
-        case "KeyA": turningLeft = true; break;
-        case "KeyD": turningRight = true; break;
+(async () => {
+    const game = document.getElementById("game") as (HTMLCanvasElement | null);
+    if (game === null) {
+        throw new Error("No canvas with id `game` is found");
     }
-});
-window.addEventListener("keyup", (event) => {
-    if (event.repeat) return;
-    switch (event.code) {
-        case "KeyW": movingForward = false; break;
-        case "KeyS": movingBackward = false; break;
-        case "KeyA": turningLeft = false; break;
-        case "KeyD": turningRight = false; break;
-    }
-});
+    game.width = 800;
+    game.height = 600;
 
-let prevTimestamp = performance.now();
-const frame = (timestamp: number) => {
-    const deltaTime = (timestamp - prevTimestamp) / 1000;
-
-    let velocity = Vector2.zero();
-    let angularVelocity = 0.0;
-
-    if (movingForward) {
-        velocity = velocity.add(Vector2.fromAngle(player.direction).scale(PLAYER_SPEED));
+    const ctx = game.getContext("2d", {});
+    if (ctx === null) {
+        throw new Error("2D context is not supported");
     }
-    if (movingBackward) {
-        velocity = velocity.sub(Vector2.fromAngle(player.direction).scale(PLAYER_SPEED));
-    }
-    if (turningLeft) {
-        angularVelocity -= Math.PI * 0.4;
-    }
-    if (turningRight) {
-        angularVelocity += Math.PI * 0.4;
-    }
+    ctx.imageSmoothingEnabled = false;
 
-    player.position = player.position.add(velocity.scale(deltaTime));
-    player.direction += angularVelocity * deltaTime;
+    const exit = await loadImageData("exit.png").catch(() => Color.magenta());
+    const wall = await loadImageData("wall.png").catch(() => Color.magenta());
+    const tech_wall = await loadImageData("tech-wall.png").catch(() => Color.magenta());
 
-    if (velocity.length() !== 0 || angularVelocity !== 0) {
-        save(player);
+    const scene: Scene = [
+        [null, null, tech_wall, tech_wall, null, null, null, null, wall],
+        [null, null, null, tech_wall, null, null, null, null, null],
+        [null, tech_wall, exit, tech_wall, null, null, null, wall, wall],
+        [null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null],
+        [wall, null, null, null, null, null, null, null, null],
+        [wall, null, null, null, null, null, null, null, null],
+    ];
+    const player = load() ?? new Player(sceneSize(scene).mul(new Vector2(0.63, 0.63)), -2.2);
+
+    let movingForward = false;
+    let movingBackward = false;
+    let turningLeft = false;
+    let turningRight = false;
+
+    window.addEventListener("keydown", (event) => {
+        if (event.repeat) return;
+        switch (event.code) {
+            case "KeyW": movingForward = true; break;
+            case "KeyS": movingBackward = true; break;
+            case "KeyA": turningLeft = true; break;
+            case "KeyD": turningRight = true; break;
+        }
+    });
+    window.addEventListener("keyup", (event) => {
+        if (event.repeat) return;
+        switch (event.code) {
+            case "KeyW": movingForward = false; break;
+            case "KeyS": movingBackward = false; break;
+            case "KeyA": turningLeft = false; break;
+            case "KeyD": turningRight = false; break;
+        }
+    });
+
+    let prevTimestamp = performance.now();
+    const frame = (timestamp: number) => {
+        const deltaTime = (timestamp - prevTimestamp) / 1000;
+
+        let velocity = Vector2.zero();
+        let angularVelocity = 0.0;
+
+        if (movingForward) {
+            velocity = velocity.add(Vector2.fromAngle(player.direction).scale(PLAYER_SPEED));
+        }
+        if (movingBackward) {
+            velocity = velocity.sub(Vector2.fromAngle(player.direction).scale(PLAYER_SPEED));
+        }
+        if (turningLeft) {
+            angularVelocity -= Math.PI * 0.4;
+        }
+        if (turningRight) {
+            angularVelocity += Math.PI * 0.4;
+        }
+
+        player.position = player.position.add(velocity.scale(deltaTime));
+        player.direction += angularVelocity * deltaTime;
+
+        if (velocity.length() !== 0 || angularVelocity !== 0) {
+            save(player);
+        }
+
+        prevTimestamp = timestamp;
+        renderGame(ctx, player, scene);
+        window.requestAnimationFrame(frame);
     }
-
-    prevTimestamp = timestamp;
-    renderGame(ctx, player, scene);
     window.requestAnimationFrame(frame);
-}
-window.requestAnimationFrame(frame);
+})();
