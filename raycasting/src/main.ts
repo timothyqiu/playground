@@ -1,6 +1,6 @@
 import "./style.css";
 
-const EPS = 1e-5;
+const EPS = 1e-6;
 const Z_NEAR = 1.0;
 const Z_FAR = 10.0;
 const FOV = Math.PI * 0.5;
@@ -35,9 +35,12 @@ class Vector2 {
     length(): number {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
+    sqrLength(): number {
+        return this.x * this.x + this.y * this.y;
+    }
     norm(): Vector2 {
         const l = this.length();
-        if (l == 0) return new Vector2(0, 0);
+        if (l === 0) return new Vector2(0, 0);
         return new Vector2(this.x / l, this.y / l);
     }
     scale(value: number): Vector2 {
@@ -45,6 +48,9 @@ class Vector2 {
     }
     distanceTo(that: Vector2): number {
         return that.sub(this).length();
+    }
+    sqrDistanceTo(that: Vector2): number {
+        return that.sub(this).sqrLength();
     }
     angle(): number {
         return Math.atan2(this.y, this.x);
@@ -114,7 +120,7 @@ function rayStep(p1: Vector2, p2: Vector2): Vector2 {
             const y3 = snap(p2.y, d.y);
             const x3 = (y3 - c) / k;
             const p3t = new Vector2(x3, y3);
-            if (p2.distanceTo(p3t) < p2.distanceTo(p3)) {
+            if (p2.sqrDistanceTo(p3t) < p2.sqrDistanceTo(p3)) {
                 p3 = p3t;
             }
         }
@@ -125,9 +131,10 @@ function rayStep(p1: Vector2, p2: Vector2): Vector2 {
 }
 
 function castRay(scene: Scene, p1: Vector2, p2: Vector2): Vector2 {
-    for (; ;) {
+    const start = p1;
+    while (start.distanceTo(p1) < Z_FAR) {
         const c = hittingCell(p1, p2);
-        if (!insideScene(scene, c) || scene[c.y][c.x] !== null) {
+        if (insideScene(scene, c) && scene[c.y][c.x] !== null) {
             break;
         }
 
@@ -176,6 +183,9 @@ function renderMinimap(ctx: CanvasRenderingContext2D, player: Player, position: 
     ctx.translate(...position.array());
     ctx.scale(...size.div(gridSize).array());
 
+    ctx.fillStyle = "#18181877";
+    ctx.fillRect(0, 0, gridSize.x, gridSize.y);
+
     for (let y = 0; y < gridSize.y; y++) {
         for (let x = 0; x < gridSize.x; x++) {
             const color = scene[y][x];
@@ -217,9 +227,12 @@ function renderScene(ctx: CanvasRenderingContext2D, player: Player, scene: Scene
         if (insideScene(scene, c)) {
             const color = scene[c.y][c.x];
             if (color != null) {
-                const stripHeight = ctx.canvas.height / p.sub(player.position).dot(camera_dir);
-                ctx.fillStyle = color;
-                ctx.fillRect(x * stripWidth, (ctx.canvas.height - stripHeight) / 2, stripWidth, stripHeight);
+                const distance = p.sub(player.position).dot(camera_dir);
+                if (distance >= 0) {
+                    const stripHeight = ctx.canvas.height / distance;
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x * stripWidth, (ctx.canvas.height - stripHeight) / 2, stripWidth, stripHeight);
+                }
             }
         }
     }
@@ -227,7 +240,7 @@ function renderScene(ctx: CanvasRenderingContext2D, player: Player, scene: Scene
 
 function renderGame(ctx: CanvasRenderingContext2D, player: Player, scene: Scene) {
     let minimapPosition = canvasSize(ctx).scale(0.03);
-    let cellSize = ctx.canvas.width * 0.06;
+    let cellSize = ctx.canvas.width * 0.03;
     let minimapSize = sceneSize(scene).scale(cellSize);
 
     ctx.fillStyle = "#181818";
