@@ -40,7 +40,7 @@ class Color {
             `${Math.floor(this.r * 255)}, ` +
             `${Math.floor(this.g * 255)}, ` +
             `${Math.floor(this.b * 255)}, ` +
-            `${Math.floor(this.a * 255)})`;
+            `${this.a})`;
     }
 }
 
@@ -287,8 +287,16 @@ function renderScene(ctx: CanvasRenderingContext2D, player: Player, scene: Scene
             const t = p.sub(c);
             const u = (Math.abs(t.x - 1) < EPS) || (Math.abs(t.x) < EPS) ? t.y : t.x;
 
-            const from_y = (ctx.canvas.height - stripHeight)  / 2;
-            ctx.drawImage(cell, Math.floor(u * cell.width), 0, 1, cell.height, x * stripWidth, from_y, stripWidth, stripHeight);
+            ctx.drawImage(
+                cell,
+                Math.floor(u * cell.width), 0, 1, cell.height,
+                x * stripWidth, (ctx.canvas.height - stripHeight) / 2, stripWidth, stripHeight
+            );
+
+            ctx.fillStyle = new Color(0.05, 0.05, 0.05, (distance - 3) / 3).toStyle();
+            const top = Math.floor((ctx.canvas.height - stripHeight) / 2);
+            const bottom = Math.ceil((ctx.canvas.height - stripHeight) / 2 + stripHeight);
+            ctx.fillRect(x * stripWidth, top, stripWidth, bottom - top);
         }
     }
 }
@@ -342,12 +350,12 @@ if (ctx === null) {
 }
 ctx.imageSmoothingEnabled = false;
 
-const exit = await loadImageData("exit.png");
-const wall = await loadImageData("wall.png");
-const tech_wall = await loadImageData("tech-wall.png");
+const exit = await loadImageData("exit.png").catch(() => Color.magenta());
+const wall = await loadImageData("wall.png").catch(() => Color.magenta());
+const tech_wall = await loadImageData("tech-wall.png").catch(() => Color.magenta());
 
 const scene: Scene = [
-    [null, null, Color.cyan(), Color.yellow(), null, null, null, null, wall],
+    [null, null, tech_wall, tech_wall, null, null, null, null, wall],
     [null, null, null, tech_wall, null, null, null, null, null],
     [null, tech_wall, exit, tech_wall, null, null, null, wall, wall],
     [null, null, null, null, null, null, null, null, null],
