@@ -4,8 +4,8 @@ const EPS = 1e-6;
 const Z_NEAR = 0.5;
 const Z_FAR = 10.0;
 const FOV = Math.PI * 0.5;
-const SCREEN_WIDTH = 256;
-const PLAYER_SPEED = 1.0;
+const SCREEN_WIDTH = 240;
+const PLAYER_SPEED = 2.0;
 
 class Color {
     r: number;
@@ -182,7 +182,7 @@ function castRay(scene: Scene, p1: Vector2, p2: Vector2): Vector2 {
     return p2;
 }
 
-type Scene = Array<Array<Color | null>>;
+type Scene = Array<Array<Color | HTMLImageElement | null>>;
 
 function insideScene(scene: Scene, p: Vector2): boolean {
     const size = sceneSize(scene);
@@ -225,10 +225,15 @@ function renderMinimap(ctx: CanvasRenderingContext2D, player: Player, position: 
 
     for (let y = 0; y < gridSize.y; y++) {
         for (let x = 0; x < gridSize.x; x++) {
-            const color = scene[y][x];
-            if (color !== null) {
-                ctx.fillStyle = color.toStyle();
+            const cell = scene[y][x];
+            if (cell === null) {
+                continue;
+            }
+            if (cell instanceof Color) {
+                ctx.fillStyle = cell.toStyle();
                 ctx.fillRect(x, y, 1, 1);
+            } else if (cell instanceof HTMLImageElement) {
+                ctx.drawImage(cell, x, y, 1, 1);
             }
         }
     }
@@ -261,16 +266,29 @@ function renderScene(ctx: CanvasRenderingContext2D, player: Player, scene: Scene
     for (let x = 0; x < SCREEN_WIDTH; x++) {
         const p = castRay(scene, player.position, r1.lerp(r2, x / SCREEN_WIDTH));
         const c = hittingCell(player.position, p);
-        if (insideScene(scene, c)) {
-            const color = scene[c.y][c.x];
-            if (color != null) {
-                const distance = p.sub(player.position).dot(camera_dir);
-                if (distance >= 0) {
-                    const stripHeight = ctx.canvas.height / distance;
-                    ctx.fillStyle = color.brightness(1 / distance).toStyle();
-                    ctx.fillRect(x * stripWidth, (ctx.canvas.height - stripHeight) / 2, stripWidth, stripHeight);
-                }
-            }
+        if (!insideScene(scene, c)) {
+            continue;
+        }
+        const cell = scene[c.y][c.x];
+        if (cell === null) {
+            continue;
+        }
+        const distance = p.sub(player.position).dot(camera_dir);
+        if (distance < 0) {
+            continue;
+        }
+        const stripHeight = ctx.canvas.height / distance;
+
+        if (cell instanceof Color) {
+            ctx.fillStyle = cell.brightness(1 / distance).toStyle();
+            ctx.fillRect(x * stripWidth, (ctx.canvas.height - stripHeight) / 2, stripWidth, stripHeight);
+        }
+        if (cell instanceof HTMLImageElement) {
+            const t = p.sub(c);
+            const u = (Math.abs(t.x - 1) < EPS) || (Math.abs(t.x) < EPS) ? t.y : t.x;
+
+            const from_y = (ctx.canvas.height - stripHeight)  / 2;
+            ctx.drawImage(cell, Math.floor(u * cell.width), 0, 1, cell.height, x * stripWidth, from_y, stripWidth, stripHeight);
         }
     }
 }
@@ -284,6 +302,17 @@ function renderGame(ctx: CanvasRenderingContext2D, player: Player, scene: Scene)
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     renderScene(ctx, player, scene);
     renderMinimap(ctx, player, minimapPosition, minimapSize, scene);
+}
+
+async function loadImageData(url: string): Promise<HTMLImageElement> {
+    const image = new Image();
+    image.src = url;
+    return new Promise((resolve, reject) => {
+        image.onload = () => {
+            resolve(image);
+        };
+        image.onerror = reject;
+    });
 }
 
 function save(player: Player) {
@@ -311,15 +340,20 @@ const ctx = game.getContext("2d", {});
 if (ctx === null) {
     throw new Error("2D context is not supported");
 }
+ctx.imageSmoothingEnabled = false;
 
-const scene = [
-    [null, null, Color.cyan(), Color.yellow(), null, null, null, null, null],
-    [null, null, null, Color.maroon(), null, null, null, null, null],
-    [null, Color.red(), Color.green(), Color.blue(), null, null, null, Color.purple(), Color.olive()],
+const exit = await loadImageData("exit.png");
+const wall = await loadImageData("wall.png");
+const tech_wall = await loadImageData("tech-wall.png");
+
+const scene: Scene = [
+    [null, null, Color.cyan(), Color.yellow(), null, null, null, null, wall],
+    [null, null, null, tech_wall, null, null, null, null, null],
+    [null, tech_wall, exit, tech_wall, null, null, null, wall, wall],
     [null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null, null],
+    [wall, null, null, null, null, null, null, null, null],
+    [wall, null, null, null, null, null, null, null, null],
 ];
 const player = load() ?? new Player(sceneSize(scene).mul(new Vector2(0.63, 0.63)), -2.2);
 
@@ -361,10 +395,10 @@ const frame = (timestamp: number) => {
         velocity = velocity.sub(Vector2.fromAngle(player.direction).scale(PLAYER_SPEED));
     }
     if (turningLeft) {
-        angularVelocity -= Math.PI * 0.3;
+        angularVelocity -= Math.PI * 0.4;
     }
     if (turningRight) {
-        angularVelocity += Math.PI * 0.3;
+        angularVelocity += Math.PI * 0.4;
     }
 
     player.position = player.position.add(velocity.scale(deltaTime));
