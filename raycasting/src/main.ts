@@ -7,6 +7,43 @@ const FOV = Math.PI * 0.5;
 const SCREEN_WIDTH = 256;
 const PLAYER_SPEED = 1.0;
 
+class Color {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+    constructor(r: number, g: number, b: number, a: number) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+    static red = () => new Color(1, 0, 0, 1)
+    static green = () => new Color(0, 1, 0, 1)
+    static blue = () => new Color(0, 0, 1, 1)
+    static magenta = () => new Color(1, 0, 1, 1)
+    static cyan = () => new Color(0, 1, 1, 1)
+    static yellow = () => new Color(1, 1, 0, 1)
+    static olive = () => new Color(0.5, 0.5, 0, 1)
+    static maroon = () => new Color(0.5, 0, 0, 1)
+    static purple = () => new Color(0.5, 0, 0.5, 1)
+    brightness(factor: number): Color {
+        return new Color(
+            this.r * factor,
+            this.g * factor,
+            this.b * factor,
+            this.a
+        );
+    }
+    toStyle(): string {
+        return `rgba(` +
+            `${Math.floor(this.r * 255)}, ` +
+            `${Math.floor(this.g * 255)}, ` +
+            `${Math.floor(this.b * 255)}, ` +
+            `${Math.floor(this.a * 255)})`;
+    }
+}
+
 class Vector2 {
     x: number;
     y: number;
@@ -145,7 +182,7 @@ function castRay(scene: Scene, p1: Vector2, p2: Vector2): Vector2 {
     return p2;
 }
 
-type Scene = Array<Array<string | null>>;
+type Scene = Array<Array<Color | null>>;
 
 function insideScene(scene: Scene, p: Vector2): boolean {
     const size = sceneSize(scene);
@@ -190,7 +227,7 @@ function renderMinimap(ctx: CanvasRenderingContext2D, player: Player, position: 
         for (let x = 0; x < gridSize.x; x++) {
             const color = scene[y][x];
             if (color !== null) {
-                ctx.fillStyle = color;
+                ctx.fillStyle = color.toStyle();
                 ctx.fillRect(x, y, 1, 1);
             }
         }
@@ -230,7 +267,7 @@ function renderScene(ctx: CanvasRenderingContext2D, player: Player, scene: Scene
                 const distance = p.sub(player.position).dot(camera_dir);
                 if (distance >= 0) {
                     const stripHeight = ctx.canvas.height / distance;
-                    ctx.fillStyle = color;
+                    ctx.fillStyle = color.brightness(1 / distance).toStyle();
                     ctx.fillRect(x * stripWidth, (ctx.canvas.height - stripHeight) / 2, stripWidth, stripHeight);
                 }
             }
@@ -276,9 +313,9 @@ if (ctx === null) {
 }
 
 const scene = [
-    [null, null, "cyan", "yellow", null, null, null, null, null],
-    [null, null, null, "maroon", null, null, null, null, null],
-    [null, "red", "green", "blue", null, null, null, "purple", "olive"],
+    [null, null, Color.cyan(), Color.yellow(), null, null, null, null, null],
+    [null, null, null, Color.maroon(), null, null, null, null, null],
+    [null, Color.red(), Color.green(), Color.blue(), null, null, null, Color.purple(), Color.olive()],
     [null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null],
