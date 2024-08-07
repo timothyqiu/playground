@@ -1,12 +1,15 @@
 const std = @import("std");
 const Uart = @import("uart.zig").Uart;
 
-var uart: Uart = undefined;
+const uart: Uart = .{
+    // https://github.com/qemu/qemu/blob/v9.0.2/hw/riscv/virt.c#L82
+    .base_address = @ptrFromInt(0x1000_0000),
+    // https://github.com/qemu/qemu/blob/v9.0.2/hw/riscv/virt.c#L919
+    .clock_frequency = 3686400,
+};
 
 export fn zmain() noreturn {
-    // https://github.com/qemu/qemu/blob/v9.0.2/hw/riscv/virt.c#L82
-    // https://github.com/qemu/qemu/blob/v9.0.2/hw/riscv/virt.c#L919
-    uart = Uart.init(0x1000_0000, 3686400);
+    uart.prepare();
 
     // Handle possible errors locally.
     main() catch |err| {
@@ -36,10 +39,11 @@ pub fn main() !void {
 
         switch (state) {
             .start => switch (c) {
-                // DEL
-                0x7f => uart.writeAll("\x08 \x08"),
+                // BS & DEL
+                0x08, 0x7f => uart.writeAll("\x08 \x08"),
 
-                '\r' => uart.putData('\n'),
+                // CR & LF
+                '\r', '\n' => uart.putData('\n'),
 
                 // ESC
                 0x1b => state = .escape,
@@ -74,6 +78,7 @@ pub fn main() !void {
     }
 }
 
+// `@panic()` uses `root.panic()` when available.
 pub fn panic(msg: []const u8, _: ?*std.builtin.StackTrace, _: ?usize) noreturn {
     @setCold(true);
     uart.writeAll("KERNEL PANIC: ");

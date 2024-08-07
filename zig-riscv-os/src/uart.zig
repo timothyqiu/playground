@@ -37,12 +37,7 @@ pub const Uart = struct {
         scr = 7,
     };
 
-    pub fn init(base_address: usize, clock_frequency: usize) Uart {
-        const self: Uart = .{
-            .base_address = @ptrFromInt(base_address),
-            .clock_frequency = clock_frequency,
-        };
-
+    pub fn prepare(self: Uart) void {
         // Set word length to 8 bits.
         const lcr = 0b0000_0011;
         self.put(.lcr, lcr);
@@ -59,8 +54,6 @@ pub const Uart = struct {
         self.put(.lcr, lcr | 0b0100_0000);
         self.putDivisorLatch(divisor);
         self.put(.lcr, lcr);
-
-        return self;
     }
 
     pub fn put(self: Uart, reg: WritableRegister, value: u8) void {
