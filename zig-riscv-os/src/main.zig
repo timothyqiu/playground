@@ -1,5 +1,11 @@
 const std = @import("std");
 const Uart = @import("uart.zig").Uart;
+const Memory = @import("Memory.zig");
+
+// See linker.ld
+// Symbol's address matters, not value.
+extern const _heap_start: u8;
+extern const _heap_end: u8;
 
 const uart: Uart = .{
     // https://github.com/qemu/qemu/blob/v9.0.2/hw/riscv/virt.c#L82
@@ -7,8 +13,10 @@ const uart: Uart = .{
     // https://github.com/qemu/qemu/blob/v9.0.2/hw/riscv/virt.c#L919
     .clock_frequency = 3686400,
 };
+var mem: Memory = undefined;
 
 export fn zmain() noreturn {
+    mem = Memory.init(@intFromPtr(&_heap_start), @intFromPtr(&_heap_end));
     uart.prepare();
 
     // Handle possible errors locally.
@@ -26,6 +34,13 @@ pub fn main() !void {
 
     uart.writeAll("Hello from Zig!\n");
     std.log.info("Press Ctrl-A and X to terminate QEMU", .{});
+
+    // Yeah, it leaks. But this is just a test :)
+    _ = try mem.alloc(64);
+    for (0..8) |_| {
+        _ = try mem.alloc(1);
+    }
+    try mem.printPageAllocations(writer.any());
 
     const State = enum {
         start,
